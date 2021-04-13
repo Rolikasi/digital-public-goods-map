@@ -15,7 +15,7 @@ export default function mapComponent(props) {
 	const [zoom, setZoom] = useState(zoomDefault);
 	const [lonLat, setLonLat] = useState([props.lon, props.lat]);
 	const [lonLatMarker, setLonLatMarker] = useState([props.lon, props.lat]);
-
+  console.log('goods', props.digitalGoods);
 	// useEffect(() => {
 	// 	setZoom(zoomDefault);
 	// 	setLonLat([props.lon, props.lat]);
@@ -24,7 +24,7 @@ export default function mapComponent(props) {
 
 	return (
 		<Map
-			style="mapbox://styles/lacabra00/ckfqtcdnj11ty19t3stjs11dq"
+			style="mapbox://styles/rolikasi/ckn67a95j022m17mcqog82g05"
 			center= {lonLat}
 			zoom={[zoom]}
 			containerStyle={{ width: '100%', height: '100%' }}
@@ -53,9 +53,9 @@ export default function mapComponent(props) {
                     id: 'Venture Fund', //this is the name of our layer, which we will need later
                     source: {
                       type: 'vector',
-                      url: 'mapbox://lacabra00.dvl2fpqx', 
+                      url: 'mapbox://rolikasi.2kn4jvyh', 
                     },
-                    'source-layer': 'ne_10m_admin_0_countries-arkt75', 
+                    'source-layer': 'ne_10m_admin_0_countries-dxlasx', 
                     type: 'fill',
                     paint: {
                       // 'fill-color': '#db3d44', // this is the color you want your tileset to have (red)
@@ -77,14 +77,14 @@ export default function mapComponent(props) {
 					id: 'Giga Countries', //this is the name of our layer, which we will need later
 					source: {
 					  type: 'vector',
-					  url: 'mapbox://lacabra00.dvl2fpqx', 
+					  url: 'mapbox://rolikasi.2kn4jvyh', 
 					},
-					'source-layer': 'ne_10m_admin_0_countries-arkt75', 
+					'source-layer': 'ne_10m_admin_0_countries-dxlasx', 
 					type: 'fill',
 					paint: {
 					  // 'fill-color': '#db3d44', // this is the color you want your tileset to have (red)
 					  // 'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
-                      "fill-pattern": "red-dots",
+                      "fill-pattern": "dot-11",
 					},
 				}, firstSymbolId)
                 map.setLayoutProperty('Giga Countries', 'visibility', 'visible');
@@ -99,9 +99,9 @@ export default function mapComponent(props) {
                     id: 'ProCo Countries', //this is the name of our layer, which we will need later
                     source: {
                       type: 'vector',
-                      url: 'mapbox://lacabra00.dvl2fpqx', 
+                      url: 'mapbox://rolikasi.2kn4jvyh', 
                     },
-                    'source-layer': 'ne_10m_admin_0_countries-arkt75', 
+                    'source-layer': 'ne_10m_admin_0_countries-dxlasx', 
                     type: 'fill',
                     paint: {
                       'fill-color': 'yellow', //this helps us distinguish individual countries a bit better by giving them an outline
@@ -112,7 +112,7 @@ export default function mapComponent(props) {
 
                 map.setFilter(
                     'ProCo Countries',
-                    ['in', 'ADM0_A3_IS'].concat(Object.keys(props.procoCountries)),
+                    ['in', 'ADM0_A3_IS'].concat(Object.entries(props.procoCountries).filter(s => s[1].connectivity == "TRUE").map(d => d[0])),
                   ); // This line lets us filter by country codes.
 
                 map.addLayer({
@@ -120,12 +120,12 @@ export default function mapComponent(props) {
                     id: 'DPG Pathfinders', //this is the name of our layer, which we will need later
                     source: {
                       type: 'vector',
-                      url: 'mapbox://lacabra00.dvl2fpqx', 
+                      url: 'mapbox://rolikasi.2kn4jvyh', 
                     },
-                    'source-layer': 'ne_10m_admin_0_countries-arkt75', 
+                    'source-layer': 'ne_10m_admin_0_countries-dxlasx', 
                     type: 'fill',
                     paint: {
-                       "fill-pattern": "grey-lines",
+                       "fill-pattern": "rectangle-blue-6",
                     },
                 }, firstSymbolId)
                 map.setLayoutProperty('DPG Pathfinders', 'visibility', 'visible');
@@ -140,9 +140,9 @@ export default function mapComponent(props) {
                     id: 'countries', //this is the name of our layer, which we will need later
                     source: {
                       type: 'vector',
-                      url: 'mapbox://lacabra00.dvl2fpqx', 
+                      url: 'mapbox://rolikasi.2kn4jvyh', 
                     },
-                    'source-layer': 'ne_10m_admin_0_countries-arkt75', 
+                    'source-layer': 'ne_10m_admin_0_countries-dxlasx', 
                     type: 'fill',
                     paint: {
                       'fill-color': 'white', //this helps us distinguish individual countries a bit better by giving them an outline
@@ -224,7 +224,7 @@ export default function mapComponent(props) {
                 });
 
                 // enumerate ids of the layers
-                var toggleableLayerIds = ['Giga Countries', 'ProCo Countries', 'DPG Pathfinders', 'Venture Fund'];
+                var toggleableLayerIds = ['Giga Countries', 'ProCo Countries', 'DPG Pathfinders', 'Venture Fund', 'Selected good'];
                  
                 // set up the corresponding toggle button for each layer
                 for (var i = 0; i < toggleableLayerIds.length; i++) {
