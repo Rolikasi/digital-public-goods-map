@@ -263,6 +263,7 @@ export default function Home() {
   const [pathfinder, setPathfinder] = useState([]);
   const [fundCountries, setFundCountries] = useState([]);
   const [digitalGoods, setDigitalGoods] = useState([]);
+  const [selectedGood, setSelectedGood] = useState('');
 
   const [gigaChecked, setGigaChecked] = useState(true);
 
@@ -342,6 +343,29 @@ export default function Home() {
     setFundCountries(f);
     setCountries(c);
   }
+  const addGoodsCountries = (good) => { // need to refactor
+    let deployGoods = {};
+    good.locations.deploymentCountries.map(country => {
+      if (!alpha3[country]) {
+        console.log('Mismatched good' + country)
+      }
+      let code = alpha3[country];
+      deployGoods[code] = country; 
+    });
+    good.locations.deploymentCountries = deployGoods;
+
+    let developmentGoods = {};
+    good.locations.developmentCountries.forEach(country => {
+      if (!alpha3[country]) {
+        console.log('Mismatched good' + country)
+      }
+      let code = alpha3[country];
+      developmentGoods[code] = country;
+    });
+    good.locations.developmentCountries = developmentGoods;
+
+    setDigitalGoods(digitalGoods => [...digitalGoods, good]);
+  }
 
   const getDigitalGoods = (name, loop, nameHandler) => {
     fetch('https://raw.githubusercontent.com/unicef/publicgoods-candidates/master/screening/' + name)
@@ -351,7 +375,8 @@ export default function Home() {
           let data = JSON.parse(text);
           if (nameHandler)
             data.name = nameHandler
-          setDigitalGoods(digitalGoods => [...digitalGoods, data]);
+          addGoodsCountries(data);
+
         }
         // handle linked json  
         catch (error) {
@@ -438,7 +463,7 @@ export default function Home() {
                   </NavText>
             {Object.values(digitalGoods).map((good, index) => {
               return (
-                <NavItem key={"gs-" + good.name}>
+                <NavItem eventKey={good.name} key={"gs-" + good.name}>
                   <NavText style={{ color: "black" }}>
                     {good.name}
                   </NavText>
@@ -551,6 +576,7 @@ export default function Home() {
         pathfinderCountries={pathfinder}
         digitalGoods={digitalGoods}
       />
+      <select id="dg-menu"> </select>
       <ul id="menu"></ul>
 
     </div>
