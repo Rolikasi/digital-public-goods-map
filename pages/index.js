@@ -64,6 +64,7 @@ const alpha3 = {
   "Cayman Islands": 'CYM',
   "Cyprus": 'CYP',
   "Czech Republic": 'CZE',
+  "Czechia": 'CZE',
   "Germany": 'DEU',
   "Djibouti": 'DJI',
   "Dominica": 'DMA',
@@ -113,6 +114,7 @@ const alpha3 = {
   "British Indian Ocean Territory": 'IOT',
   "Ireland": 'IRL',
   "Iran, Islamic Republic of": 'IRN',
+  "Iran": 'IRN',
   "Iraq": 'IRQ',
   "Iceland": 'ISL',
   "Israel": 'ISR',
@@ -232,12 +234,14 @@ const alpha3 = {
   "Turkey": 'TUR',
   "Tuvalu": 'TUV',
   "Taiwan, Province of China": 'TWN',
+  "Taiwan": 'TWN',
   "Tanzania": 'TZA',
   "Uganda": 'UGA',
   "Ukraine": 'UKR',
   "United States Minor Outlying Islands": 'UMI',
   "Uruguay": 'URY',
   "United States": 'USA',
+  "USA": "USA",
   "Uzbekistan": 'UZB',
   "Holy See (Vatican City State)": 'VAT',
   "Saint Vincent and the Grenadines": 'VCT',
@@ -258,12 +262,13 @@ export default function Home() {
 
   const [open, setOpen] = useState(true);
   const [countries, setCountries] = useState({});
-  const [gigaCountries, setGigaCountries] = useState([]);
-  const [procoCountries, setProcoCountries] = useState([]);
-  const [pathfinder, setPathfinder] = useState([]);
-  const [fundCountries, setFundCountries] = useState([]);
   const [digitalGoods, setDigitalGoods] = useState([]);
-  const [selectedGood, setSelectedGood] = useState('');
+  const [pathfinder, setPathfinder] = useState([]);
+  
+  // const [fundCountries, setFundCountries] = useState([]);
+  // const [gigaCountries, setGigaCountries] = useState([]);
+  // const [procoCountries, setProcoCountries] = useState([]);
+
 
   const [gigaChecked, setGigaChecked] = useState(true);
 
@@ -303,46 +308,46 @@ export default function Home() {
     }
   }
 
-  function addFundCountries(results, label) {
-    let c = countries;
-    let f = []
-    console.log(results)
-    for (let i = 0; i < results.length; i++) {
-      if (!alpha3[results[i].country]) {
-        console.log('Mismatched ' + results[i].country)
-      } else {
-        if (!Object.keys(c).find(e => e == alpha3[results[i].country])) {
-          c[alpha3[results[i].country]] = {}
-        }
-        if (!f[alpha3[results[i].country]]) {
-          f[alpha3[results[i].country]] = {
-            country: results[i].country,
-            investments: []
-          }
-        }
+  // function addFundCountries(results, label) {
+  //   let c = countries;
+  //   let f = []
+  //   console.log(results)
+  //   for (let i = 0; i < results.length; i++) {
+  //     if (!alpha3[results[i].country]) {
+  //       console.log('Mismatched ' + results[i].country)
+  //     } else {
+  //       if (!Object.keys(c).find(e => e == alpha3[results[i].country])) {
+  //         c[alpha3[results[i].country]] = {}
+  //       }
+  //       if (!f[alpha3[results[i].country]]) {
+  //         f[alpha3[results[i].country]] = {
+  //           country: results[i].country,
+  //           investments: []
+  //         }
+  //       }
 
-        if (!c[alpha3[results[i].country]][label]) {
-          c[alpha3[results[i].country]][label] = {
-            country: results[i].country,
-            investments: []
-          }
-        }
+  //       if (!c[alpha3[results[i].country]][label]) {
+  //         c[alpha3[results[i].country]][label] = {
+  //           country: results[i].country,
+  //           investments: []
+  //         }
+  //       }
 
-        c[alpha3[results[i].country]][label].investments.push({
-          investment: results[i].investment,
-          co: results[i].co
-        })
+  //       c[alpha3[results[i].country]][label].investments.push({
+  //         investment: results[i].investment,
+  //         co: results[i].co
+  //       })
 
-        f[alpha3[results[i].country]].investments.push({
-          investment: results[i].investment,
-          co: results[i].co
-        })
+  //       f[alpha3[results[i].country]].investments.push({
+  //         investment: results[i].investment,
+  //         co: results[i].co
+  //       })
 
-      }
-    }
-    setFundCountries(f);
-    setCountries(c);
-  }
+  //     }
+  //   }
+  //   setFundCountries(f);
+  //   setCountries(c);
+  // }
   const addGoodsCountries = (good) => { // need to refactor
     let deployGoods = {};
     good.locations.deploymentCountries.map(country => {
@@ -350,7 +355,7 @@ export default function Home() {
         console.log('Mismatched good' + country)
       }
       let code = alpha3[country];
-      deployGoods[code] = country; 
+      deployGoods[code] = country;
     });
     good.locations.deploymentCountries = deployGoods;
 
@@ -391,27 +396,27 @@ export default function Home() {
   useEffect(() => {
 
     GSheetReader(options, results => {
-      addCountries(results, 'giga');
-    });
-
-    let options2 = options;
-    options2.sheetNumber = 2;
-    GSheetReader(options2, results => {
-      console.log('proco', results);
-      addCountries(results, 'proco');
-    });
-
-    options2.sheetNumber = 3;
-    GSheetReader(options2, results => {
-      console.log("pathfinder", results);
       addCountries(results, 'pathfinder');
-
     });
 
-    options2.sheetNumber = 4;
-    GSheetReader(options2, results => {
-      addFundCountries(results, 'fund');
-    });
+    // let options2 = options;
+    // options2.sheetNumber = 2;
+    // GSheetReader(options2, results => {
+    //   console.log('proco', results);
+    //   addCountries(results, 'proco');
+    // });
+
+    // options2.sheetNumber = 3;
+    // GSheetReader(options2, results => {
+    //   console.log("giga", results);
+    //   addCountries(results, 'giga');
+
+    // });
+
+    // options2.sheetNumber = 4;
+    // GSheetReader(options2, results => {
+    //   addFundCountries(results, 'fund');
+    // });
     fetch("https://api.github.com/search/code?q=repo:unicef/publicgoods-candidates+path:screening+filename:.json")
       .then(function (response) {
         console.log("response", response)
@@ -472,7 +477,27 @@ export default function Home() {
             })
             }
           </NavItem>
-          <NavItem eventKey="giga">
+          <NavItem eventKey="pathfinder">
+            <NavIcon>
+              <i className="fa fa-fw fa-line-chart" style={{ fontSize: '1.75em' }} />
+            </NavIcon>
+            <NavText style={{ color: "black" }}>
+              <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' style={{ border: "1px solid black", background: 'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cGF0aCBkPSJNLTIgMTBMMTAgLTJaTTEwIDZMNiAxMFpNLTIgMkwyIC0yIiBzdHJva2U9IiMyMjIiIHN0cm9rZS13aWR0aD0iMiI+PC9wYXRoPgo8L3N2Zz4=")' }}>
+              </svg>
+                      &nbsp; DPG Pathfinders
+                  </NavText>
+            {Object.values(pathfinder).map((country, index) => {
+              return (
+                <NavItem key={"p-" + country.country}>
+                  <NavText style={{ color: "black" }}>
+                    {country.country}
+                  </NavText>
+                </NavItem>
+              )
+            })
+            }
+          </NavItem>
+          {/* <NavItem eventKey="giga">
             <NavIcon>
               <i className="fa fa-fw fa-line-chart" style={{ fontSize: '1.75em' }} />
             </NavIcon>
@@ -512,26 +537,7 @@ export default function Home() {
             })
             }
           </NavItem>
-          <NavItem eventKey="pathfinder">
-            <NavIcon>
-              <i className="fa fa-fw fa-line-chart" style={{ fontSize: '1.75em' }} />
-            </NavIcon>
-            <NavText style={{ color: "black" }}>
-              <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' style={{ border: "1px solid black", background: 'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cGF0aCBkPSJNLTIgMTBMMTAgLTJaTTEwIDZMNiAxMFpNLTIgMkwyIC0yIiBzdHJva2U9IiMyMjIiIHN0cm9rZS13aWR0aD0iMiI+PC9wYXRoPgo8L3N2Zz4=")' }}>
-              </svg>
-                      &nbsp; DPG Pathfinders
-                  </NavText>
-            {Object.values(pathfinder).map((country, index) => {
-              return (
-                <NavItem key={"p-" + country.country}>
-                  <NavText style={{ color: "black" }}>
-                    {country.country}
-                  </NavText>
-                </NavItem>
-              )
-            })
-            }
-          </NavItem>
+          
           <NavItem eventKey="fund">
             <NavIcon>
               <i className="fa fa-fw fa-line-chart" style={{ fontSize: '1.75em' }} />
@@ -554,7 +560,7 @@ export default function Home() {
               )
             })
             }
-          </NavItem>
+          </NavItem> */}
 
         </SideNav.Nav>
 
@@ -570,15 +576,15 @@ export default function Home() {
         lon="-14"
         lat="24.5"
         countries={countries}
-        gigaCountries={gigaCountries}
-        procoCountries={procoCountries}
-        fundCountries={fundCountries}
+        // gigaCountries={gigaCountries}
+        // procoCountries={procoCountries}
+        // fundCountries={fundCountries}
         pathfinderCountries={pathfinder}
         digitalGoods={digitalGoods}
       />
-      <select id="dg-menu"> </select>
+      <select id="dg-menu" defaultValue='Select digital good'>
+        <option value="Select digital good" disabled>Select digital good</option> </select>
       <ul id="menu"></ul>
-
     </div>
   )
 }

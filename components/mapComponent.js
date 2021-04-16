@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import ReactMapboxGl, { Layer, Feature, Marker, Popup, ZoomControl } from 'react-mapbox-gl';
 import mapboxgl from 'mapbox-gl';
+import dynamic from 'next/dynamic';
 
 const zoomDefault = 1;
 
@@ -10,22 +11,22 @@ const Map = ReactMapboxGl({
   minZoom: 0
 });
 
+
 export default function mapComponent(props) {
 
   const [zoom, setZoom] = useState(zoomDefault);
   const [lonLat, setLonLat] = useState([props.lon, props.lat]);
   const [lonLatMarker, setLonLatMarker] = useState([props.lon, props.lat]);
+  const [selectedGood, setSelectedGood] = useState('');
   console.log('goods', props.digitalGoods);
-  console.log('prococountries', props.procoCountries);
-  console.log('selected', props.selectedGood);
   // useEffect(() => {
   // 	setZoom(zoomDefault);
   // 	setLonLat([props.lon, props.lat]);
   // 	setLonLatMarker([props.lon, props.lat]);
   // }, [props.lon, props.lat]);
-
+  const InfoComponent = dynamic(() => import('../components/infoComponent'));
   return (
-
+    <div className='map'>
     <Map
       style="mapbox://styles/rolikasi/ckn67a95j022m17mcqog82g05"
       center={lonLat}
@@ -62,8 +63,7 @@ export default function mapComponent(props) {
             type: 'fill',
             paint: {
               // 'fill-color': '#db3d44', // this is the color you want your tileset to have (red)
-              'fill-color': '#1CABE2', //this helps us distinguish individual countries a bit better by giving them an outline
-              'fill-opacity': 0.2,
+              'fill-pattern': 'hardware-15', //this helps us distinguish individual countries a bit better by giving them an outline
             },
           }, firstSymbolId)
           map.setLayoutProperty(good.name + '-develop', 'visibility', 'none');
@@ -95,72 +95,72 @@ export default function mapComponent(props) {
           ); // This line lets us filter by country codes.
         });
 
-        map.addLayer({
-          // adding a layer containing the tileset with country boundaries
-          id: 'Venture Fund', //this is the name of our layer, which we will need later
-          source: {
-            type: 'vector',
-            url: 'mapbox://rolikasi.2kn4jvyh',
-          },
-          'source-layer': 'ne_10m_admin_0_countries-dxlasx',
-          type: 'fill',
-          paint: {
-            // 'fill-color': '#db3d44', // this is the color you want your tileset to have (red)
-            'fill-color': '#1CABE2', //this helps us distinguish individual countries a bit better by giving them an outline
-            'fill-opacity': 0.2,
-          },
-        }, firstSymbolId)
-        map.setLayoutProperty('Venture Fund', 'visibility', 'none');
+        // map.addLayer({
+        //   // adding a layer containing the tileset with country boundaries
+        //   id: 'Venture Fund', //this is the name of our layer, which we will need later
+        //   source: {
+        //     type: 'vector',
+        //     url: 'mapbox://rolikasi.2kn4jvyh',
+        //   },
+        //   'source-layer': 'ne_10m_admin_0_countries-dxlasx',
+        //   type: 'fill',
+        //   paint: {
+        //     // 'fill-color': '#db3d44', // this is the color you want your tileset to have (red)
+        //     'fill-color': '#1CABE2', //this helps us distinguish individual countries a bit better by giving them an outline
+        //     'fill-opacity': 0.2,
+        //   },
+        // }, firstSymbolId)
+        // map.setLayoutProperty('Venture Fund', 'visibility', 'none');
 
-        map.setFilter(
-          'Venture Fund',
-          ['in', 'ADM0_A3_IS'].concat(Object.keys(props.fundCountries)),
-        ); // This line lets us filter by country codes.
+        // map.setFilter(
+        //   'Venture Fund',
+        //   ['in', 'ADM0_A3_IS'].concat(Object.keys(props.fundCountries)),
+        // ); // This line lets us filter by country codes.
 
 
-        // Ref: https://dev.to/wuz/building-a-country-highlighting-tool-with-mapbox-2kbh
-        map.addLayer({
-          // adding a layer containing the tileset with country boundaries
-          id: 'Giga Countries', //this is the name of our layer, which we will need later
-          source: {
-            type: 'vector',
-            url: 'mapbox://rolikasi.2kn4jvyh',
-          },
-          'source-layer': 'ne_10m_admin_0_countries-dxlasx',
-          type: 'fill',
-          paint: {
-            // 'fill-color': '#db3d44', // this is the color you want your tileset to have (red)
-            // 'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
-            "fill-pattern": "dot-11",
-          },
-        }, firstSymbolId)
-        map.setLayoutProperty('Giga Countries', 'visibility', 'visible');
+        // // Ref: https://dev.to/wuz/building-a-country-highlighting-tool-with-mapbox-2kbh
+        // map.addLayer({
+        //   // adding a layer containing the tileset with country boundaries
+        //   id: 'Giga Countries', //this is the name of our layer, which we will need later
+        //   source: {
+        //     type: 'vector',
+        //     url: 'mapbox://rolikasi.2kn4jvyh',
+        //   },
+        //   'source-layer': 'ne_10m_admin_0_countries-dxlasx',
+        //   type: 'fill',
+        //   paint: {
+        //     // 'fill-color': '#db3d44', // this is the color you want your tileset to have (red)
+        //     // 'fill-outline-color': '#F2F2F2', //this helps us distinguish individual countries a bit better by giving them an outline
+        //     "fill-pattern": "dot-11",
+        //   },
+        // }, firstSymbolId)
+        // map.setLayoutProperty('Giga Countries', 'visibility', 'visible');
 
-        map.setFilter(
-          'Giga Countries',
-          ['in', 'ADM0_A3_IS'].concat(Object.keys(props.gigaCountries)),
-        ); // This line lets us filter by country codes.
+        // map.setFilter(
+        //   'Giga Countries',
+        //   ['in', 'ADM0_A3_IS'].concat(Object.keys(props.gigaCountries)),
+        // ); // This line lets us filter by country codes.
 
-        map.addLayer({
-          // adding a layer containing the tileset with country boundaries
-          id: 'ProCo Countries', //this is the name of our layer, which we will need later
-          source: {
-            type: 'vector',
-            url: 'mapbox://rolikasi.2kn4jvyh',
-          },
-          'source-layer': 'ne_10m_admin_0_countries-dxlasx',
-          type: 'fill',
-          paint: {
-            'fill-color': 'yellow', //this helps us distinguish individual countries a bit better by giving them an outline
-            'fill-opacity': 0.2,
-          },
-        }, firstSymbolId)
-        map.setLayoutProperty('ProCo Countries', 'visibility', 'visible');
+        // map.addLayer({
+        //   // adding a layer containing the tileset with country boundaries
+        //   id: 'ProCo Countries', //this is the name of our layer, which we will need later
+        //   source: {
+        //     type: 'vector',
+        //     url: 'mapbox://rolikasi.2kn4jvyh',
+        //   },
+        //   'source-layer': 'ne_10m_admin_0_countries-dxlasx',
+        //   type: 'fill',
+        //   paint: {
+        //     'fill-color': 'yellow', //this helps us distinguish individual countries a bit better by giving them an outline
+        //     'fill-opacity': 0.2,
+        //   },
+        // }, firstSymbolId)
+        // map.setLayoutProperty('ProCo Countries', 'visibility', 'visible');
 
-        map.setFilter(
-          'ProCo Countries',
-          ['in', 'ADM0_A3_IS'].concat(Object.entries(props.procoCountries).filter(s => s[1].connectivity == "TRUE").map(d => d[0])),
-        ); // This line lets us filter by country codes.
+        // map.setFilter(
+        //   'ProCo Countries',
+        //   ['in', 'ADM0_A3_IS'].concat(Object.entries(props.procoCountries).filter(s => s[1].connectivity == "TRUE").map(d => d[0])),
+        // ); // This line lets us filter by country codes.
 
         map.addLayer({
           // adding a layer containing the tileset with country boundaries
@@ -173,6 +173,7 @@ export default function mapComponent(props) {
           type: 'fill',
           paint: {
             "fill-pattern": "rectangle-blue-6",
+            "fill-opacity": 0.5,
           },
         }, firstSymbolId)
         map.setLayoutProperty('DPG Pathfinders', 'visibility', 'visible');
@@ -207,28 +208,28 @@ export default function mapComponent(props) {
           const countryCode = mapElement.features[0].properties.ADM0_A3_IS; // Grab the country code from the map properties.
 
           let countryName = '';
-          let gigaHtml = '';
+          // let gigaHtml = '';
           let pathHtml = '';
-          let fundHtml = '';
-          let procoHtml = '';
+          // let fundHtml = '';
+          // let procoHtml = '';
 
-          if (props.countries[countryCode].giga) {
-            countryName = props.countries[countryCode].giga.country;
-            gigaHtml = '✅&nbsp;&nbsp;GIGA Country<br/>';
-            if (props.countries[countryCode].giga.link) {
-              gigaHtml += '<ul><li><a href="' + props.countries[countryCode].giga.link + '" target="_blank">More info</a></li></ul>';
-            }
-          }
+          // if (props.countries[countryCode].giga) {
+          //   countryName = props.countries[countryCode].giga.country;
+          //   gigaHtml = '✅&nbsp;&nbsp;GIGA Country<br/>';
+          //   if (props.countries[countryCode].giga.link) {
+          //     gigaHtml += '<ul><li><a href="' + props.countries[countryCode].giga.link + '" target="_blank">More info</a></li></ul>';
+          //   }
+          // }
 
           console.log()
-          if (props.countries[countryCode].proco) {
-            countryName = props.countries[countryCode].proco.country;
-            procoHtml = '✅&nbsp;&nbsp;Project Connect<br/>';
-            procoHtml += '<ul>';
-            procoHtml += '<li><b>Location Data</b>: ' + props.countries[countryCode].proco.location + '</li>';
-            procoHtml += '<li><b>Connectivity Data</b>: ' + props.countries[countryCode].proco.connectivity + "</li>";
-            procoHtml += '</ul>';
-          }
+          // if (props.countries[countryCode].proco) {
+          //   countryName = props.countries[countryCode].proco.country;
+          //   procoHtml = '✅&nbsp;&nbsp;Project Connect<br/>';
+          //   procoHtml += '<ul>';
+          //   procoHtml += '<li><b>Location Data</b>: ' + props.countries[countryCode].proco.location + '</li>';
+          //   procoHtml += '<li><b>Connectivity Data</b>: ' + props.countries[countryCode].proco.connectivity + "</li>";
+          //   procoHtml += '</ul>';
+          // }
 
           if (props.countries[countryCode].pathfinder) {
             countryName = props.countries[countryCode].pathfinder.country;
@@ -243,25 +244,22 @@ export default function mapComponent(props) {
             }
             pathHtml += "</ul>";
           }
-          if (props.countries[countryCode].fund) {
-            countryName = props.countries[countryCode].fund.country;
-            fundHtml = "✅&nbsp;&nbsp;Venture Fund Investments<br/>";
-            fundHtml += "<ul>";
-            for (let i = 0; i < props.countries[countryCode].fund.investments.length; i++) {
-              fundHtml += "<li>" + props.countries[countryCode].fund.investments[i].investment
-              if (props.countries[countryCode].fund.investments[i].co) {
-                fundHtml += "&nbsp;🌐"
-              }
-              fundHtml += "</li>";
-            }
-            fundHtml += "</ul>";
-          }
+          // if (props.countries[countryCode].fund) {
+          //   countryName = props.countries[countryCode].fund.country;
+          //   fundHtml = "✅&nbsp;&nbsp;Venture Fund Investments<br/>";
+          //   fundHtml += "<ul>";
+          //   for (let i = 0; i < props.countries[countryCode].fund.investments.length; i++) {
+          //     fundHtml += "<li>" + props.countries[countryCode].fund.investments[i].investment
+          //     if (props.countries[countryCode].fund.investments[i].co) {
+          //       fundHtml += "&nbsp;🌐"
+          //     }
+          //     fundHtml += "</li>";
+          //   }
+          //   fundHtml += "</ul>";
+          // }
 
           var html = `<h3>${countryName}</h3>
-    				${gigaHtml}
-    				${procoHtml}
-    				${pathHtml}
-    				${fundHtml}`;
+    				${pathHtml}`;
 
           new mapboxgl.Popup() //Create a new popup
             .setLngLat(mapElement.lngLat) // Set where we want it to appear (where we clicked)
@@ -271,13 +269,31 @@ export default function mapComponent(props) {
         });
 
         // enumerate ids of the layers
-        var toggleableLayerIds = ['Giga Countries', 'ProCo Countries', 'DPG Pathfinders', 'Venture Fund', 'Selected good'];
+        var toggleableLayerIds = ['DPG Pathfinders'];
+        var prevLayer = '';
         props.digitalGoods.map(good => {
-          var layers = document.getElementById('dg-menu');
-
-          var li = document.createElement('option');
+          let layers = document.getElementById('dg-menu');
+          console.log('good map')
+          let li = document.createElement('option');
           li.textContent = good.name;
-          li.value = good.name;
+          li.onclick = function (e) {
+            console.log('clicked ', e)
+            console.log('prev', prevLayer)
+            var clickedGood = this.textContent;
+            setSelectedGood(clickedGood);
+            
+            e.preventDefault();
+            e.stopPropagation();
+            if (prevLayer) {
+              map.setLayoutProperty(prevLayer +'-develop', 'visibility', 'none');
+              map.setLayoutProperty(prevLayer +'-deploy', 'visibility', 'none');
+            }
+            prevLayer = this.textContent;
+
+            map.setLayoutProperty(clickedGood +'-develop', 'visibility', 'visible');
+            map.setLayoutProperty(clickedGood +'-deploy', 'visibility', 'visible');
+            
+          }
           layers.appendChild(li);
         })
 
@@ -320,5 +336,7 @@ export default function mapComponent(props) {
 
       <ZoomControl />
     </Map>
+    <InfoComponent selectedGood={selectedGood} />
+    </div>
   );
 }
