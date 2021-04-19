@@ -80,7 +80,7 @@ ul#menu {
 	background: #fff;
 	position: absolute;
 	z-index: 1;
-	top: 40px;
+	top: 0px;
 	right: 0px;
 	left: 0px;
 	margin: auto;

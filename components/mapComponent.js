@@ -17,7 +17,7 @@ export default function mapComponent(props) {
   const [zoom, setZoom] = useState(zoomDefault);
   const [lonLat, setLonLat] = useState([props.lon, props.lat]);
   const [lonLatMarker, setLonLatMarker] = useState([props.lon, props.lat]);
-  const [selectedGood, setSelectedGood] = useState('');
+  const [selectedGood, setSelectedGood] = useState({});
   console.log('goods', props.digitalGoods);
   // useEffect(() => {
   // 	setZoom(zoomDefault);
@@ -206,30 +206,29 @@ export default function mapComponent(props) {
 
         map.on('click', 'countries', function (mapElement) {
           const countryCode = mapElement.features[0].properties.ADM0_A3_IS; // Grab the country code from the map properties.
-
+          console.log('deployments in country', props.digitalGoods.filter(good => Object.keys(good.locations.deploymentCountries).includes(countryCode)))
+          console.log('deployments in country', props.digitalGoods.filter(good => Object.keys(good.locations.developmentCountries).includes(countryCode)))
+          let deployments = props.digitalGoods.filter(good => Object.keys(good.locations.deploymentCountries).includes(countryCode));
+          let developments = props.digitalGoods.filter(good => Object.keys(good.locations.developmentCountries).includes(countryCode));
           let countryName = '';
-          // let gigaHtml = '';
+          let deployHtml = '';
+          let developHtml = '';
           let pathHtml = '';
-          // let fundHtml = '';
-          // let procoHtml = '';
+          if (deployments.length > 0){
+            deployHtml += "<ul><b>Goods deployed</b>";
+            deployments.map(d => {deployHtml += "<li>"+ d.name + "</li>"});
+            deployHtml += "</ul>";
 
-          // if (props.countries[countryCode].giga) {
-          //   countryName = props.countries[countryCode].giga.country;
-          //   gigaHtml = '✅&nbsp;&nbsp;GIGA Country<br/>';
-          //   if (props.countries[countryCode].giga.link) {
-          //     gigaHtml += '<ul><li><a href="' + props.countries[countryCode].giga.link + '" target="_blank">More info</a></li></ul>';
-          //   }
-          // }
+          }
+
+          if (developments.length > 0){
+            developHtml += "<ul><b>Goods developed</b>";
+            developments.map(d => {developHtml += "<li>"+ d.name + "</li>"});
+            developHtml += "</ul>";
+
+          }
 
           console.log()
-          // if (props.countries[countryCode].proco) {
-          //   countryName = props.countries[countryCode].proco.country;
-          //   procoHtml = '✅&nbsp;&nbsp;Project Connect<br/>';
-          //   procoHtml += '<ul>';
-          //   procoHtml += '<li><b>Location Data</b>: ' + props.countries[countryCode].proco.location + '</li>';
-          //   procoHtml += '<li><b>Connectivity Data</b>: ' + props.countries[countryCode].proco.connectivity + "</li>";
-          //   procoHtml += '</ul>';
-          // }
 
           if (props.countries[countryCode].pathfinder) {
             countryName = props.countries[countryCode].pathfinder.country;
@@ -244,22 +243,11 @@ export default function mapComponent(props) {
             }
             pathHtml += "</ul>";
           }
-          // if (props.countries[countryCode].fund) {
-          //   countryName = props.countries[countryCode].fund.country;
-          //   fundHtml = "✅&nbsp;&nbsp;Venture Fund Investments<br/>";
-          //   fundHtml += "<ul>";
-          //   for (let i = 0; i < props.countries[countryCode].fund.investments.length; i++) {
-          //     fundHtml += "<li>" + props.countries[countryCode].fund.investments[i].investment
-          //     if (props.countries[countryCode].fund.investments[i].co) {
-          //       fundHtml += "&nbsp;🌐"
-          //     }
-          //     fundHtml += "</li>";
-          //   }
-          //   fundHtml += "</ul>";
-          // }
 
           var html = `<h3>${countryName}</h3>
-    				${pathHtml}`;
+    				${pathHtml};
+            ${deployHtml};
+            ${developHtml}`;
 
           new mapboxgl.Popup() //Create a new popup
             .setLngLat(mapElement.lngLat) // Set where we want it to appear (where we clicked)
@@ -280,7 +268,7 @@ export default function mapComponent(props) {
             console.log('clicked ', e)
             console.log('prev', prevLayer)
             var clickedGood = this.textContent;
-            setSelectedGood(clickedGood);
+            setSelectedGood(good);
             
             e.preventDefault();
             e.stopPropagation();
