@@ -2,7 +2,6 @@ import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import React, { useState, useEffect } from 'react';
 import GSheetReader from 'g-sheets-api';
-import SideNav, { Toggle, Nav, NavItem, NavIcon, NavText } from '@trendmicro/react-sidenav';
 import Badge from 'react-bootstrap/Badge';
 
 const alpha3 = {
@@ -264,7 +263,8 @@ export default function Home() {
   const [countries, setCountries] = useState({});
   const [digitalGoods, setDigitalGoods] = useState([]);
   const [pathfinder, setPathfinder] = useState([]);
-  
+  const [pathfinderImplemented, setPathfinderImplemented] = useState([]);
+
   // const [fundCountries, setFundCountries] = useState([]);
   // const [gigaCountries, setGigaCountries] = useState([]);
   // const [procoCountries, setProcoCountries] = useState([]);
@@ -281,6 +281,7 @@ export default function Home() {
 
   function addCountries(results, label) {
     let l = [];
+    let z = [];
     let c = countries;
     for (let i = 0; i < results.length; i++) {
       if (!alpha3[results[i].country]) {
@@ -291,7 +292,8 @@ export default function Home() {
         }
         c[alpha3[results[i].country]][label] = results[i];
 
-        l[alpha3[results[i].country]] = results[i];
+        results[i].status == 'Confirmed' ?
+          l[alpha3[results[i].country]] = results[i] : z[alpha3[results[i].country]] = results[i];
       }
     }
     setCountries(c);
@@ -304,70 +306,46 @@ export default function Home() {
         break;
       case 'pathfinder':
         setPathfinder(l);
+        setPathfinderImplemented(z)
         break;
     }
   }
 
-  // function addFundCountries(results, label) {
-  //   let c = countries;
-  //   let f = []
-  //   console.log(results)
-  //   for (let i = 0; i < results.length; i++) {
-  //     if (!alpha3[results[i].country]) {
-  //       console.log('Mismatched ' + results[i].country)
-  //     } else {
-  //       if (!Object.keys(c).find(e => e == alpha3[results[i].country])) {
-  //         c[alpha3[results[i].country]] = {}
-  //       }
-  //       if (!f[alpha3[results[i].country]]) {
-  //         f[alpha3[results[i].country]] = {
-  //           country: results[i].country,
-  //           investments: []
-  //         }
-  //       }
-
-  //       if (!c[alpha3[results[i].country]][label]) {
-  //         c[alpha3[results[i].country]][label] = {
-  //           country: results[i].country,
-  //           investments: []
-  //         }
-  //       }
-
-  //       c[alpha3[results[i].country]][label].investments.push({
-  //         investment: results[i].investment,
-  //         co: results[i].co
-  //       })
-
-  //       f[alpha3[results[i].country]].investments.push({
-  //         investment: results[i].investment,
-  //         co: results[i].co
-  //       })
-
-  //     }
-  //   }
-  //   setFundCountries(f);
-  //   setCountries(c);
-  // }
   const addGoodsCountries = (good) => { // need to refactor
     let deployGoods = {};
+    let developmentGoods = {};
+    let c = countries;
     good.locations.deploymentCountries.map(country => {
       if (!alpha3[country]) {
         console.log('Mismatched good' + country)
+      } else {
+        if (!Object.keys(c).find(e => e == alpha3[country])) {
+          c[alpha3[country]] = {}
+        }
+        let code = alpha3[country];
+        deployGoods[code] = country;
+        c[code].deployGoods ? c[code].deployGoods.push(good.name) : c[code].deployGoods = [good.name];
       }
-      let code = alpha3[country];
-      deployGoods[code] = country;
     });
     good.locations.deploymentCountries = deployGoods;
 
-    let developmentGoods = {};
-    good.locations.developmentCountries.forEach(country => {
+
+    good.locations.developmentCountries.forEach((country, index) => {
       if (!alpha3[country]) {
         console.log('Mismatched good' + country)
+      } else {
+        if (!Object.keys(c).find(e => e == alpha3[country])) {
+          c[alpha3[country]] = {}
+        }
+        let code = alpha3[country];
+        developmentGoods[code] = country;
+        console.log('name', good.name, index);
+        c[code].devGoods ? c[code].devGoods.push(good.name) : c[code].devGoods = [good.name];
       }
-      let code = alpha3[country];
-      developmentGoods[code] = country;
+
     });
     good.locations.developmentCountries = developmentGoods;
+    setCountries(c);
 
     setDigitalGoods(digitalGoods => [...digitalGoods, good]);
   }
@@ -398,25 +376,6 @@ export default function Home() {
     GSheetReader(options, results => {
       addCountries(results, 'pathfinder');
     });
-
-    // let options2 = options;
-    // options2.sheetNumber = 2;
-    // GSheetReader(options2, results => {
-    //   console.log('proco', results);
-    //   addCountries(results, 'proco');
-    // });
-
-    // options2.sheetNumber = 3;
-    // GSheetReader(options2, results => {
-    //   console.log("giga", results);
-    //   addCountries(results, 'giga');
-
-    // });
-
-    // options2.sheetNumber = 4;
-    // GSheetReader(options2, results => {
-    //   addFundCountries(results, 'fund');
-    // });
     fetch("https://api.github.com/search/code?q=repo:unicef/publicgoods-candidates+path:screening+filename:.json")
       .then(function (response) {
         console.log("response", response)
@@ -445,132 +404,6 @@ export default function Home() {
 
   return (
     <div className="main">
-      <SideNav
-        onSelect={(selected) => {
-          // Add your code here
-        }}
-        style={{ bottom: "auto", minHeight: "100%", background: "white" }}
-        expanded={true}
-        onToggle={(selected) => {
-          // Add your code here
-        }}
-      >
-        <SideNav.Toggle style={{ color: "black" }} />
-        <SideNav.Nav defaultSelected="home">
-          <NavItem eventKey='goods'>
-            <NavIcon>
-              <i className="fa fa-fw fa-line-chart" style={{ fontSize: '1.75em' }} />
-            </NavIcon>
-            <NavText style={{ color: "black" }}>
-              <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' style={{ border: "1px solid black", background: 'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgogIDxjaXJjbGUgY3g9IjQiIGN5PSI0IiByPSIxIiBmaWxsPSJyZWQiPjwvY2lyY2xlPgo8L3N2Zz4=")' }}>
-              </svg>
-                      &nbsp; Goods
-                  </NavText>
-            {Object.values(digitalGoods).map((good, index) => {
-              return (
-                <NavItem eventKey={good.name} key={"gs-" + good.name}>
-                  <NavText style={{ color: "black" }}>
-                    {good.name}
-                  </NavText>
-                </NavItem>
-              )
-            })
-            }
-          </NavItem>
-          <NavItem eventKey="pathfinder">
-            <NavIcon>
-              <i className="fa fa-fw fa-line-chart" style={{ fontSize: '1.75em' }} />
-            </NavIcon>
-            <NavText style={{ color: "black" }}>
-              <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' style={{ border: "1px solid black", background: 'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cGF0aCBkPSJNLTIgMTBMMTAgLTJaTTEwIDZMNiAxMFpNLTIgMkwyIC0yIiBzdHJva2U9IiMyMjIiIHN0cm9rZS13aWR0aD0iMiI+PC9wYXRoPgo8L3N2Zz4=")' }}>
-              </svg>
-                      &nbsp; DPG Pathfinders
-                  </NavText>
-            {Object.values(pathfinder).map((country, index) => {
-              return (
-                <NavItem key={"p-" + country.country}>
-                  <NavText style={{ color: "black" }}>
-                    {country.country}
-                  </NavText>
-                </NavItem>
-              )
-            })
-            }
-          </NavItem>
-          {/* <NavItem eventKey="giga">
-            <NavIcon>
-              <i className="fa fa-fw fa-line-chart" style={{ fontSize: '1.75em' }} />
-            </NavIcon>
-            <NavText style={{ color: "black" }}>
-              <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' style={{ border: "1px solid black", background: 'url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgogIDxjaXJjbGUgY3g9IjQiIGN5PSI0IiByPSIxIiBmaWxsPSJyZWQiPjwvY2lyY2xlPgo8L3N2Zz4=")' }}>
-              </svg>
-                      &nbsp; GIGA Countries
-                  </NavText>
-            {Object.values(gigaCountries).map((country, index) => {
-              return (
-                <NavItem key={"g-" + country.country}>
-                  <NavText style={{ color: "black" }}>
-                    {country.country}
-                  </NavText>
-                </NavItem>
-              )
-            })
-            }
-          </NavItem>
-          <NavItem eventKey="proco">
-            <NavIcon>
-              <i className="fa fa-fw fa-line-chart" style={{ fontSize: '1.75em' }} />
-            </NavIcon>
-            <NavText style={{ color: "black" }}>
-              <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' style={{ border: "1px solid black", backgroundColor: "yellow", opacity: 0.2 }} >
-              </svg>
-                      &nbsp; ProCo Countries
-                  </NavText>
-            {Object.values(procoCountries).map((country, index) => {
-              return (
-                <NavItem key={"pc-" + country.country}>
-                  <NavText style={{ color: "black" }}>
-                    {country.country}
-                  </NavText>
-                </NavItem>
-              )
-            })
-            }
-          </NavItem>
-          
-          <NavItem eventKey="fund">
-            <NavIcon>
-              <i className="fa fa-fw fa-line-chart" style={{ fontSize: '1.75em' }} />
-            </NavIcon>
-            <NavText style={{ color: "black" }}>
-              <svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' style={{ border: "1px solid black", backgroundColor: "cyan", opacity: 0.2 }} >
-              </svg>
-                      &nbsp; Venture Fund
-                  </NavText>
-            {Object.values(fundCountries).map((country, index) => {
-              return (
-                <NavItem key={"f-" + country.country}>
-                  <NavText style={{ color: "black" }}>
-                    {country.country}&nbsp;&nbsp;
-                          <Badge pill variant="info">
-                      {country.investments.length}
-                    </Badge>
-                  </NavText>
-                </NavItem>
-              )
-            })
-            }
-          </NavItem> */}
-
-        </SideNav.Nav>
-
-        <div style={{ float: "left", padding: "2em 2em", position: "absolute", bottom: "0" }}>
-          📂&nbsp;&nbsp;<a href="https://docs.google.com/spreadsheets/d/1-pd7DeLfr1EhRuu07IeAw2rZHfpU5Oagv3_L8COszCw/edit?usp=sharing" target="_blank">Edit the data</a><br />
-          <br />
-          <img src="/github.jpeg" width="20" />&nbsp;&nbsp;<a href="https://github.com/lacabra/ooi-project-visualization" target="_blank">Source code</a>
-        </div>
-
-      </SideNav>
 
       <MapComponent
         lon="-14"
@@ -580,11 +413,11 @@ export default function Home() {
         // procoCountries={procoCountries}
         // fundCountries={fundCountries}
         pathfinderCountries={pathfinder}
+        pathfinderImplemented={pathfinderImplemented}
         digitalGoods={digitalGoods}
       />
       <select id="dg-menu" defaultValue='Select digital good'>
         <option value="Select digital good" disabled>Select digital good</option> </select>
-      <ul id="menu"></ul>
     </div>
   )
 }
