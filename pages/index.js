@@ -1,8 +1,6 @@
-import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import React, { useState, useEffect } from 'react';
 import GSheetReader from 'g-sheets-api';
-import Badge from 'react-bootstrap/Badge';
 
 const alpha3 = {
   "Aruba": 'ABW',
@@ -259,18 +257,10 @@ const alpha3 = {
 
 export default function Home() {
 
-  const [open, setOpen] = useState(true);
   const [countries, setCountries] = useState({});
   const [digitalGoods, setDigitalGoods] = useState([]);
   const [pathfinder, setPathfinder] = useState([]);
   const [pathfinderImplemented, setPathfinderImplemented] = useState([]);
-
-  // const [fundCountries, setFundCountries] = useState([]);
-  // const [gigaCountries, setGigaCountries] = useState([]);
-  // const [procoCountries, setProcoCountries] = useState([]);
-
-
-  const [gigaChecked, setGigaChecked] = useState(true);
 
 
   const options = {
@@ -297,18 +287,8 @@ export default function Home() {
       }
     }
     setCountries(c);
-    switch (label) {
-      case 'giga':
-        setGigaCountries(l);
-        break;
-      case 'proco':
-        setProcoCountries(l);
-        break;
-      case 'pathfinder':
-        setPathfinder(l);
-        setPathfinderImplemented(z)
-        break;
-    }
+    setPathfinder(l);
+    setPathfinderImplemented(z)
   }
 
   const addGoodsCountries = (good) => { // need to refactor
@@ -393,15 +373,6 @@ export default function Home() {
     ssr: false
   })
 
-  function handleChange(event) {
-    switch (event.target.id) {
-      case 'giga':
-        setGigaChecked(!gigaChecked);
-        setGigaCountries([])
-    }
-
-  }
-
   return (
     <div className="main">
 
@@ -409,15 +380,12 @@ export default function Home() {
         lon="-14"
         lat="24.5"
         countries={countries}
-        // gigaCountries={gigaCountries}
-        // procoCountries={procoCountries}
-        // fundCountries={fundCountries}
         pathfinderCountries={pathfinder}
         pathfinderImplemented={pathfinderImplemented}
         digitalGoods={digitalGoods}
       />
       <select id="dg-menu" defaultValue='Select digital good'>
-        <option value="Select digital good" disabled>Select digital good</option> </select>
+        <option value="Select digital good" disabled className="defaul-option">Select digital good</option> </select>
     </div>
   )
 }

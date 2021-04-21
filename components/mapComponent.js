@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import ReactMapboxGl, { Layer, Feature, Marker, Popup, ZoomControl } from 'react-mapbox-gl';
 import mapboxgl from 'mapbox-gl';
 import dynamic from 'next/dynamic';
+import line from "../public/Line.svg";
 
 const zoomDefault = 1;
 
@@ -116,7 +117,7 @@ export default function mapComponent(props) {
               type: 'fill',
               paint: {
                 // 'fill-color': '#db3d44', // this is the color you want your tileset to have (red)
-                'fill-color': '#db3d44', //this helps us distinguish individual countries a bit better by giving them an outline
+                'fill-color': '#00AEEF', //this helps us distinguish individual countries a bit better by giving them an outline
                 'fill-opacity': 0.2,
               },
             }, firstSymbolId)
@@ -147,27 +148,39 @@ export default function mapComponent(props) {
             'DPG Pathfinders',
             ['in', 'ADM0_A3_IS'].concat(Object.keys(props.pathfinderCountries)),
           ); // This line lets us filter by country codes.
-
-          map.addLayer({
-            // adding a layer containing the tileset with country boundaries
-            id: 'DPG Implemented', //this is the name of our layer, which we will need later
-            source: {
-              type: 'vector',
-              url: 'mapbox://rolikasi.2kn4jvyh',
-            },
-            'source-layer': 'ne_10m_admin_0_countries-dxlasx',
-            type: 'fill',
-            paint: {
-              "fill-pattern": "rectangle-red-6",
-              "fill-opacity": 0.5,
-            },
-          }, firstSymbolId)
-          map.setLayoutProperty('DPG Implemented', 'visibility', 'visible');
-
-          map.setFilter(
-            'DPG Implemented',
-            ['in', 'ADM0_A3_IS'].concat(Object.keys(props.pathfinderImplemented)),
-          ); // This line lets us filter by country codes.
+          map.loadImage(
+            line,
+            function (err, image) {
+            // Throw an error if something went wrong
+            if (err) throw err;
+             
+            // Declare the image
+            map.addImage('pattern', image);
+             
+            // Use it
+            map.addLayer({
+              // adding a layer containing the tileset with country boundaries
+              id: 'DPG Implemented', //this is the name of our layer, which we will need later
+              source: {
+                type: 'vector',
+                url: 'mapbox://rolikasi.2kn4jvyh',
+              },
+              'source-layer': 'ne_10m_admin_0_countries-dxlasx',
+              type: 'fill',
+              paint: {
+                "fill-pattern": "pattern",
+                "fill-opacity": 0.5,
+              },
+            }, firstSymbolId)
+            map.setLayoutProperty('DPG Implemented', 'visibility', 'visible');
+  
+            map.setFilter(
+              'DPG Implemented',
+              ['in', 'ADM0_A3_IS'].concat(Object.keys(props.pathfinderImplemented)),
+            ); // This line lets us filter by country codes.
+            }
+            );
+          
 
           map.addLayer({
             // adding a layer containing the tileset with country boundaries
@@ -243,6 +256,26 @@ export default function mapComponent(props) {
               .addTo(map); // Add the popup to the map
 
           });
+          //create legend
+          layers = ['where it was developed', 'where it was implemented']
+          var colors = [
+            '#F57F29',
+            '#00AEEF'
+            ];
+          for (i = 0; i < layers.length; i++) {
+            var layer = layers[i];
+            var color = colors[i];
+            var item = document.createElement('div');
+            var key = document.createElement('span');
+            key.className = 'legend-key';
+            key.style.backgroundColor = color;
+             
+            var value = document.createElement('span');
+            value.innerHTML = layer;
+            item.appendChild(key);
+            item.appendChild(value);
+            legend.appendChild(item);
+          }
 
           // create goods selection
           var prevLayer = '';
@@ -255,6 +288,7 @@ export default function mapComponent(props) {
               console.log('clicked ', e)
               console.log('prev', prevLayer)
               var clickedGood = this.textContent;
+              document.getElementById('legend').style.display = "block";
               setSelectedGood(good);
 
               e.preventDefault();
@@ -312,6 +346,7 @@ export default function mapComponent(props) {
 
         <ZoomControl />
       </Map>
+      <div className="map-overlay" id="legend"></div>
       <div className='controls' onClick={toggleClass}>
         <div className={isActive ? 'change hamburger-icon' : 'hamburger-icon'}>
           <div className="bar1"></div>
