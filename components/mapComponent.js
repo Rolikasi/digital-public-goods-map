@@ -148,7 +148,7 @@ export default function mapComponent(props) {
             ['in', 'ADM0_A3_IS'].concat(Object.keys(props.pathfinderCountries)),
           ); // This line lets us filter by country codes.
           map.loadImage(
-            'https://raw.githubusercontent.com/Rolikasi/digital-public-goods-map/master/public/line.png?token=AKSQVS5L6DPPY5URLVXU75LAQAN4Q',
+            'https://raw.githubusercontent.com/Rolikasi/digital-public-goods-map/master/public/line.png?token=AKSQVSZIB2TROBM7ZFISMSLAQAOPE',
             function (err, image) {
             // Throw an error if something went wrong
             if (err) throw err;
