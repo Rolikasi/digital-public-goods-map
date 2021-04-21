@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from 'react';
 import ReactMapboxGl, { Layer, Feature, Marker, Popup, ZoomControl } from 'react-mapbox-gl';
 import mapboxgl from 'mapbox-gl';
 import dynamic from 'next/dynamic';
-import line from "../public/Line.svg";
 
 const zoomDefault = 1;
 
@@ -149,7 +148,7 @@ export default function mapComponent(props) {
             ['in', 'ADM0_A3_IS'].concat(Object.keys(props.pathfinderCountries)),
           ); // This line lets us filter by country codes.
           map.loadImage(
-            line,
+            'https://raw.githubusercontent.com/Rolikasi/digital-public-goods-map/master/public/line.png?token=AKSQVS3GYFFIFUA5WATSVYTAQAMYC',
             function (err, image) {
             // Throw an error if something went wrong
             if (err) throw err;
