@@ -2,6 +2,8 @@ import React, { useRef, useState, useEffect } from 'react';
 import ReactMapboxGl, { Layer, Feature, Marker, Popup, ZoomControl } from 'react-mapbox-gl';
 import mapboxgl from 'mapbox-gl';
 import dynamic from 'next/dynamic';
+import implementedpattern from '../public/implemented.svg';
+import pathpattern from '../public/pathfinders.svg';
 
 const zoomDefault = 1;
 
@@ -26,7 +28,7 @@ export default function mapComponent(props) {
     if (typeof jQuery === "function" && el instanceof jQuery) {
       el = el[0];
     }
-
+    
     var rect = el.getBoundingClientRect();
 
     return (
@@ -53,6 +55,7 @@ export default function mapComponent(props) {
   const InfoComponent = dynamic(() => import('../components/infoComponent'));
   useEffect(() => {
     window.onscroll = () => {
+      if (!document.getElementById("menu")) {return }
       !isElementInViewport(document.getElementById("menu")) ? document.getElementById("footer-text").textContent = "Tap to see filters and info"
         :
         document.getElementById("footer-text").textContent = "";
@@ -64,6 +67,8 @@ export default function mapComponent(props) {
         style="mapbox://styles/rolikasi/ckn67a95j022m17mcqog82g05"
         center={lonLat}
         zoom={[zoom]}
+        pitch={[30]} // pitch in degrees
+        // bearing in degrees
         containerStyle={{ width: '100%', height: '100%' }}
         movingMethod='jumpTo'
         logoPosition='bottom-right'
@@ -127,6 +132,14 @@ export default function mapComponent(props) {
               ['in', 'ADM0_A3_IS'].concat(Object.keys(good.locations.deploymentCountries)),
             ); // This line lets us filter by country codes.
           });
+
+          // Declare the image
+
+          let pathimg = new Image(20, 20)
+          pathimg.onload = () => map.addImage('pathfinders-pattern', pathimg);
+          pathimg.src = pathpattern;
+
+          // Use it
           map.addLayer({
             // adding a layer containing the tileset with country boundaries
             id: 'DPG Pathfinders', //this is the name of our layer, which we will need later
@@ -137,49 +150,48 @@ export default function mapComponent(props) {
             'source-layer': 'ne_10m_admin_0_countries-dxlasx',
             type: 'fill',
             paint: {
-              "fill-pattern": "rectangle-blue-6",
+              "fill-pattern": "pathfinders-pattern",
               "fill-opacity": 0.5,
             },
           }, firstSymbolId)
           map.setLayoutProperty('DPG Pathfinders', 'visibility', 'visible');
-
           map.setFilter(
             'DPG Pathfinders',
             ['in', 'ADM0_A3_IS'].concat(Object.keys(props.pathfinderCountries)),
           ); // This line lets us filter by country codes.
-          map.loadImage(
-            'https://raw.githubusercontent.com/Rolikasi/digital-public-goods-map/master/public/line.png?token=AKSQVSZIB2TROBM7ZFISMSLAQAOPE',
-            function (err, image) {
-            // Throw an error if something went wrong
-            if (err) throw err;
-             
-            // Declare the image
-            map.addImage('pattern', image);
-             
-            // Use it
-            map.addLayer({
-              // adding a layer containing the tileset with country boundaries
-              id: 'DPG Implemented', //this is the name of our layer, which we will need later
-              source: {
-                type: 'vector',
-                url: 'mapbox://rolikasi.2kn4jvyh',
-              },
-              'source-layer': 'ne_10m_admin_0_countries-dxlasx',
-              type: 'fill',
-              paint: {
-                "fill-pattern": "pattern",
-                "fill-opacity": 0.5,
-              },
-            }, firstSymbolId)
-            map.setLayoutProperty('DPG Implemented', 'visibility', 'visible');
-  
-            map.setFilter(
-              'DPG Implemented',
-              ['in', 'ADM0_A3_IS'].concat(Object.keys(props.pathfinderImplemented)),
-            ); // This line lets us filter by country codes.
-            }
-            );
-          
+
+
+
+
+
+          // Declare the image
+          let implementedimg = new Image(20, 20)
+          implementedimg.onload = () => map.addImage('implemented-pattern', implementedimg);
+          implementedimg.src = implementedpattern;
+
+          // Use it
+          map.addLayer({
+            // adding a layer containing the tileset with country boundaries
+            id: 'DPG Implemented', //this is the name of our layer, which we will need later
+            source: {
+              type: 'vector',
+              url: 'mapbox://rolikasi.2kn4jvyh',
+            },
+            'source-layer': 'ne_10m_admin_0_countries-dxlasx',
+            type: 'fill',
+            paint: {
+              "fill-pattern": "implemented-pattern",
+              "fill-opacity": 0.5,
+            },
+          }, firstSymbolId)
+          map.setLayoutProperty('DPG Implemented', 'visibility', 'visible');
+
+          map.setFilter(
+            'DPG Implemented',
+            ['in', 'ADM0_A3_IS'].concat(Object.keys(props.pathfinderImplemented)),
+          ); // This line lets us filter by country codes.
+
+
 
           map.addLayer({
             // adding a layer containing the tileset with country boundaries
@@ -260,7 +272,7 @@ export default function mapComponent(props) {
           var colors = [
             '#F57F29',
             '#00AEEF'
-            ];
+          ];
           for (i = 0; i < layers.length; i++) {
             var layer = layers[i];
             var color = colors[i];
@@ -268,7 +280,7 @@ export default function mapComponent(props) {
             var key = document.createElement('span');
             key.className = 'legend-key';
             key.style.backgroundColor = color;
-             
+
             var value = document.createElement('span');
             value.innerHTML = layer;
             item.appendChild(key);
@@ -309,13 +321,16 @@ export default function mapComponent(props) {
           var toggleableLayerIds = ['DPG Pathfinders', 'DPG Implemented'];
           for (var i = 0; i < toggleableLayerIds.length; i++) {
             var id = toggleableLayerIds[i];
-
+            // var linkText = document.createElement('span');
             var link = document.createElement('a');
             link.href = '#';
-            link.className = 'active';
+            link.className = 'active ' + id;
             link.textContent = id;
+            // linkText.textContent = id;
+            link.style.backgroundImage = i == 0 ? 'url(pathfinders.svg)' : 'url(implemented.svg)'
 
             link.onclick = function (e) {
+              console.log('click', this.className)
               var clickedLayer = this.textContent;
               e.preventDefault();
               e.stopPropagation();
@@ -325,9 +340,11 @@ export default function mapComponent(props) {
               // toggle layer visibility by changing the layout object's visibility property
               if (visibility === 'visible') {
                 map.setLayoutProperty(clickedLayer, 'visibility', 'none');
-                this.className = '';
+                this.className = clickedLayer;
+                this.style.backgroundImage = 'none';
               } else {
-                this.className = 'active';
+                this.className = 'active ' + clickedLayer;
+                this.style.backgroundImage = clickedLayer == 'DPG Pathfinders' ? 'url(pathfinders.svg)' : 'url(implemented.svg)'
                 map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
               }
             };
@@ -336,6 +353,7 @@ export default function mapComponent(props) {
 
             var li = document.createElement('li');
             li.appendChild(link);
+
 
             layers.appendChild(li);
           }
