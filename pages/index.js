@@ -283,7 +283,7 @@ export default function Home() {
         c[alpha3[results[i].country]][label] = results[i];
 
         results[i].status == 'Confirmed' ?
-          l[alpha3[results[i].country]] = results[i] : z[alpha3[results[i].country]] = results[i];
+          z[alpha3[results[i].country]] = results[i] : l[alpha3[results[i].country]] = results[i];
       }
     }
     setCountries(c);
@@ -375,6 +375,13 @@ export default function Home() {
 
   return (
     <div className="main">
+      <div className='selectContainer'>
+        <div id="dg-menu"> Select a digital good
+        <div id="dg-menu-dropdown"></div>
+        </div>
+        {/* <select id="dg-menu" defaultValue='Select digital good'> */}
+        {/* <option value="Select digital good" disabled className="defaul-option">Select digital good</option> </select> */}
+      </div>
 
       <MapComponent
         lon="-14"
@@ -384,8 +391,7 @@ export default function Home() {
         pathfinderImplemented={pathfinderImplemented}
         digitalGoods={digitalGoods}
       />
-      <select id="dg-menu" defaultValue='Select digital good'>
-        <option value="Select digital good" disabled className="defaul-option">Select digital good</option> </select>
+
     </div>
   )
 }

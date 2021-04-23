@@ -279,7 +279,8 @@ export default function mapComponent(props) {
             var item = document.createElement('div');
             var key = document.createElement('span');
             key.className = 'legend-key';
-            key.style.backgroundColor = color;
+            i == 0 ? key.style.backgroundImage = 'url(hardware.svg)' : key.style.backgroundColor = color;
+            
 
             var value = document.createElement('span');
             value.innerHTML = layer;
@@ -291,10 +292,11 @@ export default function mapComponent(props) {
           // create goods selection
           var prevLayer = '';
           props.digitalGoods.map(good => {
-            let layers = document.getElementById('dg-menu');
+            let layers = document.getElementById('dg-menu-dropdown');
             console.log('good map')
-            let li = document.createElement('option');
+            let li = document.createElement('a');
             li.textContent = good.name;
+            li.href = '#';
             li.onclick = function (e) {
               console.log('clicked ', e)
               console.log('prev', prevLayer)
@@ -315,23 +317,28 @@ export default function mapComponent(props) {
 
             }
             layers.appendChild(li);
+            // op.appendChild(li);
+            
           })
 
           // set up the corresponding toggle button for each layer
           var toggleableLayerIds = ['DPG Pathfinders', 'DPG Implemented'];
           for (var i = 0; i < toggleableLayerIds.length; i++) {
             var id = toggleableLayerIds[i];
-            // var linkText = document.createElement('span');
+            var linkText = document.createElement('span');
             var link = document.createElement('a');
+            var li = document.createElement('li');
+
             link.href = '#';
             link.className = 'active ' + id;
-            link.textContent = id;
-            // linkText.textContent = id;
+            li.id = id;
+            linkText.textContent = id;
             link.style.backgroundImage = i == 0 ? 'url(pathfinders.svg)' : 'url(implemented.svg)'
 
-            link.onclick = function (e) {
-              console.log('click', this.className)
-              var clickedLayer = this.textContent;
+            
+            li.onclick = function (e) {
+              console.log('click', this)
+              var clickedLayer = this.id;
               e.preventDefault();
               e.stopPropagation();
 
@@ -339,21 +346,24 @@ export default function mapComponent(props) {
 
               // toggle layer visibility by changing the layout object's visibility property
               if (visibility === 'visible') {
-                map.setLayoutProperty(clickedLayer, 'visibility', 'none');
-                this.className = clickedLayer;
-                this.style.backgroundImage = 'none';
+                map.setLayoutProperty(clickedLayer, 'visibility', 'none'); //need to refactor
+                this.children[1].className = clickedLayer;
+                this.children[1].style.backgroundImage = 'none';
+                this.children[1].textContent = clickedLayer;
+                this.children[0].textContent = '';
               } else {
-                this.className = 'active ' + clickedLayer;
-                this.style.backgroundImage = clickedLayer == 'DPG Pathfinders' ? 'url(pathfinders.svg)' : 'url(implemented.svg)'
+                this.children[1].className = 'active ' + clickedLayer;
+                this.children[1].style.backgroundImage = clickedLayer == 'DPG Pathfinders' ? 'url(pathfinders.svg)' : 'url(implemented.svg)'
+                this.children[1].textContent = '';
+                this.children[0].textContent = clickedLayer;
+
                 map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
               }
             };
 
             var layers = document.getElementById('menu');
-
-            var li = document.createElement('li');
+            li.appendChild(linkText)
             li.appendChild(link);
-
 
             layers.appendChild(li);
           }

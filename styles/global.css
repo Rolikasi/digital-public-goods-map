@@ -21,9 +21,16 @@ box-sizing: border-box;
 	width: 100%;
  	height: 100%;
 }	
+.selectContainer{
+	height: 95%;
+	display: flex;
+	justify-content: center;
+}
 .map {
 	width: 100%;
 	height: 95%;
+	position: absolute;
+	top: 0;
 }
 .map-overlay {
 	position: absolute;
@@ -41,7 +48,7 @@ box-sizing: border-box;
 		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 		line-height: 18px;
 		margin-bottom: 40px;
-		width: 13rem;
+		width: 14rem;
 		display: none;
 		}
 		.legend-key {
@@ -82,11 +89,19 @@ ul#menu {
 	color: #404040;
 	display: block;
 	margin: 0;
-	padding: 0;
 	padding: 10px;
 	text-decoration: none;
 	border-radius: 5px;
 	text-align: center;
+}
+#menu span {
+	font-size: 13px;
+	color: #404040;
+	display: block;
+	margin: 0;
+	text-align: center;
+	cursor: pointer;
+
 }
 #menu a.Implemented {
 	border: 2px solid rgba(165, 207, 77, .5);
@@ -102,27 +117,68 @@ ul#menu {
 	border: 2px solid #878C92;
 }
  
-#menu a:hover {
+#menu li:hover > a {
 	background-color: #f8f8f8;
 	color: #404040;
 }
 
 #dg-menu {
 	background: #fff;
-	position: absolute;
+	position: -webkit-sticky;
+	position: sticky;
 	z-index: 1;
-	top: 0px;
-	right: 0px;
-	left: 0px;
-	margin: auto;
+	top: 10px;
+	max-height: 2rem;
 	border-radius: 3px;
 	border: 1px solid rgba(0, 0, 0, 0.4);
 	font-family: 'Open Sans', sans-serif;
+	padding: 0.2rem;
 	}
+	#dg-menu-dropdown a{
+		color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+	}
+	#dg-menu-dropdown {
+		display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  overflow-y: scroll;
+  max-height: 50vh;
+	}
+
+	/* Change color of dropdown links on hover */
+#dg-menu-dropdown a:hover {background-color: #f1f1f1}
+
+/* Show the dropdown menu on hover */
+#dg-menu:hover #dg-menu-dropdown {
+  display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown
+#dg-menu:hover .dropbtn {
+  background-color: #3e8e41;
+} */
+.dropdown-arrow {
+	height: 0;
+	width: 0;
+	  border-left: 8px solid transparent;
+	  border-right: 8px solid transparent;
+	  border-top: 8px solid #333;
+	position: relative;
+	top: 45px;
+	left: 350px;
+  }
+
 	.hamburger-icon {
 		display: inline-block;
 		cursor: pointer;
 		margin: 0.2rem 0.2rem;
+		cursor: default;
 	  }
 	  
 	  .bar1, .bar2, .bar3 {
@@ -157,4 +213,6 @@ ul#menu {
 	align-content: center;
 	align-items: center;
 	height: 6%;
+	cursor: default;
+	border-top: solid 1px rgba(0, 0, 0, 0.2);
 }

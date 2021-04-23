@@ -7,7 +7,8 @@ export default function InfoComponent(props) {
         
         <div>
             
-            <div>{props.selectedGood.name}</div>
+            <h2 className='goodName'>{props.selectedGood.name}</h2>
+            
             {(props.selectedGood.locations) &&
             <div><ul>Deployment countries</ul> {Object.values(props.selectedGood.locations.deploymentCountries).map(country => {
                 return(
