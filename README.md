@@ -1,6 +1,6 @@
-<h1 align="center">Visualization of UNICEF Office of Innovation (OoI)<br/> Activities by Country</h1>
+<h1 align="center">Map Visualization of Digital Public Goods </br>Developments and Implementations</h1>
 
-This repository was conceived as a very simple tool to visualize on a map the various workstreams that are currenty underway at the UNICEF Office of Innovation organized by country. 
+This is a map of digital public goods with multiple dimentions.
 
 ## 🤔 Rationale
 
@@ -13,13 +13,15 @@ The design requirements were as follows:
 
 The above requirements were addressed with the following strategies:
 
-1. Data is maintained in a Google Spreadsheets that any member of the team can easily edit. The spreadsheet is published on the web, and changes in data automatically and instantaneoulsy propagate to the web application. The integration is done through the [g-sheets-api](`https://www.npmjs.com/package/g-sheets-api) package.
+1. Data is maintained in a Google Spreadsheets that any member of the team can easily edit. The spreadsheet is published on the web, and changes in data automatically and instantaneoulsy propagate to the web application. The integration is done through the [g-sheets-api](`https://www.npmjs.com/package/g-sheets-api) package. 
 
-2. Data is displayed on a world map using Mapbox, and integrated on the React frontend through the [react-mapbox-gl](https://www.npmjs.com/package/react-mapbox-gl) bindings for [React GL JS](https://docs.mapbox.com/mapbox-gl-js/api/).
+2. Map pulls set of JSONs from [publicgoods-candidates]('https://github.com/unicef/publicgoods-candidates')
 
-3. Each workstream is visualized in its own layer, whose visibility can be toggled individually. Overlapping layers use a combination of background colors with transparency that can be combined (yellow + blue = green) for those layers with the larger number of countries, and fill patterns (dots and lines) for those layers with fewer number of countries.
+3. Data is displayed on a world map using Mapbox, and integrated on the React frontend through the [react-mapbox-gl](https://www.npmjs.com/package/react-mapbox-gl) bindings for [React GL JS](https://docs.mapbox.com/mapbox-gl-js/api/).
 
-4. Theming can easily be modified through CSS.
+4. Each workstream is visualized in its own layer, whose visibility can be toggled individually. Overlapping layers use a combination of background colors with transparency and fill patterns (hardware and lines).
+
+5. Theming can easily be modified through CSS.
 
 ## 🛠 Architecture
 
@@ -46,15 +48,15 @@ Setup your development environment as follows:
 1. Clone this repo:
     - SSL:
     ```bash
-    git clone git@github.com:lacabra/ooi-project-visualization.git
+    git clone git@github.com:rolikasi/digital-public-goods-map
     ```
     - HTTPS:
     ```bash
-    git clone https://github.com/lacabra/ooi-project-visualization.git
+    git clone https://github.com/Rolikasi/digital-public-goods-map
     ```
 2. Install project dependencies:
     ```bash
-    cd ooi-project-visualization
+    cd digital-public-goods-map
     npm install
     ```
 3. After having set up the proper [Configuration](#%EF%B8%8F-configuration), run the developmnet server with [fast refresh](https://nextjs.org/docs/basic-features/fast-refresh):
@@ -62,9 +64,7 @@ Setup your development environment as follows:
     npm run dev
     ```
     
-## 💙 About UNICEF
-
-[UNICEF](https://www.unicef.org/) works in over 190 countries and territories to protect the rights of every child. UNICEF has spent more than 70 years working to improve the lives of children and their families. In UNICEF, **we believe all children have a right to survive, thrive and fulfill their potential – to the benefit of a better world**.
+This project has been developed on top of the [Visualization of UNICEF Office of Innovation (OoI) repository](https://github.com/lacabra/ooi-project-visualization) that is licensed under the [GNU General Public License](LICENSE)
 
 ## :memo: License
 
