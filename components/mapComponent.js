@@ -67,7 +67,7 @@ export default function mapComponent(props) {
         style="mapbox://styles/rolikasi/ckn67a95j022m17mcqog82g05"
         center={lonLat}
         zoom={[zoom]}
-        pitch={[30]} // pitch in degrees
+        // pitch={[30]} // pitch in degrees
         // bearing in degrees
         containerStyle={{ width: '100%', height: '100%' }}
         movingMethod='jumpTo'
