@@ -376,7 +376,7 @@ export default function Home() {
   return (
     <div className="main">
       <div className='selectContainer'>
-        <div id="dg-menu"> Select a digital good
+        <div id="dg-menu"> <span id="dg-menu-text">Select a digital good</span>
         <div id="dg-menu-dropdown"></div>
         </div>
         {/* <select id="dg-menu" defaultValue='Select digital good'> */}

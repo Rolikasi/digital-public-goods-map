@@ -314,6 +314,7 @@ export default function mapComponent(props) {
 
               map.setLayoutProperty(clickedGood + '-develop', 'visibility', 'visible');
               map.setLayoutProperty(clickedGood + '-deploy', 'visibility', 'visible');
+              document.getElementById('dg-menu-text').textContent = clickedGood;
 
             }
             layers.appendChild(li);
