@@ -331,7 +331,7 @@ export default function Home() {
   }
 
   const getDigitalGoods = (name, loop, nameHandler) => {
-    fetch('https://raw.githubusercontent.com/unicef/publicgoods-candidates/master/screening/' + name)
+    fetch('https://raw.githubusercontent.com/unicef/publicgoods-candidates/master/digitalpublicgoods/' + name)
       .then(response => response.text())
       .then(text => {
         try {
@@ -356,7 +356,7 @@ export default function Home() {
     GSheetReader(options, results => {
       addCountries(results, 'pathfinder');
     });
-    fetch("https://api.github.com/search/code?q=repo:unicef/publicgoods-candidates+path:screening+filename:.json")
+    fetch("https://api.github.com/search/code?q=repo:unicef/publicgoods-candidates+path:digitalpublicgoods+filename:.json")
       .then(function (response) {
         console.log("response", response)
         return response.json();
