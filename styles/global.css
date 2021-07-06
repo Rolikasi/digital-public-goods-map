@@ -102,17 +102,17 @@ ul#menu {
   cursor: pointer;
 }
 #menu a.Implemented {
-  border: 2px solid rgba(165, 207, 77, 0.5);
+  border: 2px solid rgba(42, 168, 168, 0.5);
 }
 #menu a.Pathfinders {
-  border: 2px solid rgba(135, 140, 146, 0.5);
+  border: 2px solid rgba(240, 96, 118, 0.5);
 }
 
 #menu a.active.Implemented {
-  border: 2px solid #a5cf4d;
+  border: 2px solid #2AA8A8;
 }
 #menu a.active.Pathfinders {
-  border: 2px solid #878c92;
+  border: 2px solid #F06076;
 }
 
 #menu li:hover > a {
