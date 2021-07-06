@@ -137,7 +137,7 @@ export default function mapComponent(props) {
                 type: "fill",
                 paint: {
                   // 'fill-color': '#db3d44', // this is the color you want your tileset to have (red)
-                  "fill-color": "#00AEEF", //this helps us distinguish individual countries a bit better by giving them an outline
+                  "fill-color": "#3333AB", //this helps us distinguish individual countries a bit better by giving them an outline
                   "fill-opacity": 0.2,
                 },
               },
@@ -257,9 +257,11 @@ export default function mapComponent(props) {
             let developHtml = "";
             let pathHtml = "";
             if (deployments.length > 0) {
+              console.log(deployments);
               countryName =
                 deployments[0].locations.deploymentCountries[countryCode];
-              deployHtml += "<ul><b>Goods deployed:</b>";
+              deployHtml +=
+                "<ul><b>" + deployments.length + " Goods deployed:</b>";
               deployments.map((d) => {
                 deployHtml += "<li>" + d.name + "</li>";
               });
@@ -269,7 +271,8 @@ export default function mapComponent(props) {
             if (developments.length > 0) {
               countryName =
                 developments[0].locations.developmentCountries[countryCode];
-              developHtml += "<ul><b>Goods developed:</b>";
+              developHtml +=
+                "<ul><b>" + developments.length + " Goods developed:</b>";
               developments.map((d) => {
                 developHtml += "<li>" + d.name + "</li>";
               });
@@ -311,7 +314,7 @@ export default function mapComponent(props) {
           });
           //create legend
           layers = ["where it was developed", "where it was implemented"];
-          var colors = ["#F57F29", "#00AEEF"];
+          var colors = ["#FF952A", "#d4d4ec"];
           for (i = 0; i < layers.length; i++) {
             var layer = layers[i];
             var color = colors[i];
@@ -461,9 +464,9 @@ export default function mapComponent(props) {
       </div>
       <ul id="menu"></ul>
 
-      <div className='infoGood'>
+      <div className="infoGood">
         <h2 className="goodName">{selectedGood.name}</h2>
-
+        {console.log(selectedGood)}
         {selectedGood.locations && (
           <div>
             <ul>Deployment countries</ul>{" "}
