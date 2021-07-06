@@ -276,7 +276,6 @@ export default function mapComponent(props) {
               developHtml += "</ul>";
             }
 
-
             if (props.countries[countryCode].pathfinder) {
               countryName = props.countries[countryCode].pathfinder.country;
               pathHtml = "✅&nbsp;&nbsp;DPG Pathfinder Country<br/>";
@@ -462,7 +461,30 @@ export default function mapComponent(props) {
       </div>
       <ul id="menu"></ul>
 
-      <InfoComponent selectedGood={selectedGood} />
+      <div className='infoGood'>
+        <h2 className="goodName">{selectedGood.name}</h2>
+
+        {selectedGood.locations && (
+          <div>
+            <ul>Deployment countries</ul>{" "}
+            {Object.values(selectedGood.locations.deploymentCountries).map(
+              (country) => {
+                return <li key={"deploy-" + country}>{country}</li>;
+              }
+            )}
+          </div>
+        )}
+        {selectedGood.locations && (
+          <div>
+            <ul>Development countries</ul>{" "}
+            {Object.values(selectedGood.locations.developmentCountries).map(
+              (country) => {
+                return <li key={"develop-" + country}>{country}</li>;
+              }
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
