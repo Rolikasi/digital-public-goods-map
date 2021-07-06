@@ -4,7 +4,6 @@ body {
   display: -ms-flexbox;
   display: flex;
   overflow-x: hidden;
-
 }
 
 /* Next main div */
@@ -14,214 +13,219 @@ body {
 }
 
 * {
-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .main {
-	width: 100%;
- 	height: 100%;
-}	
-.selectContainer{
-	height: 95%;
-	display: flex;
-	justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.selectContainer {
+  height: 95%;
+  display: flex;
+  justify-content: center;
 }
 .map {
-	width: 100%;
-	height: 95%;
-	position: absolute;
-	top: 0;
+  width: 100%;
+  height: 95%;
+  position: absolute;
+  top: 0;
 }
 .map-overlay {
-	position: absolute;
-	bottom: 0;
-	right: 0;
-	background: rgba(255, 255, 255, 0.8);
-	margin-right: 20px;
-	font-family: Arial, sans-serif;
-	overflow: auto;
-	border-radius: 3px;
-	}
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.8);
+  margin-right: 20px;
+  font-family: Arial, sans-serif;
+  overflow: auto;
+  border-radius: 3px;
+}
 
-	#legend {
-		padding: 10px;
-		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-		line-height: 18px;
-		margin-bottom: 40px;
-		width: 14rem;
-		display: none;
-		}
-		.legend-key {
-		display: inline-block;
-		border-radius: 20%;
-		width: 10px;
-		height: 10px;
-		margin-right: 5px;
-		}
+#legend {
+  padding: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  line-height: 18px;
+  margin-bottom: 40px;
+  width: 14rem;
+  display: none;
+}
+.legend-key {
+  display: inline-block;
+  border-radius: 20%;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+}
 
 .defaul-option {
-	display: none;
+  display: none;
 }
 
 #menu {
-background: #fff;
-border-radius: 3px;
-font-family: 'Open Sans', sans-serif;
-padding: 0;
-display: flex;
-flex-direction: row;
-justify-content: center;
+  background: #fff;
+  border-radius: 3px;
+  font-family: "Open Sans", sans-serif;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 ul#menu {
-	list-style-type: none;
-  	overflow: hidden;
+  list-style-type: none;
+  overflow: hidden;
 }
 
 #menu li {
-	float: left;
-	width: 8.5rem;
-	margin: 0 0.5rem;
+  float: left;
+  width: 8.5rem;
+  margin: 0 0.5rem;
 }
- 
+
 #menu a {
-	font-size: 13px;
-	color: #404040;
-	display: block;
-	margin: 0;
-	padding: 10px;
-	text-decoration: none;
-	border-radius: 5px;
-	text-align: center;
+  font-size: 13px;
+  color: #404040;
+  display: block;
+  margin: 0;
+  padding: 10px;
+  text-decoration: none;
+  border-radius: 5px;
+  text-align: center;
 }
 #menu span {
-	font-size: 13px;
-	color: #404040;
-	display: block;
-	margin: 0;
-	text-align: center;
-	cursor: pointer;
-
+  font-size: 13px;
+  color: #404040;
+  display: block;
+  margin: 0;
+  text-align: center;
+  cursor: pointer;
 }
 #menu a.Implemented {
-	border: 2px solid rgba(165, 207, 77, .5);
+  border: 2px solid rgba(165, 207, 77, 0.5);
 }
 #menu a.Pathfinders {
-	border: 2px solid rgba(135, 140, 146, .5);
+  border: 2px solid rgba(135, 140, 146, 0.5);
 }
- 
+
 #menu a.active.Implemented {
-	border: 2px solid #A5CF4D;
+  border: 2px solid #a5cf4d;
 }
 #menu a.active.Pathfinders {
-	border: 2px solid #878C92;
+  border: 2px solid #878c92;
 }
- 
+
 #menu li:hover > a {
-	background-color: #f8f8f8;
-	color: #404040;
+  background-color: #f8f8f8;
+  color: #404040;
 }
 
 #dg-menu {
-	background: #fff;
-	position: -webkit-sticky;
-	position: sticky;
-	z-index: 1;
-	top: 10px;
-	max-height: 2rem;
-	border-radius: 3px;
-	border: 1px solid rgba(0, 0, 0, 0.4);
-	font-family: 'Open Sans', sans-serif;
-	padding: 0.2rem;
-	min-width: 300px;
-	}
-#dg-menu-text {
-	margin: 0 0.8rem;
+  background: #fff;
+  position: -webkit-sticky;
+  position: sticky;
+  z-index: 1;
+  top: 10px;
+  max-height: 2rem;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  font-family: "Open Sans", sans-serif;
+  padding: 0.2rem;
+  min-width: 300px;
 }
-	#dg-menu-dropdown a{
-		color: black;
+#dg-menu-text {
+  margin: 0 0.8rem;
+}
+#dg-menu-dropdown a {
+  color: black;
   padding: 12px 16px;
   text-decoration: none;
   display: block;
-	}
-	#dg-menu-dropdown {
-		display: none;
+}
+#dg-menu-dropdown {
+  margin: 0.4rem 0;
   position: absolute;
   background-color: #f9f9f9;
   min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
   overflow-y: scroll;
   max-height: 50vh;
-	}
-
-	/* Change color of dropdown links on hover */
-#dg-menu-dropdown a:hover {background-color: #f1f1f1}
-
-/* Show the dropdown menu on hover */
-#dg-menu:hover #dg-menu-dropdown {
+}
+.active {
   display: block;
 }
+.inactive {
+  display: none;
+}
+/* Change color of dropdown links on hover */
+#dg-menu-dropdown a:hover {
+  background-color: #f1f1f1;
+}
 
-/* Change the background color of the dropdown button when the dropdown content is shown
-#dg-menu:hover .dropbtn {
-  background-color: #3e8e41;
-} */
 .dropdown-arrow {
-	height: 0;
-	width: 0;
-	  border-left: 8px solid transparent;
-	  border-right: 8px solid transparent;
-	  border-top: 8px solid #333;
-	position: relative;
-	top: 45px;
-	left: 350px;
-  }
+  height: 0;
+  width: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #333;
+  position: relative;
+  top: 45px;
+  left: 350px;
+}
 
-	.hamburger-icon {
-		display: inline-block;
-		cursor: pointer;
-		margin: 0.2rem 0.2rem;
-		cursor: default;
-	  }
-	  
-	  .bar1, .bar2, .bar3 {
-		width: 15px;
-		height: 3px;
-		background-color: #333;
-		margin: 4px 0;
-		transition: 0.4s;
-	  }
-	  
-	  /* Rotate first bar */
-	  .change .bar1 {
-		-webkit-transform: rotate(-45deg) translate(-9px, 6px) ;
-		transform: rotate(-45deg) translate(-9px, 6px) ;
-	  }
-	  
-	  /* Fade out the second bar */
-	  .change .bar2 {
-		opacity: 0;
-	  }
-	  
-	  /* Rotate last bar */
-	  .change .bar3 {
-		-webkit-transform: rotate(45deg) translate(-8px, -8px) ;
-		transform: rotate(45deg) translate(-8px, -8px) ;
-	  }
+.hamburger-icon {
+  display: inline-block;
+  cursor: pointer;
+  margin: 0.2rem 0.2rem;
+  cursor: default;
+}
+
+.bar1,
+.bar2,
+.bar3 {
+  width: 15px;
+  height: 3px;
+  background-color: #333;
+  margin: 4px 0;
+  transition: 0.4s;
+}
+
+/* Rotate first bar */
+.change .bar1 {
+  -webkit-transform: rotate(-45deg) translate(-9px, 6px);
+  transform: rotate(-45deg) translate(-9px, 6px);
+}
+
+/* Fade out the second bar */
+.change .bar2 {
+  opacity: 0;
+}
+
+/* Rotate last bar */
+.change .bar3 {
+  -webkit-transform: rotate(45deg) translate(-8px, -8px);
+  transform: rotate(45deg) translate(-8px, -8px);
+}
 
 .controls {
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	align-content: center;
-	align-items: center;
-	height: 6%;
-	cursor: default;
-	border-top: solid 1px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  height: 6%;
+  cursor: default;
+  border-top: solid 1px rgba(0, 0, 0, 0.2);
 }
 
 .mapboxgl-popup-content {
-	overflow-y: auto;
-	max-height: 40vh;
+  overflow-y: auto;
+  max-height: 40vh;
+}
+
+@media screen and (min-width: 769px) {
+  #dg-menu-dropdown {
+    margin: 0.2rem 0;
+  }
 }
