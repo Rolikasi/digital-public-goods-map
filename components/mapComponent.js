@@ -56,8 +56,6 @@ export default function mapComponent(props) {
       // document.getElementById("footer-text").textContent = '';
     }
   };
-  console.log("goods", props.digitalGoods);
-  console.log("goods", props.countries);
   // useEffect(() => {
   // 	setZoom(zoomDefault);
   // 	setLonLat([props.lon, props.lat]);
@@ -258,7 +256,6 @@ export default function mapComponent(props) {
             let deployHtml = "";
             let developHtml = "";
             let pathHtml = "";
-            console.log("depl", deployments);
             if (deployments.length > 0) {
               countryName =
                 deployments[0].locations.deploymentCountries[countryCode];
@@ -279,7 +276,6 @@ export default function mapComponent(props) {
               developHtml += "</ul>";
             }
 
-            console.log();
 
             if (props.countries[countryCode].pathfinder) {
               countryName = props.countries[countryCode].pathfinder.country;
@@ -336,7 +332,6 @@ export default function mapComponent(props) {
 
           // create goods selection
           document.getElementById("dg-menu").onmouseover = (e) => {
-            console.log("hover!", e, this);
             document.getElementById("dg-menu-dropdown").classList.add("active");
             document
               .getElementById("dg-menu-dropdown")
@@ -360,13 +355,10 @@ export default function mapComponent(props) {
           var prevLayer = "";
           props.digitalGoods.map((good) => {
             let layers = document.getElementById("dg-menu-dropdown");
-            console.log("good map");
             let li = document.createElement("a");
             li.textContent = good.name;
             li.href = "#";
             li.onclick = function (e) {
-              console.log("clicked ", e);
-              console.log("prev", prevLayer);
               var clickedGood = this.textContent;
               document.getElementById("legend").style.display = "block";
               setSelectedGood(good);
@@ -420,7 +412,6 @@ export default function mapComponent(props) {
               i == 0 ? "url(pathfinders.svg)" : "url(implemented.svg)";
 
             li.onclick = function (e) {
-              console.log("click", this);
               var clickedLayer = this.id;
               e.preventDefault();
               e.stopPropagation();

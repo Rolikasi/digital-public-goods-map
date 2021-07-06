@@ -260,6 +260,7 @@ export default function Home() {
   const [digitalGoods, setDigitalGoods] = useState([]);
   const [pathfinder, setPathfinder] = useState([]);
   const [pathfinderImplemented, setPathfinderImplemented] = useState([]);
+  const [loaded, setLoaded] = useState(false);
 
   const options = {
     sheetId: process.env.NEXT_PUBLIC_SHEET,
@@ -290,7 +291,7 @@ export default function Home() {
     setPathfinderImplemented(z);
   }
 
-  const addGoodsCountries = (good) => {
+  const addGoodsCountries = (good, maxGoods) => {
     // need to refactor
     let deployGoods = {};
     let developmentGoods = {};
@@ -320,7 +321,6 @@ export default function Home() {
         }
         let code = alpha3[country];
         developmentGoods[code] = country;
-        console.log("name", good.name, index);
         c[code].devGoods
           ? c[code].devGoods.push(good.name)
           : (c[code].devGoods = [good.name]);
@@ -329,10 +329,15 @@ export default function Home() {
     good.locations.developmentCountries = developmentGoods;
     setCountries(c);
 
-    setDigitalGoods((digitalGoods) => [...digitalGoods, good]);
+    setDigitalGoods((digitalGoods) => {
+      if ([...digitalGoods, good].length == maxGoods) {
+        setLoaded(true);
+      }
+      return [...digitalGoods, good];
+    });
   };
 
-  const getDigitalGoods = (name, loop, nameHandler) => {
+  const getDigitalGoods = (name, loop, nameHandler, maxGoods) => {
     fetch(
       "https://raw.githubusercontent.com/unicef/publicgoods-candidates/master/digitalpublicgoods/" +
         name
@@ -342,11 +347,11 @@ export default function Home() {
         try {
           let data = JSON.parse(text);
           if (nameHandler) data.name = nameHandler;
-          addGoodsCountries(data);
+          addGoodsCountries(data, maxGoods);
         } catch (error) {
           // handle linked json
           if (loop >= 2) return;
-          getDigitalGoods(text, loop + 1, name.replace(".json", "")); // add loop variable to avoid recursion and delete .json extension from name
+          getDigitalGoods(text, loop + 1, name.replace(".json", ""), maxGoods); // add loop variable to avoid recursion and delete .json extension from name
         }
       });
   };
@@ -356,16 +361,13 @@ export default function Home() {
       addCountries(results, "pathfinder");
     });
     fetch(
-      // "https://api.digitalpublicgoods.net/dpgs/"
       "https://api.github.com/search/code?q=repo:unicef/publicgoods-candidates+path:digitalpublicgoods+filename:.json"
     )
       .then(function (response) {
-        console.log("response", response);
         return response.json();
       })
       .then(function (files) {
-        console.log("files", files);
-        files.items.map((data) => getDigitalGoods(data.name, 0));
+        files.items.map((data) => getDigitalGoods(data.name, 0, null, files.items.length));
       });
   }, []);
 
@@ -374,24 +376,24 @@ export default function Home() {
   });
 
   return (
-    <div className="main">
-      <div className="selectContainer">
-        <div
-          id="dg-menu"
-        >
-          <span id="dg-menu-text">Select a digital good</span>
-          <div id="dg-menu-dropdown" className='inactive'></div>
-        </div>
-      </div>
+      <div className="main">
+        {!loaded && <p>Loading!</p>}
+        {loaded && 
+        <div className="selectContainer">
+          <div id="dg-menu">
+            <span id="dg-menu-text">Select a digital good</span>
+            <div id="dg-menu-dropdown" className="inactive"></div>
+          </div>
+        </div>}
 
-      <MapComponent
-        lon="-14"
-        lat="24.5"
-        countries={countries}
-        pathfinderCountries={pathfinder}
-        pathfinderImplemented={pathfinderImplemented}
-        digitalGoods={digitalGoods}
-      />
-    </div>
-  );
+        {loaded && <MapComponent
+          lon="-14"
+          lat="24.5"
+          countries={countries}
+          pathfinderCountries={pathfinder}
+          pathfinderImplemented={pathfinderImplemented}
+          digitalGoods={digitalGoods}
+        />}
+      </div>
+    )
 }
