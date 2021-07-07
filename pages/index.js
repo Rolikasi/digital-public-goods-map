@@ -274,7 +274,7 @@ export default function Home() {
     let c = countries;
     for (let i = 0; i < results.length; i++) {
       if (!alpha3[results[i].country]) {
-        console.log("Mismatched " + results[i].country);
+        // console.log("Mismatched " + results[i].country);
       } else {
         if (!Object.keys(c).find((e) => e == alpha3[results[i].country])) {
           c[alpha3[results[i].country]] = {};
@@ -291,14 +291,14 @@ export default function Home() {
     setPathfinderImplemented(z);
   }
 
-  const addGoodsCountries = (good, maxGoods) => {
+  const addGoodsCountries = (good, maxGoods, nomineeData) => {
     // need to refactor
     let deployGoods = {};
     let developmentGoods = {};
     let c = countries;
     good.locations.deploymentCountries.map((country) => {
       if (!alpha3[country]) {
-        console.log("Mismatched good" + country);
+        // console.log("Mismatched good" + country);
       } else {
         if (!Object.keys(c).find((e) => e == alpha3[country])) {
           c[alpha3[country]] = {};
@@ -314,7 +314,7 @@ export default function Home() {
 
     good.locations.developmentCountries.forEach((country) => {
       if (!alpha3[country]) {
-        console.log("Mismatched good" + country);
+        // console.log("Mismatched good" + country);
       } else {
         if (!Object.keys(c).find((e) => e == alpha3[country])) {
           c[alpha3[country]] = {};
@@ -329,6 +329,9 @@ export default function Home() {
     good.locations.developmentCountries = developmentGoods;
     setCountries(c);
 
+    //merge arrays
+    good = {...good, ...nomineeData};
+
     setDigitalGoods((digitalGoods) => {
       if ([...digitalGoods, good].length == maxGoods) {
         setLoaded(true);
@@ -337,17 +340,24 @@ export default function Home() {
     });
   };
 
-  const getDigitalGoods = (name, loop, nameHandler, maxGoods) => {
+  const getDigitalGoods = async (name, loop, nameHandler, maxGoods) => {
+    var nomineeData;
+    await getNomineeData(name).then((res) => (nomineeData = res));
     fetch(
       "https://raw.githubusercontent.com/unicef/publicgoods-candidates/master/digitalpublicgoods/" +
         name
     )
       .then((response) => response.text())
-      .then((text) => {
+      .then(async (text) => {
         try {
           let data = JSON.parse(text);
-          if (nameHandler) data.name = nameHandler;
-          addGoodsCountries(data, maxGoods);
+          if (nameHandler) {
+            data.name = nameHandler;
+            await getNomineeData(nameHandler + ".json").then(
+              (res) => (nomineeData = res)
+            );
+          }
+          addGoodsCountries(data, maxGoods, nomineeData);
         } catch (error) {
           // handle linked json
           if (loop >= 2) return;
@@ -355,22 +365,30 @@ export default function Home() {
         }
       });
   };
+  const getNomineeData = (name) => {
+    return fetch(
+      "https://raw.githubusercontent.com/unicef/publicgoods-candidates/master/nominees/" +
+        name
+    )
+      .then((response) => response.json())
+      .then((response) => response);
+  };
 
   useEffect(() => {
     GSheetReader(options, (results) => {
       addCountries(results, "pathfinder");
     });
-    fetch(
-      "https://api.github.com/search/code?q=repo:unicef/publicgoods-candidates+path:digitalpublicgoods+filename:.json"
-    )
-      .then(function (response) {
+    const fetchData = async () => {
+      const result = await fetch(
+        "https://api.github.com/search/code?q=repo:unicef/publicgoods-candidates+path:digitalpublicgoods+filename:.json"
+      ).then(function (response) {
         return response.json();
-      })
-      .then(function (files) {
-        files.items.map((data) =>
-          getDigitalGoods(data.name, 0, null, files.items.length)
-        );
       });
+      await result.items.map((data) => {
+        getDigitalGoods(data.name, 0, null, result.items.length);
+      });
+    };
+    fetchData();
   }, []);
 
   const MapComponent = dynamic(import("../components/mapComponent"), {
@@ -388,7 +406,7 @@ export default function Home() {
           </div>
         </div>
       )}
-
+      {loaded && console.log("goods", digitalGoods)}
       {loaded && (
         <MapComponent
           lon="-14"

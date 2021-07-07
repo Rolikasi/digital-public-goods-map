@@ -33,7 +33,7 @@ export default function mapComponent(props) {
           document.documentElement.clientWidth) /* or $(window).width() */
     );
   };
-  const toggleClass = () => {
+  const scrollHandle = () => {
     // setActive(!isActive);
     if (!isElementInViewport(document.getElementById("menu"))) {
       document.getElementById("menu").scrollIntoView({
@@ -403,7 +403,7 @@ export default function mapComponent(props) {
         <ZoomControl />
       </Map>
       <div className="map-overlay" id="legend"></div>
-      <div className="controls" onClick={toggleClass}>
+      <div className="controls" onClick={scrollHandle}>
         <div className="hamburger-icon">
           <div className="bar1"></div>
           <div className="bar2"></div>
@@ -418,7 +418,11 @@ export default function mapComponent(props) {
         {console.log(selectedGood)}
         {selectedGood.locations && (
           <div>
-            <ul>Deployment countries</ul>{" "}
+            <ul>
+              {"Deployed in " +
+                Object.keys(selectedGood.locations.deploymentCountries).length +
+                " countries:"}
+            </ul>
             {Object.values(selectedGood.locations.deploymentCountries).map((country) => {
               return <li key={"deploy-" + country}>{country}</li>;
             })}
@@ -426,7 +430,11 @@ export default function mapComponent(props) {
         )}
         {selectedGood.locations && (
           <div>
-            <ul>Development countries</ul>{" "}
+            <ul>
+              {"Developed in " +
+                Object.keys(selectedGood.locations.developmentCountries).length +
+                " countries:"}
+            </ul>
             {Object.values(selectedGood.locations.developmentCountries).map((country) => {
               return <li key={"develop-" + country}>{country}</li>;
             })}
