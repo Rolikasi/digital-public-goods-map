@@ -1,13 +1,6 @@
-import React, { useRef, useState, useEffect } from "react";
-import ReactMapboxGl, {
-  Layer,
-  Feature,
-  Marker,
-  Popup,
-  ZoomControl,
-} from "react-mapbox-gl";
+import React, {useState, useEffect} from "react";
+import ReactMapboxGl, {ZoomControl} from "react-mapbox-gl";
 import mapboxgl from "mapbox-gl";
-import dynamic from "next/dynamic";
 import implementedpattern from "../public/implemented.svg";
 import pathpattern from "../public/pathfinders.svg";
 
@@ -22,16 +15,11 @@ const Map = ReactMapboxGl({
 export default function mapComponent(props) {
   const [zoom, setZoom] = useState(zoomDefault);
   const [lonLat, setLonLat] = useState([props.lon, props.lat]);
-  const [lonLatMarker, setLonLatMarker] = useState([props.lon, props.lat]);
+  // const [lonLatMarker, setLonLatMarker] = useState([props.lon, props.lat]);
   const [selectedGood, setSelectedGood] = useState({});
-  const [isActive, setActive] = useState(false);
+  // const [isActive, setActive] = useState(false);
 
   const isElementInViewport = (el) => {
-    // Special bonus for those using jQuery
-    if (typeof jQuery === "function" && el instanceof jQuery) {
-      el = el[0];
-    }
-
     var rect = el.getBoundingClientRect();
 
     return (
@@ -61,7 +49,6 @@ export default function mapComponent(props) {
   // 	setLonLat([props.lon, props.lat]);
   // 	setLonLatMarker([props.lon, props.lat]);
   // }, [props.lon, props.lat]);
-  const InfoComponent = dynamic(() => import("../components/infoComponent"));
   useEffect(() => {
     window.onscroll = () => {
       if (!document.getElementById("menu")) {
@@ -81,7 +68,7 @@ export default function mapComponent(props) {
         zoom={[zoom]}
         // pitch={[30]} // pitch in degrees
         // bearing in degrees
-        containerStyle={{ width: "100%", height: "100%" }}
+        containerStyle={{width: "100%", height: "100%"}}
         movingMethod="jumpTo"
         logoPosition="bottom-right"
         onMoveEnd={(map) => {
@@ -89,11 +76,11 @@ export default function mapComponent(props) {
           setLonLat([map.getCenter().lng, map.getCenter().lat]);
           console.log(map.getCenter().lng, map.getCenter().lat);
         }}
-        onStyleLoad={(map, loadEvent) => {
+        onStyleLoad={(map) => {
           var layers = map.getStyle().layers;
           // Find the index of the first symbol layer in the map style
           var firstSymbolId;
-          for (var i = 0; i < layers.length; i++) {
+          for (let i = 0; i < layers.length; i++) {
             if (layers[i].type === "symbol") {
               firstSymbolId = layers[i].id;
               break;
@@ -147,9 +134,7 @@ export default function mapComponent(props) {
 
             map.setFilter(
               good.name + "-deploy",
-              ["in", "ADM0_A3_IS"].concat(
-                Object.keys(good.locations.deploymentCountries)
-              )
+              ["in", "ADM0_A3_IS"].concat(Object.keys(good.locations.deploymentCountries))
             ); // This line lets us filter by country codes.
           });
 
@@ -211,9 +196,7 @@ export default function mapComponent(props) {
 
           map.setFilter(
             "DPG Implemented",
-            ["in", "ADM0_A3_IS"].concat(
-              Object.keys(props.pathfinderImplemented)
-            )
+            ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderImplemented))
           ); // This line lets us filter by country codes.
 
           map.addLayer(
@@ -243,14 +226,10 @@ export default function mapComponent(props) {
             const countryCode = mapElement.features[0].properties.ADM0_A3_IS; // Grab the country code from the map properties.
 
             let deployments = props.digitalGoods.filter((good) =>
-              Object.keys(good.locations.deploymentCountries).includes(
-                countryCode
-              )
+              Object.keys(good.locations.deploymentCountries).includes(countryCode)
             );
             let developments = props.digitalGoods.filter((good) =>
-              Object.keys(good.locations.developmentCountries).includes(
-                countryCode
-              )
+              Object.keys(good.locations.developmentCountries).includes(countryCode)
             );
             let countryName = "";
             let deployHtml = "";
@@ -258,10 +237,8 @@ export default function mapComponent(props) {
             let pathHtml = "";
             if (deployments.length > 0) {
               console.log(deployments);
-              countryName =
-                deployments[0].locations.deploymentCountries[countryCode];
-              deployHtml +=
-                "<ul><b>" + deployments.length + " Goods deployed:</b>";
+              countryName = deployments[0].locations.deploymentCountries[countryCode];
+              deployHtml += "<ul><b>" + deployments.length + " Goods deployed:</b>";
               deployments.map((d) => {
                 deployHtml += "<li>" + d.name + "</li>";
               });
@@ -269,10 +246,8 @@ export default function mapComponent(props) {
             }
 
             if (developments.length > 0) {
-              countryName =
-                developments[0].locations.developmentCountries[countryCode];
-              developHtml +=
-                "<ul><b>" + developments.length + " Goods developed:</b>";
+              countryName = developments[0].locations.developmentCountries[countryCode];
+              developHtml += "<ul><b>" + developments.length + " Goods developed:</b>";
               developments.map((d) => {
                 developHtml += "<li>" + d.name + "</li>";
               });
@@ -313,10 +288,10 @@ export default function mapComponent(props) {
               .addTo(map); // Add the popup to the map
           });
           //create legend
-          layers = ["where it was developed", "where it was implemented"];
+          var legends = ["where it was developed", "where it was implemented"];
           var colors = ["#FF952A", "#d4d4ec"];
-          for (i = 0; i < layers.length; i++) {
-            var layer = layers[i];
+          for (let i = 0; i < legends.length; i++) {
+            var layer = legends[i];
             var color = colors[i];
             var item = document.createElement("div");
             var key = document.createElement("span");
@@ -329,25 +304,18 @@ export default function mapComponent(props) {
             value.innerHTML = layer;
             item.appendChild(key);
             item.appendChild(value);
-            legend.appendChild(item);
           }
 
           // create goods selection
-          document.getElementById("dg-menu").onmouseover = (e) => {
+          document.getElementById("dg-menu").onmouseover = () => {
             document.getElementById("dg-menu-dropdown").classList.add("active");
-            document
-              .getElementById("dg-menu-dropdown")
-              .classList.remove("inactive");
+            document.getElementById("dg-menu-dropdown").classList.remove("inactive");
           };
-          document.getElementById("dg-menu").onmouseleave = (e) => {
-            document
-              .getElementById("dg-menu-dropdown")
-              .classList.remove("active");
-            document
-              .getElementById("dg-menu-dropdown")
-              .classList.add("inactive");
+          document.getElementById("dg-menu").onmouseleave = () => {
+            document.getElementById("dg-menu-dropdown").classList.remove("active");
+            document.getElementById("dg-menu-dropdown").classList.add("inactive");
           };
-          document.getElementById("dg-menu").onclick = (e) => {
+          document.getElementById("dg-menu").onclick = () => {
             let dropDown = document.getElementById("dg-menu-dropdown");
             if (dropDown.classList.contains("inactive")) {
               dropDown.classList.add("active");
@@ -368,29 +336,13 @@ export default function mapComponent(props) {
               e.preventDefault();
               e.stopPropagation();
               if (prevLayer) {
-                map.setLayoutProperty(
-                  prevLayer + "-develop",
-                  "visibility",
-                  "none"
-                );
-                map.setLayoutProperty(
-                  prevLayer + "-deploy",
-                  "visibility",
-                  "none"
-                );
+                map.setLayoutProperty(prevLayer + "-develop", "visibility", "none");
+                map.setLayoutProperty(prevLayer + "-deploy", "visibility", "none");
               }
               prevLayer = this.textContent;
 
-              map.setLayoutProperty(
-                clickedGood + "-develop",
-                "visibility",
-                "visible"
-              );
-              map.setLayoutProperty(
-                clickedGood + "-deploy",
-                "visibility",
-                "visible"
-              );
+              map.setLayoutProperty(clickedGood + "-develop", "visibility", "visible");
+              map.setLayoutProperty(clickedGood + "-deploy", "visibility", "visible");
               document.getElementById("dg-menu-text").textContent = clickedGood;
               layers.classList.add("inactive");
               layers.classList.remove("active");
@@ -400,7 +352,7 @@ export default function mapComponent(props) {
 
           // set up the corresponding toggle button for each layer
           var toggleableLayerIds = ["DPG Pathfinders", "DPG Implemented"];
-          for (var i = 0; i < toggleableLayerIds.length; i++) {
+          for (let i = 0; i < toggleableLayerIds.length; i++) {
             var id = toggleableLayerIds[i];
             var linkText = document.createElement("span");
             var link = document.createElement("a");
@@ -418,10 +370,7 @@ export default function mapComponent(props) {
               e.preventDefault();
               e.stopPropagation();
 
-              var visibility = map.getLayoutProperty(
-                clickedLayer,
-                "visibility"
-              );
+              var visibility = map.getLayoutProperty(clickedLayer, "visibility");
 
               // toggle layer visibility by changing the layout object's visibility property
               if (visibility === "visible") {
@@ -443,11 +392,11 @@ export default function mapComponent(props) {
               }
             };
 
-            var layers = document.getElementById("menu");
+            let filters = document.getElementById("menu");
             li.appendChild(linkText);
             li.appendChild(link);
 
-            layers.appendChild(li);
+            filters.appendChild(li);
           }
         }}
       >
@@ -455,7 +404,7 @@ export default function mapComponent(props) {
       </Map>
       <div className="map-overlay" id="legend"></div>
       <div className="controls" onClick={toggleClass}>
-        <div className={isActive ? "change hamburger-icon" : "hamburger-icon"}>
+        <div className="hamburger-icon">
           <div className="bar1"></div>
           <div className="bar2"></div>
           <div className="bar3"></div>
@@ -470,21 +419,17 @@ export default function mapComponent(props) {
         {selectedGood.locations && (
           <div>
             <ul>Deployment countries</ul>{" "}
-            {Object.values(selectedGood.locations.deploymentCountries).map(
-              (country) => {
-                return <li key={"deploy-" + country}>{country}</li>;
-              }
-            )}
+            {Object.values(selectedGood.locations.deploymentCountries).map((country) => {
+              return <li key={"deploy-" + country}>{country}</li>;
+            })}
           </div>
         )}
         {selectedGood.locations && (
           <div>
             <ul>Development countries</ul>{" "}
-            {Object.values(selectedGood.locations.developmentCountries).map(
-              (country) => {
-                return <li key={"develop-" + country}>{country}</li>;
-              }
-            )}
+            {Object.values(selectedGood.locations.developmentCountries).map((country) => {
+              return <li key={"develop-" + country}>{country}</li>;
+            })}
           </div>
         )}
       </div>
