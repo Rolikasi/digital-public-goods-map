@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import GSheetReader from "g-sheets-api";
 
 const alpha3 = {
@@ -312,7 +312,7 @@ export default function Home() {
     });
     good.locations.deploymentCountries = deployGoods;
 
-    good.locations.developmentCountries.forEach((country, index) => {
+    good.locations.developmentCountries.forEach((country) => {
       if (!alpha3[country]) {
         console.log("Mismatched good" + country);
       } else {
@@ -367,7 +367,9 @@ export default function Home() {
         return response.json();
       })
       .then(function (files) {
-        files.items.map((data) => getDigitalGoods(data.name, 0, null, files.items.length));
+        files.items.map((data) =>
+          getDigitalGoods(data.name, 0, null, files.items.length)
+        );
       });
   }, []);
 
@@ -376,24 +378,27 @@ export default function Home() {
   });
 
   return (
-      <div className="main">
-        {!loaded && <p>Loading!</p>}
-        {loaded && 
+    <div className="main">
+      {!loaded && <p>Loading!</p>}
+      {loaded && (
         <div className="selectContainer">
           <div id="dg-menu">
             <span id="dg-menu-text">Select a digital good</span>
             <div id="dg-menu-dropdown" className="inactive"></div>
           </div>
-        </div>}
+        </div>
+      )}
 
-        {loaded && <MapComponent
+      {loaded && (
+        <MapComponent
           lon="-14"
           lat="24.5"
           countries={countries}
           pathfinderCountries={pathfinder}
           pathfinderImplemented={pathfinderImplemented}
           digitalGoods={digitalGoods}
-        />}
-      </div>
-    )
+        />
+      )}
+    </div>
+  );
 }

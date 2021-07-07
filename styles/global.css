@@ -109,10 +109,10 @@ ul#menu {
 }
 
 #menu a.active.Implemented {
-  border: 2px solid #2AA8A8;
+  border: 2px solid #2aa8a8;
 }
 #menu a.active.Pathfinders {
-  border: 2px solid #F06076;
+  border: 2px solid #f06076;
 }
 
 #menu li:hover > a {
