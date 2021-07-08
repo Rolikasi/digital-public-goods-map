@@ -18,6 +18,25 @@ export default function mapComponent(props) {
   // const [lonLatMarker, setLonLatMarker] = useState([props.lon, props.lat]);
   const [selectedGood, setSelectedGood] = useState({});
   // const [isActive, setActive] = useState(false);
+  const SDGS = [
+    "1. No Poverty",
+    "2. Zero Hunger",
+    "3. Good Health and Well-being",
+    "4. Quality Education",
+    "5. Gender Equality",
+    "6. Clean Water and Sanitation",
+    "7. Affordable and Clean Energy",
+    "8. Decent Work and Economic Growth",
+    "9. Industry, Innovation and Infrastructure",
+    "10. Reduced Inequality",
+    "11. Sustainable Cities and Communities",
+    "12. Responsible Consumption and Production",
+    "13. Climate Action",
+    "14. Life Below Water",
+    "15. Life on Land",
+    "16. Peace and Justice Strong Institutions",
+    "17. Partnerships to achieve the Goal",
+  ];
 
   const isElementInViewport = (el) => {
     var rect = el.getBoundingClientRect();
@@ -34,14 +53,12 @@ export default function mapComponent(props) {
     );
   };
   const scrollHandle = () => {
-    // setActive(!isActive);
     if (!isElementInViewport(document.getElementById("menu"))) {
       document.getElementById("menu").scrollIntoView({
         behavior: "smooth",
         block: "center",
         inline: "nearest",
       });
-      // document.getElementById("footer-text").textContent = '';
     }
   };
   // useEffect(() => {
@@ -54,10 +71,20 @@ export default function mapComponent(props) {
       if (!document.getElementById("menu")) {
         return;
       }
-      !isElementInViewport(document.getElementById("menu"))
-        ? (document.getElementById("footer-text").textContent =
-            "Tap to see filters and info")
-        : (document.getElementById("footer-text").textContent = "");
+      if (isElementInViewport(document.getElementById("menu"))) {
+        document.getElementById("footer-text").textContent = "";
+        document.getElementById("hamburger").classList.add("active");
+        document.getElementById("hamburger").classList.remove("inactive");
+        document.getElementById("arrow-up").classList.remove("active");
+        document.getElementById("arrow-up").classList.add("inactive");
+      } else {
+        document.getElementById("footer-text").textContent =
+          "Tap to see filters and info";
+        document.getElementById("hamburger").classList.add("inactive");
+        document.getElementById("hamburger").classList.remove("active");
+        document.getElementById("arrow-up").classList.add("active");
+        document.getElementById("arrow-up").classList.remove("inactive");
+      }
     };
   }, []);
   return (
@@ -304,6 +331,7 @@ export default function mapComponent(props) {
             value.innerHTML = layer;
             item.appendChild(key);
             item.appendChild(value);
+            document.getElementById("legend").appendChild(item);
           }
 
           // create goods selection
@@ -404,7 +432,8 @@ export default function mapComponent(props) {
       </Map>
       <div className="map-overlay" id="legend"></div>
       <div className="controls" onClick={scrollHandle}>
-        <div className="hamburger-icon">
+        <span id="arrow-up" className="arrow-up active" />
+        <div id="hamburger" className="hamburger-icon inactive">
           <div className="bar1"></div>
           <div className="bar2"></div>
           <div className="bar3"></div>
@@ -412,35 +441,102 @@ export default function mapComponent(props) {
         <span id="footer-text">Tap to see filters and info</span>
       </div>
       <ul id="menu"></ul>
+      {Object.keys(selectedGood).length && (
+        <div className="infoGood">
+          <h2 className="goodName">{selectedGood.name}</h2>
+          <p className="goodDesc">{selectedGood.description}</p>
+          {selectedGood.website && (
+            <a
+              href={selectedGood.website}
+              className="goodWebsite"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Website
+            </a>
+          )}
 
-      <div className="infoGood">
-        <h2 className="goodName">{selectedGood.name}</h2>
-        {console.log(selectedGood)}
-        {selectedGood.locations && (
-          <div>
-            <ul>
-              {"Deployed in " +
-                Object.keys(selectedGood.locations.deploymentCountries).length +
-                " countries:"}
-            </ul>
-            {Object.values(selectedGood.locations.deploymentCountries).map((country) => {
-              return <li key={"deploy-" + country}>{country}</li>;
-            })}
-          </div>
-        )}
-        {selectedGood.locations && (
-          <div>
-            <ul>
-              {"Developed in " +
-                Object.keys(selectedGood.locations.developmentCountries).length +
-                " countries:"}
-            </ul>
-            {Object.values(selectedGood.locations.developmentCountries).map((country) => {
-              return <li key={"develop-" + country}>{country}</li>;
-            })}
-          </div>
-        )}
-      </div>
+          {["content", "data", "software", "standard", "AI model"].map((item) => {
+            if (selectedGood.type.includes(item)) {
+              return (
+                <li key={"type-" + item}>
+                  ✅&nbsp;&nbsp;Open {item}
+                  {Object.prototype.hasOwnProperty.call(
+                    selectedGood,
+                    "repositoryURL"
+                  ) && (
+                    <a href={selectedGood.repositoryURL} target="_blank" rel="noreferrer">
+                      {" "}
+                      Source Code Repository
+                    </a>
+                  )}
+                </li>
+              );
+            } else {
+              return (
+                <li key={"type-" + item}>
+                  <svg width="18" height="18">
+                    <rect width="18" height="18" fillOpacity="0" className="rect" />
+                  </svg>
+                  Open {item}
+                </li>
+              );
+            }
+          })}
+
+          <p>Relevant Sustainable Development Goals</p>
+          {selectedGood["SDGs"].map((item) => {
+            console.log(item);
+            return (
+              <div key={"SDG-" + item.SDGNumber}>
+                <p>
+                  <b>{SDGS[item.SDGNumber - 1]}</b>
+                </p>
+                {item.evidenceText && (
+                  <p>
+                    <span>Evidence:</span> {item.evidenceText}
+                  </p>
+                )}
+                {item.evidenceURL && (
+                  <a href={item.evidenceURL} target="_blank" rel="noreferrer">
+                    Link to Evidence
+                  </a>
+                )}
+              </div>
+            );
+          })}
+          {selectedGood.locations && (
+            <div>
+              <ul>
+                {"Deployed in " +
+                  Object.keys(selectedGood.locations.deploymentCountries).length +
+                  " of 249 countries:"}
+              </ul>
+              {Object.values(selectedGood.locations.deploymentCountries).map(
+                (country) => {
+                  return <li key={"deploy-" + country}>{country}</li>;
+                }
+              )}
+            </div>
+          )}
+          {selectedGood.locations && (
+            <div>
+              <ul>
+                {"Developed in " +
+                  Object.keys(selectedGood.locations.developmentCountries).length +
+                  (Object.keys(selectedGood.locations.developmentCountries).length > 1
+                    ? " countries:"
+                    : " country:")}
+              </ul>
+              {Object.values(selectedGood.locations.developmentCountries).map(
+                (country) => {
+                  return <li key={"develop-" + country}>{country}</li>;
+                }
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
