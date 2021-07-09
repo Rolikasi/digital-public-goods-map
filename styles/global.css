@@ -152,12 +152,7 @@ ul#menu {
   overflow-y: scroll;
   max-height: 50vh;
 }
-.active {
-  display: block;
-}
-.inactive {
-  display: none;
-}
+
 /* Change color of dropdown links on hover */
 #dg-menu-dropdown a:hover {
   background-color: #f1f1f1;
@@ -175,7 +170,7 @@ ul#menu {
 }
 
 .hamburger-icon {
-  /* display: inline-block; */
+  display: none;
   cursor: pointer;
   margin: 0.2rem 0.2rem;
   cursor: default;
@@ -184,10 +179,16 @@ ul#menu {
   margin: 0.5rem;
   border: solid black;
   border-width: 0 3px 3px 0;
-  /* display: inline-block; */
+  display: none;
   padding: 3px;
   transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);
+}
+.active {
+  display: block;
+}
+.inactive {
+  display: none;
 }
 .rect {
   stroke-width:1;

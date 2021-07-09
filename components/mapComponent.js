@@ -5,6 +5,25 @@ import implementedpattern from "../public/implemented.svg";
 import pathpattern from "../public/pathfinders.svg";
 
 const zoomDefault = 1;
+const sdgsDefault = [
+  {name: "1. No Poverty", open:false},
+  {name: "2. Zero Hunger", open: false},
+  {name: "3. Good Health and Well-being", open:false},
+  {name: "4. Quality Education", open:false},
+  {name: "5. Gender Equality", open:false},
+  {name: "6. Clean Water and Sanitation", open:false},
+  {name: "7. Affordable and Clean Energy", open:false},
+  {name: "8. Decent Work and Economic Growth", open:false},
+  {name: "9. Industry, Innovation and Infrastructure", open:false},
+  {name: "10. Reduced Inequality", open:false},
+  {name: "11. Sustainable Cities and Communities", open:false},
+  {name: "12. Responsible Consumption and Production", open:false},
+  {name: "13. Climate Action", open:false},
+  {name: "14. Life Below Water", open:false},
+  {name: "15. Life on Land", open:false},
+  {name: "16. Peace and Justice Strong Institutions", open:false},
+  {name: "17. Partnerships to achieve the Goal", open:false}
+];
 
 const Map = ReactMapboxGl({
   accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
@@ -17,26 +36,21 @@ export default function mapComponent(props) {
   const [lonLat, setLonLat] = useState([props.lon, props.lat]);
   // const [lonLatMarker, setLonLatMarker] = useState([props.lon, props.lat]);
   const [selectedGood, setSelectedGood] = useState({});
+  const [openCountries, setOpenCountries] = useState({'development': false, 'deployment':false});
   // const [isActive, setActive] = useState(false);
-  const SDGS = [
-    "1. No Poverty",
-    "2. Zero Hunger",
-    "3. Good Health and Well-being",
-    "4. Quality Education",
-    "5. Gender Equality",
-    "6. Clean Water and Sanitation",
-    "7. Affordable and Clean Energy",
-    "8. Decent Work and Economic Growth",
-    "9. Industry, Innovation and Infrastructure",
-    "10. Reduced Inequality",
-    "11. Sustainable Cities and Communities",
-    "12. Responsible Consumption and Production",
-    "13. Climate Action",
-    "14. Life Below Water",
-    "15. Life on Land",
-    "16. Peace and Justice Strong Institutions",
-    "17. Partnerships to achieve the Goal",
-  ];
+  const [sdgs, setSdgs] = useState([...sdgsDefault]);
+  const clearSdgs = () => {
+    sdgs.map(e => e.open = false);
+    setSdgs([...sdgs]);
+  };
+  const toggleEvidence = (i) => {
+    sdgs[i].open = !sdgs[i].open;
+    setSdgs([...sdgs]);
+  }
+
+  const toggleCountries = (type) => {
+    setOpenCountries(prevState => ({...prevState, [type]:!prevState[type]}));
+  }
 
   const isElementInViewport = (el) => {
     var rect = el.getBoundingClientRect();
@@ -74,16 +88,12 @@ export default function mapComponent(props) {
       if (isElementInViewport(document.getElementById("menu"))) {
         document.getElementById("footer-text").textContent = "";
         document.getElementById("hamburger").classList.add("active");
-        document.getElementById("hamburger").classList.remove("inactive");
         document.getElementById("arrow-up").classList.remove("active");
-        document.getElementById("arrow-up").classList.add("inactive");
       } else {
         document.getElementById("footer-text").textContent =
           "Tap to see filters and info";
-        document.getElementById("hamburger").classList.add("inactive");
         document.getElementById("hamburger").classList.remove("active");
         document.getElementById("arrow-up").classList.add("active");
-        document.getElementById("arrow-up").classList.remove("inactive");
       }
     };
   }, []);
@@ -360,6 +370,7 @@ export default function mapComponent(props) {
               var clickedGood = this.textContent;
               document.getElementById("legend").style.display = "block";
               setSelectedGood(good);
+              clearSdgs();
 
               e.preventDefault();
               e.stopPropagation();
@@ -433,7 +444,7 @@ export default function mapComponent(props) {
       <div className="map-overlay" id="legend"></div>
       <div className="controls" onClick={scrollHandle}>
         <span id="arrow-up" className="arrow-up active" />
-        <div id="hamburger" className="hamburger-icon inactive">
+        <div id="hamburger" className="hamburger-icon">
           <div className="bar1"></div>
           <div className="bar2"></div>
           <div className="bar3"></div>
@@ -441,7 +452,7 @@ export default function mapComponent(props) {
         <span id="footer-text">Tap to see filters and info</span>
       </div>
       <ul id="menu"></ul>
-      {Object.keys(selectedGood).length && (
+      {Object.keys(selectedGood).length != 0 && (
         <div className="infoGood">
           <h2 className="goodName">{selectedGood.name}</h2>
           <p className="goodDesc">{selectedGood.description}</p>
@@ -455,21 +466,22 @@ export default function mapComponent(props) {
               Website
             </a>
           )}
+          {selectedGood.repositoryURL && (
+            <a
+              href={selectedGood.repositoryURL}
+              className="goodRepo"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Source Code Repository
+            </a>
+          )}
 
           {["content", "data", "software", "standard", "AI model"].map((item) => {
             if (selectedGood.type.includes(item)) {
               return (
                 <li key={"type-" + item}>
                   ✅&nbsp;&nbsp;Open {item}
-                  {Object.prototype.hasOwnProperty.call(
-                    selectedGood,
-                    "repositoryURL"
-                  ) && (
-                    <a href={selectedGood.repositoryURL} target="_blank" rel="noreferrer">
-                      {" "}
-                      Source Code Repository
-                    </a>
-                  )}
                 </li>
               );
             } else {
@@ -484,20 +496,19 @@ export default function mapComponent(props) {
             }
           })}
 
-          <p>Relevant Sustainable Development Goals</p>
+          <p>Relevant Sustainable Development Goals:</p>
           {selectedGood["SDGs"].map((item) => {
-            console.log(item);
             return (
-              <div key={"SDG-" + item.SDGNumber}>
-                <p>
-                  <b>{SDGS[item.SDGNumber - 1]}</b>
+              <div key={"SDG-" + item.SDGNumber}  className="header">
+                <p onClick={(e) => toggleEvidence(item.SDGNumber - 1)}>
+                  <b>{sdgs[item.SDGNumber - 1].name}</b>
                 </p>
-                {item.evidenceText && (
-                  <p>
-                    <span>Evidence:</span> {item.evidenceText}
+                {item.evidenceText && sdgs[item.SDGNumber - 1].open && (
+                  <p >
+                    {item.evidenceText}
                   </p>
                 )}
-                {item.evidenceURL && (
+                {item.evidenceURL && sdgs[item.SDGNumber - 1].open && (
                   <a href={item.evidenceURL} target="_blank" rel="noreferrer">
                     Link to Evidence
                   </a>
@@ -505,30 +516,30 @@ export default function mapComponent(props) {
               </div>
             );
           })}
-          {selectedGood.locations && (
+          {Object.keys(selectedGood.locations.deploymentCountries).length > 0 && (
             <div>
-              <ul>
+              <ul onClick={(e) => toggleCountries('deployment')}>
                 {"Deployed in " +
                   Object.keys(selectedGood.locations.deploymentCountries).length +
                   " of 249 countries:"}
               </ul>
-              {Object.values(selectedGood.locations.deploymentCountries).map(
+              {openCountries.deployment && Object.values(selectedGood.locations.deploymentCountries).map(
                 (country) => {
                   return <li key={"deploy-" + country}>{country}</li>;
                 }
               )}
             </div>
           )}
-          {selectedGood.locations && (
+          {Object.keys(selectedGood.locations.developmentCountries).length > 0 && (
             <div>
-              <ul>
+              <ul onClick={(e) => toggleCountries('development')}>
                 {"Developed in " +
                   Object.keys(selectedGood.locations.developmentCountries).length +
                   (Object.keys(selectedGood.locations.developmentCountries).length > 1
                     ? " countries:"
                     : " country:")}
               </ul>
-              {Object.values(selectedGood.locations.developmentCountries).map(
+              {openCountries.development && Object.values(selectedGood.locations.developmentCountries).map(
                 (country) => {
                   return <li key={"develop-" + country}>{country}</li>;
                 }
