@@ -3,6 +3,8 @@ import ReactMapboxGl, {ZoomControl} from "react-mapbox-gl";
 import mapboxgl from "mapbox-gl";
 import implementedpattern from "../public/implemented.svg";
 import pathpattern from "../public/pathfinders.svg";
+import webSymbol from "../public/globe.png";
+import ghLogo from "../public/github.png"
 
 const zoomDefault = 1;
 const sdgsDefault = [
@@ -39,9 +41,10 @@ export default function mapComponent(props) {
   const [openCountries, setOpenCountries] = useState({'development': false, 'deployment':false});
   // const [isActive, setActive] = useState(false);
   const [sdgs, setSdgs] = useState([...sdgsDefault]);
-  const clearSdgs = () => {
+  const clearStates = () => {
     sdgs.map(e => e.open = false);
     setSdgs([...sdgs]);
+    setOpenCountries({... {'development': false, 'deployment':false}});
   };
   const toggleEvidence = (i) => {
     sdgs[i].open = !sdgs[i].open;
@@ -204,6 +207,7 @@ export default function mapComponent(props) {
             "DPG Pathfinders",
             ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderCountries))
           ); // This line lets us filter by country codes.
+          console.log('path',Object.keys(props.pathfinderCountries))
 
           // Declare the image
           let implementedimg = new Image(20, 20);
@@ -370,7 +374,7 @@ export default function mapComponent(props) {
               var clickedGood = this.textContent;
               document.getElementById("legend").style.display = "block";
               setSelectedGood(good);
-              clearSdgs();
+              clearStates();
 
               e.preventDefault();
               e.stopPropagation();
@@ -459,29 +463,29 @@ export default function mapComponent(props) {
           {selectedGood.website && (
             <a
               href={selectedGood.website}
-              className="goodWebsite"
               target="_blank"
               rel="noreferrer"
             >
-              Website
+              <img src={webSymbol} width='30px' height='30px'/>
             </a>
           )}
           {selectedGood.repositoryURL && (
             <a
-              href={selectedGood.repositoryURL}
-              className="goodRepo"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Source Code Repository
-            </a>
+            href={selectedGood.repositoryURL}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img src={ghLogo} width='30px' height='30px'/>
+          </a>
+            
+            
           )}
-
+          <ul> <p>Type of Digital Public Good</p>
           {["content", "data", "software", "standard", "AI model"].map((item) => {
             if (selectedGood.type.includes(item)) {
               return (
                 <li key={"type-" + item}>
-                  ✅&nbsp;&nbsp;Open {item}
+                  ✅&nbsp;Open {item}
                 </li>
               );
             } else {
@@ -490,11 +494,12 @@ export default function mapComponent(props) {
                   <svg width="18" height="18">
                     <rect width="18" height="18" fillOpacity="0" className="rect" />
                   </svg>
-                  Open {item}
+                  &nbsp;Open {item}
                 </li>
               );
             }
           })}
+          </ul>
 
           <p>Relevant Sustainable Development Goals:</p>
           {selectedGood["SDGs"].map((item) => {
@@ -517,34 +522,32 @@ export default function mapComponent(props) {
             );
           })}
           {Object.keys(selectedGood.locations.deploymentCountries).length > 0 && (
-            <div>
               <ul onClick={(e) => toggleCountries('deployment')}>
                 {"Deployed in " +
                   Object.keys(selectedGood.locations.deploymentCountries).length +
                   " of 249 countries:"}
-              </ul>
+              
               {openCountries.deployment && Object.values(selectedGood.locations.deploymentCountries).map(
                 (country) => {
                   return <li key={"deploy-" + country}>{country}</li>;
                 }
               )}
-            </div>
+              </ul>
           )}
           {Object.keys(selectedGood.locations.developmentCountries).length > 0 && (
-            <div>
               <ul onClick={(e) => toggleCountries('development')}>
                 {"Developed in " +
                   Object.keys(selectedGood.locations.developmentCountries).length +
                   (Object.keys(selectedGood.locations.developmentCountries).length > 1
                     ? " countries:"
                     : " country:")}
-              </ul>
+              
               {openCountries.development && Object.values(selectedGood.locations.developmentCountries).map(
                 (country) => {
                   return <li key={"develop-" + country}>{country}</li>;
                 }
               )}
-            </div>
+            </ul>
           )}
         </div>
       )}

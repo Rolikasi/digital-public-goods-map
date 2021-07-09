@@ -5,6 +5,10 @@ body {
   display: flex;
   overflow-x: hidden;
 }
+ul {
+  list-style-type: none;
+  padding: 0;
+}
 
 /* Next main div */
 #__next {
@@ -183,6 +187,9 @@ ul#menu {
   padding: 3px;
   transform: rotate(-135deg);
   -webkit-transform: rotate(-135deg);
+}
+.infoGood {
+  padding: 0 1rem;
 }
 .active {
   display: block;
