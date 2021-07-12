@@ -5,6 +5,10 @@ body {
   display: flex;
   overflow-x: hidden;
 }
+ul {
+  list-style-type: none;
+  padding: 0;
+}
 
 /* Next main div */
 #__next {
@@ -152,15 +156,37 @@ ul#menu {
   overflow-y: scroll;
   max-height: 50vh;
 }
-.active {
-  display: block;
-}
-.inactive {
-  display: none;
-}
+
 /* Change color of dropdown links on hover */
 #dg-menu-dropdown a:hover {
   background-color: #f1f1f1;
+}
+
+.goodName {
+  font-size: 1.5rem;
+  text-align: center;
+}
+.goodLinks {
+  display: flex;
+  justify-content: center;
+}
+.goodLinks a{
+  margin: 0 0.5rem 1rem 0;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
+.goodContainer {
+  margin: 0 0 2rem 0;
+}
+.collapsable-text{
+  font-weight: bold;
+  display: flex;
+  border: solid black;
+  border-width: 0 0 1px 0;
+  justify-content: space-between;
 }
 
 .dropdown-arrow {
@@ -175,10 +201,38 @@ ul#menu {
 }
 
 .hamburger-icon {
-  display: inline-block;
+  display: none;
   cursor: pointer;
   margin: 0.2rem 0.2rem;
   cursor: default;
+}
+.arrow {
+  margin: 0.5rem;
+  border: solid black;
+  border-width: 0 2px 2px 0;
+  display: none;
+  padding: 3px;
+}
+.up {
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+}
+.down {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+.infoGood {
+  padding: 0 1rem;
+}
+.active {
+  display: block;
+}
+.inactive {
+  display: none;
+}
+.rect {
+  stroke-width:1;
+  stroke:rgb(0,0,0);
 }
 
 .bar1,
