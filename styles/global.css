@@ -188,6 +188,20 @@ ul#menu {
   border-width: 0 0 1px 0;
   justify-content: space-between;
 }
+.loader {
+  max-width: 22%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  animation: 1.5s ease-in-out 1s infinite alternate changeWidth;
+}
+@keyframes changeWidth {
+  0% {max-width: 22%;}
+  100% {
+     max-width: 25%;
+  }
+}
 
 .dropdown-arrow {
   height: 0;

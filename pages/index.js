@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import React, {useState, useEffect} from "react";
 import GSheetReader from "g-sheets-api";
+import dpgaLogo from "../public/logo.svg"
 
 const alpha3 = {
   Aruba: "ABW",
@@ -268,7 +269,7 @@ export default function Home() {
     returnAllResults: true,
   };
 
-  function addCountries(results, label) {
+  const addCountries = async (results, label) => {
     let l = [];
     let z = [];
     let c = countries;
@@ -375,9 +376,6 @@ export default function Home() {
   };
 
   useEffect(() => {
-    GSheetReader(options, (results) => {
-      addCountries(results, "pathfinder");
-    });
     const fetchData = async () => {
       const result = await fetch(
         "https://api.github.com/search/code?q=repo:unicef/publicgoods-candidates+path:digitalpublicgoods+filename:.json"
@@ -386,6 +384,9 @@ export default function Home() {
       });
       await result.items.map((data) => {
         getDigitalGoods(data.name, 0, null, result.items.length);
+      });
+      GSheetReader(options, (results) => {
+        addCountries(results, "pathfinder");
       });
     };
     fetchData();
@@ -397,7 +398,7 @@ export default function Home() {
 
   return (
     <div className="main">
-      {!loaded && <p>Loading!</p>}
+      {!loaded && <img className='loader' src={dpgaLogo}></img>}
       {loaded && (
         <div className="selectContainer">
           <div id="dg-menu">
