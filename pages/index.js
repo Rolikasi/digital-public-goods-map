@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import React, {useState, useEffect} from "react";
 import GSheetReader from "g-sheets-api";
-import dpgaLogo from "../public/logo.svg"
+import dpgaLogo from "../public/logo.svg";
 
 const alpha3 = {
   Aruba: "ABW",
@@ -256,6 +256,42 @@ const alpha3 = {
   Zimbabwe: "ZWE",
 };
 
+function SearchBox() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const handleMouseOver = () => {
+    menuOpen ? null : setMenuOpen(true);
+  };
+  const handleMouseLeave = () => {
+    menuOpen ? setMenuOpen(false) : null;
+  };
+  const handleMenuClick = () => {
+    !menuOpen ? setMenuOpen(true) : null;
+  };
+  const handleMenuSelect = () => {
+    menuOpen ? setMenuOpen(false) : null;
+  };
+
+  return (
+    <div className="selectContainer">
+      <div
+        onClick={handleMenuClick}
+        onMouseOver={handleMouseOver}
+        onMouseLeave={handleMouseLeave}
+        id="dg-menu"
+      >
+        <span id="dg-menu-text">Select a digital good</span>{" "}
+        <span className={menuOpen ? "arrow up active" : "arrow down active"}></span>
+        <div
+          onClick={handleMenuSelect}
+          onMouseLeave={handleMouseLeave}
+          id="dg-menu-dropdown"
+          className={menuOpen ? "active" : ""}
+        ></div>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [countries, setCountries] = useState({});
   const [digitalGoods, setDigitalGoods] = useState([]);
@@ -290,7 +326,7 @@ export default function Home() {
     setCountries(c);
     setPathfinder(l);
     setPathfinderImplemented(z);
-  }
+  };
 
   const addGoodsCountries = (good, maxGoods, nomineeData) => {
     // need to refactor
@@ -398,15 +434,8 @@ export default function Home() {
 
   return (
     <div className="main">
-      {!loaded && <img className='loader' src={dpgaLogo}></img>}
-      {loaded && (
-        <div className="selectContainer">
-          <div id="dg-menu">
-            <span id="dg-menu-text">Select a digital good</span>
-            <div id="dg-menu-dropdown" className="inactive"></div>
-          </div>
-        </div>
-      )}
+      {!loaded && <img className="loader" src={dpgaLogo}></img>}
+      {loaded && <SearchBox />}
       {loaded && console.log("goods", digitalGoods)}
       {loaded && (
         <MapComponent
