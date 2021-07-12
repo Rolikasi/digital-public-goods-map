@@ -447,7 +447,7 @@ export default function mapComponent(props) {
       </Map>
       <div className="map-overlay" id="legend"></div>
       <div className="controls" onClick={scrollHandle}>
-        <span id="arrow-up" className="arrow-up active" />
+        <span id="arrow-up" className="arrow up active" />
         <div id="hamburger" className="hamburger-icon">
           <div className="bar1"></div>
           <div className="bar2"></div>
@@ -458,8 +458,9 @@ export default function mapComponent(props) {
       <ul id="menu"></ul>
       {Object.keys(selectedGood).length != 0 && (
         <div className="infoGood">
+          <div className="goodContainer">
           <h2 className="goodName">{selectedGood.name}</h2>
-          <p className="goodDesc">{selectedGood.description}</p>
+          <div className="goodLinks">
           {selectedGood.website && (
             <a
               href={selectedGood.website}
@@ -477,10 +478,11 @@ export default function mapComponent(props) {
           >
             <img src={ghLogo} width='30px' height='30px'/>
           </a>
-            
-            
           )}
-          <ul> <p>Type of Digital Public Good</p>
+          </div>
+          <p className="goodDesc">{selectedGood.description}</p>
+          </div>
+          <ul className="goodContainer"> <p className="text-bold">Type of Digital Public Good</p>
           {["content", "data", "software", "standard", "AI model"].map((item) => {
             if (selectedGood.type.includes(item)) {
               return (
@@ -500,13 +502,13 @@ export default function mapComponent(props) {
             }
           })}
           </ul>
-
-          <p>Relevant Sustainable Development Goals:</p>
+          <div className="goodContainer">
+          <p className="text-bold">Relevant Sustainable Development Goals:</p>
           {selectedGood["SDGs"].map((item) => {
             return (
-              <div key={"SDG-" + item.SDGNumber}  className="header">
-                <p onClick={(e) => toggleEvidence(item.SDGNumber - 1)}>
-                  <b>{sdgs[item.SDGNumber - 1].name}</b>
+              <div key={"SDG-" + item.SDGNumber}  className="header"> 
+                <p className="collapsable-text" onClick={(e) => toggleEvidence(item.SDGNumber - 1)}>
+                  {sdgs[item.SDGNumber - 1].name} <span className={sdgs[item.SDGNumber - 1].open ? "arrow active up" : "arrow active down"}></span>
                 </p>
                 {item.evidenceText && sdgs[item.SDGNumber - 1].open && (
                   <p >
@@ -521,11 +523,15 @@ export default function mapComponent(props) {
               </div>
             );
           })}
+          </div>
+          <div className="goodContainer">
           {Object.keys(selectedGood.locations.deploymentCountries).length > 0 && (
-              <ul onClick={(e) => toggleCountries('deployment')}>
+              <ul> 
+                <p className="collapsable-text" onClick={(e) => toggleCountries('deployment')}>
                 {"Deployed in " +
                   Object.keys(selectedGood.locations.deploymentCountries).length +
-                  " of 249 countries:"}
+                  " of 249 countries:"} <span className={openCountries.deployment ? "arrow active up" : "arrow active down"}></span>
+                  </p>
               
               {openCountries.deployment && Object.values(selectedGood.locations.deploymentCountries).map(
                 (country) => {
@@ -535,12 +541,14 @@ export default function mapComponent(props) {
               </ul>
           )}
           {Object.keys(selectedGood.locations.developmentCountries).length > 0 && (
-              <ul onClick={(e) => toggleCountries('development')}>
+              <ul>
+                <p className="collapsable-text" onClick={(e) => toggleCountries('development')}>
                 {"Developed in " +
                   Object.keys(selectedGood.locations.developmentCountries).length +
                   (Object.keys(selectedGood.locations.developmentCountries).length > 1
                     ? " countries:"
-                    : " country:")}
+                    : " country:")} <span className={openCountries.development ? "arrow active up" : "arrow active down"}></span>
+                    </p>
               
               {openCountries.development && Object.values(selectedGood.locations.developmentCountries).map(
                 (country) => {
@@ -549,6 +557,7 @@ export default function mapComponent(props) {
               )}
             </ul>
           )}
+          </div>
         </div>
       )}
     </div>
