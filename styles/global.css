@@ -136,9 +136,12 @@ ul#menu {
   font-family: "Open Sans", sans-serif;
   padding: 0.2rem;
   min-width: 300px;
+  display: flex;
+  justify-content: space-between;
 }
 #dg-menu-text {
   margin: 0 0.8rem;
+  display: flex;
 }
 #dg-menu-dropdown a {
   color: black;
@@ -147,7 +150,8 @@ ul#menu {
   display: block;
 }
 #dg-menu-dropdown {
-  margin: 0.4rem 0;
+  display: none;
+  margin: 1.9rem 0;
   position: absolute;
   background-color: #f9f9f9;
   min-width: 160px;
@@ -155,6 +159,9 @@ ul#menu {
   z-index: 1;
   overflow-y: scroll;
   max-height: 50vh;
+}
+#dg-menu-dropdown.active {
+  display: block;
 }
 
 /* Change color of dropdown links on hover */
@@ -170,7 +177,7 @@ ul#menu {
   display: flex;
   justify-content: center;
 }
-.goodLinks a{
+.goodLinks a {
   margin: 0 0.5rem 1rem 0;
 }
 
@@ -181,7 +188,7 @@ ul#menu {
 .goodContainer {
   margin: 0 0 2rem 0;
 }
-.collapsable-text{
+.collapsable-text {
   font-weight: bold;
   display: flex;
   border: solid black;
@@ -197,9 +204,11 @@ ul#menu {
   animation: 1.5s ease-in-out 1s infinite alternate changeWidth;
 }
 @keyframes changeWidth {
-  0% {max-width: 22%;}
+  0% {
+    max-width: 22%;
+  }
   100% {
-     max-width: 25%;
+    max-width: 25%;
   }
 }
 
@@ -245,8 +254,8 @@ ul#menu {
   display: none;
 }
 .rect {
-  stroke-width:1;
-  stroke:rgb(0,0,0);
+  stroke-width: 1;
+  stroke: rgb(0, 0, 0);
 }
 
 .bar1,
@@ -294,6 +303,6 @@ ul#menu {
 
 @media screen and (min-width: 769px) {
   #dg-menu-dropdown {
-    margin: 0.2rem 0;
+    margin: 1.7rem 0;
   }
 }
