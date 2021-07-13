@@ -180,6 +180,10 @@ ul#menu {
 .goodLinks a {
   margin: 0 0.5rem 1rem 0;
 }
+.header {
+  display: flex;
+  flex-direction: column;
+}
 
 .text-bold {
   font-weight: bold;

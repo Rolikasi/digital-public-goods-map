@@ -81,6 +81,11 @@ export default function mapComponent(props) {
       });
     }
   };
+  const parseURLs = (text) => {
+    const url = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+    let urls = text.match(url);
+    return urls.map(i => <a href={i} target='_blank' rel='noreferrer'>Link to evidence</a>)
+  }
   // useEffect(() => {
   // 	setZoom(zoomDefault);
   // 	setLonLat([props.lon, props.lat]);
@@ -497,10 +502,7 @@ export default function mapComponent(props) {
                   {item.evidenceText && sdgs[item.SDGNumber - 1].open && (
                     <p>{item.evidenceText}</p>
                   )}
-                  {item.evidenceURL && sdgs[item.SDGNumber - 1].open && (
-                    <a href={item.evidenceURL} target="_blank" rel="noreferrer">
-                      Link to Evidence
-                    </a>
+                  {item.evidenceURL && sdgs[item.SDGNumber - 1].open && ( parseURLs(item.evidenceURL)
                   )}
                 </div>
               );
