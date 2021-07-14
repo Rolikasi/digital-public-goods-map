@@ -5,6 +5,7 @@ import implementedpattern from "../public/implemented.svg";
 import pathpattern from "../public/pathfinders.svg";
 import webSymbol from "../public/globe.png";
 import ghLogo from "../public/github.png";
+import { Scrollama, Step } from 'react-scrollama';
 
 const zoomDefault = 1;
 const sdgsDefault = [
@@ -32,7 +33,41 @@ const Map = ReactMapboxGl({
   maxZoom: 5,
   minZoom: 0,
 });
+function SearchBox() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const handleMouseOver = () => {
+    menuOpen ? null : setMenuOpen(true);
+  };
+  const handleMouseLeave = () => {
+    menuOpen ? setMenuOpen(false) : null;
+  };
+  const handleMenuClick = () => {
+    !menuOpen ? setMenuOpen(true) : null;
+  };
+  const handleMenuSelect = () => {
+    menuOpen ? setMenuOpen(false) : null;
+  };
 
+  return (
+    <div className='selectContainer'>
+      <div
+        onClick={handleMenuClick}
+        onMouseOver={handleMouseOver}
+        onMouseLeave={handleMouseLeave}
+        id="dg-menu"
+      >
+        <span id="dg-menu-text">Select a digital good</span>{" "}
+        <span className={menuOpen ? "arrow up active" : "arrow down active"}></span>
+        <div
+          onClick={handleMenuSelect}
+          onMouseLeave={handleMouseLeave}
+          id="dg-menu-dropdown"
+          className={menuOpen ? "active" : ""}
+        ></div>
+      </div>
+      </div>
+  );
+}
 export default function mapComponent(props) {
   const [zoom, setZoom] = useState(zoomDefault);
   const [lonLat, setLonLat] = useState([props.lon, props.lat]);
@@ -44,6 +79,19 @@ export default function mapComponent(props) {
   });
   // const [isActive, setActive] = useState(false);
   const [sdgs, setSdgs] = useState([...sdgsDefault]);
+
+
+  // scrollama states
+  const [currentStepIndex, setCurrentStepIndex] = useState(null);
+
+  // This callback fires when a Step hits the offset threshold. It receives the
+  // data prop of the step, which in this demo stores the index of the step.
+  const onStepEnter = ({ data }) => {
+    setCurrentStepIndex(data);
+    setLonLat([data, data])
+  };
+
+
   const clearStates = () => {
     sdgs.map((e) => (e.open = false));
     setSdgs([...sdgs]);
@@ -109,15 +157,19 @@ export default function mapComponent(props) {
     };
   }, []);
   return (
+    <div>
     <div className="map">
+      
+      <div style={{ position: 'sticky', top: 0, border: '1px solid orchid', height:"100vh"}}>
+      <SearchBox />
       <Map
         style="mapbox://styles/rolikasi/ckn67a95j022m17mcqog82g05"
         center={lonLat}
         zoom={[zoom]}
         // pitch={[30]} // pitch in degrees
         // bearing in degrees
-        containerStyle={{width: "100%", height: "100%"}}
-        movingMethod="jumpTo"
+        containerStyle={{width: "100%", height: "100%", position:'unset'}}
+        movingMethod="flyTo"
         logoPosition="bottom-right"
         onMoveEnd={(map) => {
           setZoom(map.getZoom());
@@ -434,7 +486,27 @@ export default function mapComponent(props) {
       >
         <ZoomControl />
       </Map>
+      </div>
+      <div className="scroller">
+      <Scrollama onStepEnter={onStepEnter} debug>
+        {[1, 2, 3, 4].map((_, stepIndex) => (
+          <Step data={stepIndex} key={stepIndex}>
+            <div
+              style={{
+                margin: stepIndex == 3 ? '0' : '50vh 0',
+                border: '1px solid gray',
+                opacity: currentStepIndex === stepIndex ? 1 : 0.2,
+              }}
+            >
+              I'm a Scrollama Step of index {stepIndex}
+            </div>
+          </Step>
+        ))}
+      </Scrollama>
+      </div>
       <div className="map-overlay" id="legend"></div>
+      </div>
+      <div>
       <div className="controls" onClick={scrollHandle}>
         <span id="arrow-up" className="arrow up active" />
         <div id="hamburger" className="hamburger-icon">
@@ -562,6 +634,7 @@ export default function mapComponent(props) {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }
