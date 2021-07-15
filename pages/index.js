@@ -256,7 +256,6 @@ const alpha3 = {
   Zimbabwe: "ZWE",
 };
 
-
 export default function Home() {
   const [countries, setCountries] = useState({});
   const [digitalGoods, setDigitalGoods] = useState([]);
@@ -264,7 +263,7 @@ export default function Home() {
   const [pathfinderImplemented, setPathfinderImplemented] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [story, setStory] = useState([]);
- 
+
   const options = {
     sheetId: process.env.NEXT_PUBLIC_SHEET,
     sheetNumber: 1,
@@ -296,13 +295,12 @@ export default function Home() {
 
   const addStory = (results) => {
     // replace all //n //r, FALSE before setStory
-    for (let i = 0; i < results.length; i++)
-    {
-      results[i].text = results[i].text.replace( /[\r\n]+/gm, "" );
+    for (let i = 0; i < results.length; i++) {
+      results[i].text = results[i].text.replace(/[\r\n]+/gm, " ");
       results[i].image = results[i].image.replace("FALSE", false);
     }
     setStory(results);
-  }
+  };
 
   const addGoodsCountries = (good, maxGoods, nomineeData) => {
     // need to refactor
@@ -402,10 +400,9 @@ export default function Home() {
       });
       let options2 = options;
       options2.sheetNumber = 3;
-      GSheetReader(options2, results => {
+      GSheetReader(options2, (results) => {
         addStory(results);
       });
-      
     };
     fetchData();
   }, []);
@@ -421,7 +418,7 @@ export default function Home() {
     <div className="main">
       {!loaded && <img className="loader" src={dpgaLogo}></img>}
       {/* {loaded && story.length && <ScrollyComp story={story}/>} */}
-      {loaded && 
+      {loaded && (
         <MapComponent
           lon="-14"
           lat="24.5"
@@ -431,7 +428,7 @@ export default function Home() {
           digitalGoods={digitalGoods}
           story={story}
         />
-      }
+      )}
     </div>
   );
 }

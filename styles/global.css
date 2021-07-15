@@ -26,8 +26,11 @@ ul {
 .selectContainer {
   display: flex;
   justify-content: center;
-  position: sticky;
   position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -ms-sticky;
+  position: -o-sticky;
+  position: sticky;
   top: 1rem;
   z-index: 999999;
 }
@@ -38,8 +41,14 @@ ul {
 .scroller {
   position: relative;
   z-index: 9999;
+  max-width: 30rem;
+  margin: 0 auto;
 }
 .map-overlay {
+  position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -ms-sticky;
+  position: -o-sticky;
   position: sticky;
   bottom: 1rem;
   right: 0;
@@ -48,7 +57,7 @@ ul {
   font-family: Arial, sans-serif;
   overflow: auto;
   border-radius: 3px;
-  display: none;
+  visibility: hidden;
   padding: 10px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   line-height: 18px;
@@ -127,8 +136,11 @@ ul#menu {
 
 #dg-menu {
   background: #fff;
-  position: sticky;
   position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -ms-sticky;
+  position: -o-sticky;
+  position: sticky;
   z-index: 1;
   top: 10px;
   max-height: 2rem;
@@ -254,6 +266,7 @@ ul#menu {
 }
 .active {
   display: block;
+  visibility: visible;
 }
 .inactive {
   display: none;
@@ -304,6 +317,33 @@ ul#menu {
 .mapboxgl-popup-content {
   overflow-y: auto;
   max-height: 40vh;
+}
+.scrolly-p {
+  position: relative;
+  z-index: 99999;
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  margin: 40rem auto;
+  text-align: left;
+  border-radius: 5px;
+  -webkit-box-shadow: 0 3px 3px 1px rgba(0, 0, 0, 0.11);
+  box-shadow: 0 3px 3px 1px rgba(0, 0, 0, 0.11);
+  border: 1px solid #d0cccc;
+}
+.scrolly-p.first {
+  margin-top: -70vh;
+}
+.scrolly-p.last {
+  margin-bottom: 90vh;
+}
+.scrolly-p p {
+  padding: 1rem;
+}
+.enabled {
+  pointer-events: all;
+}
+.disabled {
+  pointer-events: none;
 }
 
 @media screen and (min-width: 769px) {
