@@ -300,7 +300,6 @@ export default function Home() {
     {
       results[i].text = results[i].text.replace( /[\r\n]+/gm, "" );
       results[i].image = results[i].image.replace("FALSE", false);
-      results[i].focus = results[i].focus.replace("FALSE", false);
     }
     setStory(results);
   }
@@ -430,6 +429,7 @@ export default function Home() {
           pathfinderCountries={pathfinder}
           pathfinderImplemented={pathfinderImplemented}
           digitalGoods={digitalGoods}
+          story={story}
         />
       }
     </div>

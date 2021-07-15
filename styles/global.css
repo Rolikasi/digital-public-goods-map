@@ -48,16 +48,13 @@ ul {
   font-family: Arial, sans-serif;
   overflow: auto;
   border-radius: 3px;
-}
-
-#legend {
+  display: none;
   padding: 10px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   line-height: 18px;
-  margin-bottom: 40px;
   width: 14rem;
-  display: none;
 }
+
 .legend-key {
   display: inline-block;
   border-radius: 20%;

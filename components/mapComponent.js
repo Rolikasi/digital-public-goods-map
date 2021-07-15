@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import ReactMapboxGl, {ZoomControl} from "react-mapbox-gl";
+import ReactMapboxGl, {ZoomControl, MapContext} from "react-mapbox-gl";
 import mapboxgl from "mapbox-gl";
 import implementedpattern from "../public/implemented.svg";
 import pathpattern from "../public/pathfinders.svg";
@@ -33,8 +33,9 @@ const Map = ReactMapboxGl({
   maxZoom: 5,
   minZoom: 0,
 });
-function SearchBox() {
+function SearchBox(props) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchText, setSearchText] = useState('Select a digital good')
   const handleMouseOver = () => {
     menuOpen ? null : setMenuOpen(true);
   };
@@ -47,23 +48,32 @@ function SearchBox() {
   const handleMenuSelect = () => {
     menuOpen ? setMenuOpen(false) : null;
   };
+  const handleSelect= (item) => {
+    // Here, we invoke the callback with the new value
+    console.log('clicked good!', item);
+    setSearchText(item.name);
+    props.onChange(item);
+}
 
   return (
     <div className='selectContainer'>
+      {console.log(props)}
       <div
         onClick={handleMenuClick}
         onMouseOver={handleMouseOver}
         onMouseLeave={handleMouseLeave}
         id="dg-menu"
       >
-        <span id="dg-menu-text">Select a digital good</span>{" "}
+        <span id="dg-menu-text">{searchText}</span>{" "}
         <span className={menuOpen ? "arrow up active" : "arrow down active"}></span>
         <div
           onClick={handleMenuSelect}
           onMouseLeave={handleMouseLeave}
           id="dg-menu-dropdown"
           className={menuOpen ? "active" : ""}
-        ></div>
+        >
+          {props.goods.map(item => <a href='#' onClick={(e) => handleSelect(item)}>{item.name}</a>)}
+        </div>
       </div>
       </div>
   );
@@ -73,12 +83,15 @@ export default function mapComponent(props) {
   const [lonLat, setLonLat] = useState([props.lon, props.lat]);
   // const [lonLatMarker, setLonLatMarker] = useState([props.lon, props.lat]);
   const [selectedGood, setSelectedGood] = useState({});
+  const [prevGood, setPrevGood] = useState({});
   const [openCountries, setOpenCountries] = useState({
     development: false,
     deployment: false,
   });
   // const [isActive, setActive] = useState(false);
   const [sdgs, setSdgs] = useState([...sdgsDefault]);
+
+  
 
 
   // scrollama states
@@ -88,7 +101,8 @@ export default function mapComponent(props) {
   // data prop of the step, which in this demo stores the index of the step.
   const onStepEnter = ({ data }) => {
     setCurrentStepIndex(data);
-    setLonLat([data, data])
+    setZoom(parseFloat(props.story[data].zoom));
+    setLonLat([parseFloat(props.story[data].longitude), parseFloat(props.story[data].latitude)]);
   };
 
 
@@ -114,10 +128,10 @@ export default function mapComponent(props) {
       rect.left >= 0 &&
       rect.bottom <=
         (window.innerHeight ||
-          document.documentElement.clientHeight) /* or $(window).height() */ &&
+          document.documentElement.clientHeight)&&
       rect.right <=
         (window.innerWidth ||
-          document.documentElement.clientWidth) /* or $(window).width() */
+          document.documentElement.clientWidth)
     );
   };
   const scrollHandle = () => {
@@ -133,6 +147,12 @@ export default function mapComponent(props) {
     const url = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
     let urls = text.match(url);
     return urls.map(i => <a href={i} target='_blank' rel='noreferrer'>Link to evidence</a>)
+  }
+  const handleChangeSearchbox = (good) => {
+    setSelectedGood((prevState) => {
+      setPrevGood(prevState)
+      return good});
+    clearStates();
   }
   // useEffect(() => {
   // 	setZoom(zoomDefault);
@@ -161,7 +181,7 @@ export default function mapComponent(props) {
     <div className="map">
       
       <div style={{ position: 'sticky', top: 0, border: '1px solid orchid', height:"100vh"}}>
-      <SearchBox />
+      <SearchBox goods={props.digitalGoods} onChange={handleChangeSearchbox} />
       <Map
         style="mapbox://styles/rolikasi/ckn67a95j022m17mcqog82g05"
         center={lonLat}
@@ -174,9 +194,10 @@ export default function mapComponent(props) {
         onMoveEnd={(map) => {
           setZoom(map.getZoom());
           setLonLat([map.getCenter().lng, map.getCenter().lat]);
-          console.log(map.getCenter().lng, map.getCenter().lat);
+          console.log(map.getCenter().lng, map.getCenter().lat, map.getZoom());
         }}
         onStyleLoad={(map) => {
+          console.log('story', props.story)
           var layers = map.getStyle().layers;
           // Find the index of the first symbol layer in the map style
           var firstSymbolId;
@@ -408,32 +429,6 @@ export default function mapComponent(props) {
             document.getElementById("legend").appendChild(item);
           }
 
-          var prevLayer = "";
-          props.digitalGoods.map((good) => {
-            let layers = document.getElementById("dg-menu-dropdown");
-            let li = document.createElement("a");
-            li.textContent = good.name;
-            li.href = "#";
-            li.onclick = function (e) {
-              var clickedGood = this.textContent;
-              document.getElementById("legend").style.display = "block";
-              setSelectedGood(good);
-              clearStates();
-
-              e.preventDefault();
-              if (prevLayer) {
-                map.setLayoutProperty(prevLayer + "-develop", "visibility", "none");
-                map.setLayoutProperty(prevLayer + "-deploy", "visibility", "none");
-              }
-              prevLayer = this.textContent;
-
-              map.setLayoutProperty(clickedGood + "-develop", "visibility", "visible");
-              map.setLayoutProperty(clickedGood + "-deploy", "visibility", "visible");
-              document.getElementById("dg-menu-text").textContent = clickedGood;
-            };
-            layers.appendChild(li);
-          });
-
           // set up the corresponding toggle button for each layer
           var toggleableLayerIds = ["DPG Pathfinders", "DPG Implemented"];
           for (let i = 0; i < toggleableLayerIds.length; i++) {
@@ -485,26 +480,36 @@ export default function mapComponent(props) {
         }}
       >
         <ZoomControl />
+        {selectedGood.name && <MapContext.Consumer>
+      {(map) => {
+        if (prevGood.name) {
+              map.setLayoutProperty(prevGood.name + "-develop", "visibility", "none");
+              map.setLayoutProperty(prevGood.name + "-deploy", "visibility", "none");
+            }
+          map.setLayoutProperty(selectedGood.name + "-develop", "visibility", "visible");
+          map.setLayoutProperty(selectedGood.name + "-deploy", "visibility", "visible");
+      }}
+    </MapContext.Consumer>}
       </Map>
       </div>
       <div className="scroller">
       <Scrollama onStepEnter={onStepEnter} debug>
-        {[1, 2, 3, 4].map((_, stepIndex) => (
+        {props.story.map((_, stepIndex) => (
           <Step data={stepIndex} key={stepIndex}>
             <div
               style={{
-                margin: stepIndex == 3 ? '0' : '50vh 0',
+                margin: [0,2].includes(stepIndex) ? '0' : '50vh 0',
                 border: '1px solid gray',
                 opacity: currentStepIndex === stepIndex ? 1 : 0.2,
               }}
             >
-              I'm a Scrollama Step of index {stepIndex}
+              {_.text}
             </div>
           </Step>
         ))}
       </Scrollama>
       </div>
-      <div className="map-overlay" id="legend"></div>
+      <div className={selectedGood.name ? "map-overlay active" : 'map-overlay'} id="legend"></div>
       </div>
       <div>
       <div className="controls" onClick={scrollHandle}>
