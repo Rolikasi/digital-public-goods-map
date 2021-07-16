@@ -6,9 +6,11 @@ import pathpattern from "../public/pathfinders.svg";
 import webSymbol from "../public/globe.png";
 import ghLogo from "../public/github.png";
 import {Scrollama, Step} from "react-scrollama";
+import {InView} from "react-intersection-observer";
 
 const legends = ["where it was developed", "where it was implemented"];
 const colors = ["#FF952A", "#d4d4ec"];
+const toggleableLayers = ["DPG Pathfinders", "DPG Implemented"];
 const zoomDefault = 2;
 const sdgsDefault = [
   {name: "1. No Poverty", open: false},
@@ -60,7 +62,6 @@ function SearchBox(props) {
 
   return (
     <div className="selectContainer">
-      {console.log(props)}
       <div
         onClick={handleMenuClick}
         onMouseOver={handleMouseOver}
@@ -75,8 +76,8 @@ function SearchBox(props) {
           id="dg-menu-dropdown"
           className={menuOpen ? "active" : ""}
         >
-          {props.goods.map((item) => (
-            <a href="#" onClick={(e) => handleSelect(item, e)}>
+          {props.goods.map((item, index) => (
+            <a key={item.name + index} href="#" onClick={(e) => handleSelect(item, e)}>
               {item.name}
             </a>
           ))}
@@ -95,11 +96,16 @@ export default function mapComponent(props) {
     development: false,
     deployment: false,
   });
+  const [visibleLayer, setVisibleLayer] = useState({
+    "DPG Pathfinders": true,
+    "DPG Implemented": true,
+  });
   // const [isActive, setActive] = useState(false);
   const [sdgs, setSdgs] = useState([...sdgsDefault]);
+  const [mapInteractive, setMapInteractive] = useState(false);
 
   // scrollama states
-  const [currentStepIndex, setCurrentStepIndex] = useState(null);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   // This callback fires when a Step hits the offset threshold. It receives the
   // data prop of the step, which in this demo stores the index of the step.
@@ -161,11 +167,11 @@ export default function mapComponent(props) {
     });
     clearStates();
   };
-  // useEffect(() => {
-  // 	setZoom(zoomDefault);
-  // 	setLonLat([props.lon, props.lat]);
-  // 	setLonLatMarker([props.lon, props.lat]);
-  // }, [props.lon, props.lat]);
+  const handleLayerToggle = (e, layer) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setVisibleLayer((prevState) => ({...prevState, [layer]: !prevState[layer]}));
+  };
   useEffect(() => {
     window.onscroll = () => {
       if (!document.getElementById("menu")) {
@@ -190,19 +196,21 @@ export default function mapComponent(props) {
           style={{
             position: "sticky",
             top: 0,
-            border: "1px solid orchid",
             height: "100vh",
+            overflow: "hidden",
           }}
         >
           <SearchBox goods={props.digitalGoods} onChange={handleChangeSearchbox} />
-          <Map
+          {console.log('check story', props.story)}
+          {props.story.length && props.story[currentStepIndex].image != 'false' && <img className='stepImage' src={props.story[currentStepIndex].image}/>}
+          <Map 
             style="mapbox://styles/rolikasi/ckn67a95j022m17mcqog82g05"
             center={lonLat}
             zoom={[zoom]}
             // pitch={[30]} // pitch in degrees
             // bearing in degrees
             containerStyle={{width: "100%", height: "100%", position: "unset"}}
-            className={currentStepIndex >= 3 ? "enabled" : "disabled"}
+            className={mapInteractive ? "enabled" : "disabled"}
             movingMethod="flyTo"
             logoPosition="bottom-right"
             onMoveEnd={(map) => {
@@ -221,6 +229,7 @@ export default function mapComponent(props) {
                   break;
                 }
               }
+              console.log("firstSymbolId", firstSymbolId);
               //add layer for each good with map
               props.digitalGoods.map((good) => {
                 map.addLayer(
@@ -299,7 +308,7 @@ export default function mapComponent(props) {
                 },
                 firstSymbolId
               );
-              map.setLayoutProperty("DPG Pathfinders", "visibility", "visible");
+
               map.setFilter(
                 "DPG Pathfinders",
                 ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderCountries))
@@ -330,7 +339,6 @@ export default function mapComponent(props) {
                 },
                 firstSymbolId
               );
-              map.setLayoutProperty("DPG Implemented", "visibility", "visible");
 
               map.setFilter(
                 "DPG Implemented",
@@ -359,7 +367,7 @@ export default function mapComponent(props) {
                 "countries",
                 ["in", "ADM0_A3_IS"].concat(Object.keys(props.countries))
               ); // This line lets us filter by country codes.
-
+              console.log("all Layers", map.getStyle().layers);
               map.on("click", "countries", function (mapElement) {
                 const countryCode = mapElement.features[0].properties.ADM0_A3_IS; // Grab the country code from the map properties.
 
@@ -427,62 +435,23 @@ export default function mapComponent(props) {
                   .setHTML(html) // Add the HTML we just made to the popup
                   .addTo(map); // Add the popup to the map
               });
-
-              // set up the corresponding toggle button for each layer
-              // TODO: move to JSX and add mapContext.Consumer
-              var toggleableLayerIds = ["DPG Pathfinders", "DPG Implemented"];
-              for (let i = 0; i < toggleableLayerIds.length; i++) {
-                var id = toggleableLayerIds[i];
-                var linkText = document.createElement("span");
-                var link = document.createElement("a");
-                var li = document.createElement("li");
-
-                link.href = "#";
-                link.className = "active " + id;
-                li.id = id;
-                linkText.textContent = id;
-                link.style.backgroundImage =
-                  i == 0 ? "url(pathfinders.svg)" : "url(implemented.svg)";
-
-                li.onclick = function (e) {
-                  var clickedLayer = this.id;
-                  e.preventDefault();
-                  e.stopPropagation();
-
-                  var visibility = map.getLayoutProperty(clickedLayer, "visibility");
-
-                  // toggle layer visibility by changing the layout object's visibility property
-                  if (visibility === "visible") {
-                    map.setLayoutProperty(clickedLayer, "visibility", "none"); //need to refactor
-                    this.children[1].className = clickedLayer;
-                    this.children[1].style.backgroundImage = "none";
-                    this.children[1].textContent = clickedLayer;
-                    this.children[0].textContent = "";
-                  } else {
-                    this.children[1].className = "active " + clickedLayer;
-                    this.children[1].style.backgroundImage =
-                      clickedLayer == "DPG Pathfinders"
-                        ? "url(pathfinders.svg)"
-                        : "url(implemented.svg)";
-                    this.children[1].textContent = "";
-                    this.children[0].textContent = clickedLayer;
-
-                    map.setLayoutProperty(clickedLayer, "visibility", "visible");
-                  }
-                };
-
-                let filters = document.getElementById("menu");
-                li.appendChild(linkText);
-                li.appendChild(link);
-
-                filters.appendChild(li);
-              }
             }}
           >
             <ZoomControl />
-            {selectedGood.name && (
-              <MapContext.Consumer>
-                {(map) => {
+
+            <MapContext.Consumer>
+              {(map) => {
+                Object.keys(visibleLayer).map((layer) => {
+                  map.getLayer(layer)
+                    ? map.setLayoutProperty(
+                        layer,
+                        "visibility",
+                        visibleLayer[layer] ? "visible" : "none"
+                      )
+                    : null;
+                });
+                if (selectedGood.name) {
+                  console.log("toggle selected good visibility");
                   if (prevGood.name) {
                     map.setLayoutProperty(
                       prevGood.name + "-develop",
@@ -505,32 +474,34 @@ export default function mapComponent(props) {
                     "visibility",
                     "visible"
                   );
-                }}
-              </MapContext.Consumer>
-            )}
+                }
+              }}
+            </MapContext.Consumer>
           </Map>
         </div>
-        <div className="scroller">
-          <Scrollama onStepEnter={onStepEnter} debug offset="0.5">
-            {props.story.map((_, stepIndex) => (
-              <Step data={stepIndex} key={stepIndex}>
-                <div
-                  className={`scrolly-p ${stepIndex == 0 ? "first" : ""} ${
-                    stepIndex == props.story.length - 1 ? "last" : ""
-                  }`}
-                >
-                  <p>{_.text}</p>
-                </div>
-              </Step>
-            ))}
-          </Scrollama>
-        </div>
+        <InView as="div" onChange={(inView) => setMapInteractive(!inView)}>
+          <div className="scroller">
+            <Scrollama onStepEnter={onStepEnter} debug offset="0.5">
+              {props.story.map((_, stepIndex) => (
+                <Step data={stepIndex} key={stepIndex}>
+                  <div
+                    className={`scrolly-p ${stepIndex == 0 ? "first" : ""} ${
+                      stepIndex == props.story.length - 1 ? "last" : ""
+                    }`}
+                  >
+                    <p>{_.text}</p>
+                  </div>
+                </Step>
+              ))}
+            </Scrollama>
+          </div>
+        </InView>
         <div
           className={selectedGood.name ? "map-overlay active" : "map-overlay"}
           id="legend"
         >
           {legends.map((legend, index) => (
-            <div>
+            <div key={legend + index}>
               <span
                 className="legend-key"
                 style={
@@ -554,7 +525,32 @@ export default function mapComponent(props) {
           </div>
           <span id="footer-text">Tap to see filters and info</span>
         </div>
-        <ul id="menu"></ul>
+        <ul id="menu">
+          {toggleableLayers.map((layer, index) => (
+            <li
+              id={layer}
+              key={layer + index}
+              onClick={(e) => handleLayerToggle(e, layer)}
+            >
+              <span>{visibleLayer[layer] ? layer : ""}</span>
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                className={layer + (visibleLayer[layer] ? " active" : "")}
+                style={
+                  visibleLayer[layer]
+                    ? {
+                        backgroundImage:
+                          index == 0 ? "url(pathfinders.svg)" : "url(implemented.svg)",
+                      }
+                    : {backgroundImage: "none"}
+                }
+              >
+                {visibleLayer[layer] ? "" : layer}
+              </a>
+            </li>
+          ))}
+        </ul>
         {Object.keys(selectedGood).length != 0 && (
           <div className="infoGood">
             <div className="goodContainer">
