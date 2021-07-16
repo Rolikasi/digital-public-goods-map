@@ -480,7 +480,7 @@ export default function mapComponent(props) {
         </div>
         <InView as="div" onChange={(inView) => setMapInteractive(!inView)}>
           <div className="scroller">
-            <Scrollama onStepEnter={onStepEnter} debug offset="0.5">
+            <Scrollama onStepEnter={onStepEnter} offset="0.5">
               {props.story.map((_, stepIndex) => (
                 <Step data={stepIndex} key={stepIndex}>
                   <div
