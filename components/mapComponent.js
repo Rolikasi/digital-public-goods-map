@@ -197,7 +197,6 @@ export default function mapComponent(props) {
             position: "sticky",
             top: 0,
             height: "100vh",
-            overflow: "hidden",
           }}
         >
           <SearchBox goods={props.digitalGoods} onChange={handleChangeSearchbox} />
