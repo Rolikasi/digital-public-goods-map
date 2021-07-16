@@ -22,38 +22,48 @@ ul {
 
 .main {
   width: 100%;
-  height: 100%;
 }
 .selectContainer {
-  height: 95%;
   display: flex;
   justify-content: center;
+  position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -ms-sticky;
+  position: -o-sticky;
+  position: sticky;
+  top: 1rem;
+  z-index: 999999;
 }
 .map {
   width: 100%;
-  height: 95%;
-  position: absolute;
   top: 0;
 }
+.scroller {
+  position: relative;
+  z-index: 9999;
+  max-width: 30rem;
+  margin: 0 auto;
+}
 .map-overlay {
-  position: absolute;
-  bottom: 0;
+  position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -ms-sticky;
+  position: -o-sticky;
+  position: sticky;
+  bottom: 1rem;
   right: 0;
   background: rgba(255, 255, 255, 0.8);
   margin-right: 20px;
   font-family: Arial, sans-serif;
   overflow: auto;
   border-radius: 3px;
-}
-
-#legend {
+  visibility: hidden;
   padding: 10px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   line-height: 18px;
-  margin-bottom: 40px;
   width: 14rem;
-  display: none;
 }
+
 .legend-key {
   display: inline-block;
   border-radius: 20%;
@@ -127,6 +137,9 @@ ul#menu {
 #dg-menu {
   background: #fff;
   position: -webkit-sticky;
+  position: -moz-sticky;
+  position: -ms-sticky;
+  position: -o-sticky;
   position: sticky;
   z-index: 1;
   top: 10px;
@@ -253,6 +266,7 @@ ul#menu {
 }
 .active {
   display: block;
+  visibility: visible;
 }
 .inactive {
   display: none;
@@ -303,6 +317,42 @@ ul#menu {
 .mapboxgl-popup-content {
   overflow-y: auto;
   max-height: 40vh;
+}
+.scrolly-p {
+  position: relative;
+  z-index: 99999;
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  margin: 40rem auto;
+  text-align: left;
+  border-radius: 5px;
+  -webkit-box-shadow: 0 3px 3px 1px rgba(0, 0, 0, 0.11);
+  box-shadow: 0 3px 3px 1px rgba(0, 0, 0, 0.11);
+  border: 1px solid #d0cccc;
+}
+.scrolly-p.first {
+  margin-top: -70vh;
+}
+.scrolly-p.last {
+  margin-bottom: 90vh;
+}
+.scrolly-p p {
+  padding: 1rem;
+}
+.enabled {
+  pointer-events: all;
+}
+.disabled {
+  pointer-events: none;
+}
+.stepImage {
+  position: absolute;
+  top: 0;
+  z-index: 9999999;
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+  height: 100%;
 }
 
 @media screen and (min-width: 769px) {

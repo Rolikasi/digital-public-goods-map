@@ -256,48 +256,13 @@ const alpha3 = {
   Zimbabwe: "ZWE",
 };
 
-function SearchBox() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const handleMouseOver = () => {
-    menuOpen ? null : setMenuOpen(true);
-  };
-  const handleMouseLeave = () => {
-    menuOpen ? setMenuOpen(false) : null;
-  };
-  const handleMenuClick = () => {
-    !menuOpen ? setMenuOpen(true) : null;
-  };
-  const handleMenuSelect = () => {
-    menuOpen ? setMenuOpen(false) : null;
-  };
-
-  return (
-    <div className="selectContainer">
-      <div
-        onClick={handleMenuClick}
-        onMouseOver={handleMouseOver}
-        onMouseLeave={handleMouseLeave}
-        id="dg-menu"
-      >
-        <span id="dg-menu-text">Select a digital good</span>{" "}
-        <span className={menuOpen ? "arrow up active" : "arrow down active"}></span>
-        <div
-          onClick={handleMenuSelect}
-          onMouseLeave={handleMouseLeave}
-          id="dg-menu-dropdown"
-          className={menuOpen ? "active" : ""}
-        ></div>
-      </div>
-    </div>
-  );
-}
-
 export default function Home() {
   const [countries, setCountries] = useState({});
   const [digitalGoods, setDigitalGoods] = useState([]);
   const [pathfinder, setPathfinder] = useState([]);
   const [pathfinderImplemented, setPathfinderImplemented] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [story, setStory] = useState([]);
 
   const options = {
     sheetId: process.env.NEXT_PUBLIC_SHEET,
@@ -326,6 +291,15 @@ export default function Home() {
     setCountries(c);
     setPathfinder(l);
     setPathfinderImplemented(z);
+  };
+
+  const addStory = (results) => {
+    // replace all //n //r, FALSE before setStory
+    for (let i = 0; i < results.length; i++) {
+      results[i].text = results[i].text.replace(/[\r\n]+/gm, " ");
+      results[i].image = results[i].image.replace("FALSE", false);
+    }
+    setStory(results);
   };
 
   const addGoodsCountries = (good, maxGoods, nomineeData) => {
@@ -424,6 +398,11 @@ export default function Home() {
       GSheetReader(options, (results) => {
         addCountries(results, "pathfinder");
       });
+      let options2 = options;
+      options2.sheetNumber = 3;
+      GSheetReader(options2, (results) => {
+        addStory(results);
+      });
     };
     fetchData();
   }, []);
@@ -431,12 +410,14 @@ export default function Home() {
   const MapComponent = dynamic(import("../components/mapComponent"), {
     ssr: false,
   });
+  // const ScrollyComp = dynamic(import("../components/scrollyComp"), {
+  //   ssr: false,
+  // });
 
   return (
     <div className="main">
       {!loaded && <img className="loader" src={dpgaLogo}></img>}
-      {loaded && <SearchBox />}
-      {loaded && console.log("goods", digitalGoods)}
+      {/* {loaded && story.length && <ScrollyComp story={story}/>} */}
       {loaded && (
         <MapComponent
           lon="-14"
@@ -445,6 +426,7 @@ export default function Home() {
           pathfinderCountries={pathfinder}
           pathfinderImplemented={pathfinderImplemented}
           digitalGoods={digitalGoods}
+          story={story}
         />
       )}
     </div>
