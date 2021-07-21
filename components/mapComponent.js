@@ -36,6 +36,7 @@ const Map = ReactMapboxGl({
   accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
   maxZoom: 6,
   minZoom: 0,
+  logoPosition: "bottom-right",
 });
 function SearchBox(props) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -208,10 +209,9 @@ export default function mapComponent(props) {
             zoom={[zoom]}
             // pitch={[30]} // pitch in degrees
             // bearing in degrees
-            containerStyle={{width: "100%", height: "100%", position: "unset"}}
+            containerStyle={{width: "100%", height: "100%", position: "absolute", top:0, right:0}}
             className={mapInteractive ? "enabled" : "disabled"}
             movingMethod="flyTo"
-            logoPosition="bottom-right"
             onMoveEnd={(map) => {
               setZoom(map.getZoom());
               setLonLat([map.getCenter().lng, map.getCenter().lat]);
@@ -496,7 +496,7 @@ export default function mapComponent(props) {
           </div>
         </InView>
         <div
-          className={selectedGood.name ? "map-overlay active" : "map-overlay"}
+          className={selectedGood.name && props.story[currentStepIndex].image == 'false'  ? "map-overlay active" : "map-overlay"}
           id="legend"
         >
           {legends.map((legend, index) => (
@@ -519,8 +519,6 @@ export default function mapComponent(props) {
           <span id="arrow-up" className="arrow up active" />
           <div id="hamburger" className="hamburger-icon">
             <div className="bar1"></div>
-            <div className="bar2"></div>
-            <div className="bar3"></div>
           </div>
           <span id="footer-text">Tap to see filters and info</span>
         </div>
