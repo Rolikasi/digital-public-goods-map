@@ -1,6 +1,6 @@
 <h1 align="center">Map Visualization of Digital Public Goods </br>Developments and Implementations</h1>
 
-This is a map of digital public goods with multiple dimentions.
+This is a map visualization of digital public goods with multiple dimentions.
 
 ## 🤔 Rationale
 
@@ -17,7 +17,7 @@ The above requirements were addressed with the following strategies:
 
 2. Map pulls set of JSONs from [publicgoods-candidates]('https://github.com/unicef/publicgoods-candidates')
 
-3. Data is displayed on a world map using Mapbox, and integrated on the React frontend through the [react-mapbox-gl](https://www.npmjs.com/package/react-mapbox-gl) bindings for [React GL JS](https://docs.mapbox.com/mapbox-gl-js/api/).
+3. Data is displayed on a world map using Mapbox, and integrated on the React frontend through the [react-mapbox-gl](https://www.npmjs.com/package/react-mapbox-gl) bindings for [Mapbox GL JS](https://docs.mapbox.com/mapbox-gl-js/api/).
 
 4. Each workstream is visualized in its own layer, whose visibility can be toggled individually. Overlapping layers use a combination of background colors with transparency and fill patterns (hardware and lines).
 
@@ -29,16 +29,20 @@ This webapp is built using [Next.js](https://nextjs.org/) as a React Framework a
 
 * `pages/_app.js` is the application entry point, which loads the required stylesheets and loads `index.js`
 * `pages/index.js` wraps most of the logic of the application:
-    - loads the data asynchronously from each of the 4 sheets of the referenced Google spreadsheet, and stores each dataset in its own React state variable, as well as combining them into a one single list.
-    - displays a fixed sidebar that displays on a drop down the list of countries from each workstream
+    - loads the data asynchronously from Google spreadsheet and https://github.com/unicef/publicgoods-candidates, and stores each dataset in its own React state variable, as well as combining them into a one single list.
+    - displays a loader and footer.
     - loads the MapComponent from `components/mapComponents.js`
-* `components/mapComponent.js` loads the Mapbox map, adds a layer for each dataset, programmatically creates a popup for each country, and programmatically build s a navbar menu to toggle the visibility of each layer
+* `components/mapComponent.js` loads the Mapbox map, adds a layer for each dataset, programmatically creates a popup for each country, searchBar menu to toggle the visibility of each layer of digitalpublic good, and creates filters for other layers of data.
 
 ## ✏️ Configuration
 
-In order to run this application, you need to open an account with [Mapbox](https://www.mapbox.com/) to obtain an *Access Token*. The following [environment variable](https://nextjs.org/docs/basic-features/environment-variables) need to be set in `.env` or `.env.local`:
+In order to run this application, you need to:
+- open an account with [Mapbox](https://www.mapbox.com/) to obtain an *Access Token*. 
+- Copy [google spreadsheet](https://docs.google.com/spreadsheets/d/1t75gYVhdUjPD1532DbPYN49FLXFhpRwEBFiS4Hbk6_Q) for this project and [set up](https://github.com/bpk68/g-sheets-api#readme) it so you can obtain sheets id.
+The following [environment variables](https://nextjs.org/docs/basic-features/environment-variables) need to be set in `.env` or `.env.local`:
 ```
 NEXT_PUBLIC_ACCESS_TOKEN="MAPBOX_ACCESS_TOKEN"
+NEXT_PUBLIC_SHEET="SHEET_ACCESS_TOKEN"
 ```
 
 ## 💻 Development Environment
