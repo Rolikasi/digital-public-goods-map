@@ -41,7 +41,7 @@ ul {
 .scroller {
   position: relative;
   z-index: 9999;
-  max-width: 30rem;
+  max-width: 19rem;
   margin: 0 auto;
 }
 .map-overlay {
@@ -241,6 +241,8 @@ ul#menu {
   border-width: 0 2px 2px 0;
   display: none;
   padding: 3px;
+  width: 0.5rem;
+  height: 0.5rem;
 }
 .up {
   transform: rotate(-135deg);
@@ -325,6 +327,12 @@ ul#menu {
   object-position: center;
   width: 100%;
   height: 100%;
+}
+.footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding-bottom: 1rem;
 }
 
 @media screen and (min-width: 769px) {

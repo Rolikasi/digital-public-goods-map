@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState} from "react";
 import ReactMapboxGl, {ZoomControl, MapContext} from "react-mapbox-gl";
 import mapboxgl from "mapbox-gl";
 import implementedpattern from "../public/implemented.svg";
@@ -7,6 +7,7 @@ import webSymbol from "../public/globe.png";
 import ghLogo from "../public/github.png";
 import {Scrollama, Step} from "react-scrollama";
 import {InView} from "react-intersection-observer";
+import SearchBox from "./searchBox";
 
 const legends = ["where it was developed", "where it was implemented"];
 const colors = ["#FF952A", "#d4d4ec"];
@@ -38,55 +39,7 @@ const Map = ReactMapboxGl({
   minZoom: 0,
   logoPosition: "bottom-right",
 });
-function SearchBox(props) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [searchText, setSearchText] = useState("Select a digital good");
-  const handleMouseOver = () => {
-    menuOpen ? null : setMenuOpen(true);
-  };
-  const handleMouseLeave = () => {
-    menuOpen ? setMenuOpen(false) : null;
-  };
-  const handleMenuClick = () => {
-    !menuOpen ? setMenuOpen(true) : null;
-  };
-  const handleMenuSelect = () => {
-    menuOpen ? setMenuOpen(false) : null;
-  };
-  const handleSelect = (item, event) => {
-    event.preventDefault();
-    // Here, we invoke the callback with the new value
-    console.log("clicked good!", item);
-    setSearchText(item.name);
-    props.onChange(item);
-  };
 
-  return (
-    <div className="selectContainer">
-      <div
-        onClick={handleMenuClick}
-        onMouseOver={handleMouseOver}
-        onMouseLeave={handleMouseLeave}
-        id="dg-menu"
-      >
-        <span id="dg-menu-text">{searchText}</span>{" "}
-        <span className={menuOpen ? "arrow up active" : "arrow down active"}></span>
-        <div
-          onClick={handleMenuSelect}
-          onMouseLeave={handleMouseLeave}
-          id="dg-menu-dropdown"
-          className={menuOpen ? "active" : ""}
-        >
-          {props.goods.map((item, index) => (
-            <a key={item.name + index} href="#" onClick={(e) => handleSelect(item, e)}>
-              {item.name}
-            </a>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 export default function mapComponent(props) {
   const [zoom, setZoom] = useState(zoomDefault);
   const [lonLat, setLonLat] = useState([props.lon, props.lat]);
@@ -104,6 +57,7 @@ export default function mapComponent(props) {
   // const [isActive, setActive] = useState(false);
   const [sdgs, setSdgs] = useState([...sdgsDefault]);
   const [mapInteractive, setMapInteractive] = useState(false);
+  const [menuInView, setMenuInView] = useState(false);
 
   // scrollama states
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -133,18 +87,8 @@ export default function mapComponent(props) {
     setOpenCountries((prevState) => ({...prevState, [type]: !prevState[type]}));
   };
 
-  const isElementInViewport = (el) => {
-    var rect = el.getBoundingClientRect();
-
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-  };
   const scrollHandle = () => {
-    if (!isElementInViewport(document.getElementById("menu"))) {
+    if (menuInView) {
       document.getElementById("menu").scrollIntoView({
         behavior: "smooth",
         block: "center",
@@ -155,8 +99,8 @@ export default function mapComponent(props) {
   const parseURLs = (text) => {
     const url = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi;
     let urls = text.match(url);
-    return urls.map((i) => (
-      <a href={i} target="_blank" rel="noreferrer">
+    return urls.map((url, index) => (
+      <a key={url + index} href={url} target="_blank" rel="noreferrer">
         Link to evidence
       </a>
     ));
@@ -173,23 +117,7 @@ export default function mapComponent(props) {
     e.stopPropagation();
     setVisibleLayer((prevState) => ({...prevState, [layer]: !prevState[layer]}));
   };
-  useEffect(() => {
-    window.onscroll = () => {
-      if (!document.getElementById("menu")) {
-        return;
-      }
-      if (isElementInViewport(document.getElementById("menu"))) {
-        document.getElementById("footer-text").textContent = "";
-        document.getElementById("hamburger").classList.add("active");
-        document.getElementById("arrow-up").classList.remove("active");
-      } else {
-        document.getElementById("footer-text").textContent =
-          "Tap to see filters and info";
-        document.getElementById("hamburger").classList.remove("active");
-        document.getElementById("arrow-up").classList.add("active");
-      }
-    };
-  }, []);
+
   return (
     <div>
       <div className="map">
@@ -200,16 +128,26 @@ export default function mapComponent(props) {
             height: "100vh",
           }}
         >
-          <SearchBox goods={props.digitalGoods} onChange={handleChangeSearchbox} />
-          {console.log('check story', props.story)}
-          {props.story.length && props.story[currentStepIndex].image != 'false' && <img className='stepImage' src={props.story[currentStepIndex].image}/>}
-          <Map 
+          {mapInteractive && (
+            <SearchBox goods={props.digitalGoods} onChange={handleChangeSearchbox} />
+          )}
+          {console.log("check story", props.story)}
+          {props.story.length && props.story[currentStepIndex].image != "false" && (
+            <img className="stepImage" src={props.story[currentStepIndex].image} />
+          )}
+          <Map
             style="mapbox://styles/rolikasi/ckn67a95j022m17mcqog82g05"
             center={lonLat}
             zoom={[zoom]}
             // pitch={[30]} // pitch in degrees
             // bearing in degrees
-            containerStyle={{width: "100%", height: "100%", position: "absolute", top:0, right:0}}
+            containerStyle={{
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+              top: 0,
+              right: 0,
+            }}
             className={mapInteractive ? "enabled" : "disabled"}
             movingMethod="flyTo"
             onMoveEnd={(map) => {
@@ -231,209 +169,229 @@ export default function mapComponent(props) {
               console.log("firstSymbolId", firstSymbolId);
               //add layer for each good with map
               props.digitalGoods.map((good) => {
-                map.addLayer(
-                  {
-                    id: good.name + "-develop",
-                    source: {
-                      type: "vector",
-                      url: "mapbox://rolikasi.2kn4jvyh",
+                // check if layer is already created
+                if (map.getLayer(good.name + "-develop")) {
+                  console.log(good.name + " is layer already created");
+                  return;
+                } else {
+                  map.addLayer(
+                    {
+                      id: good.name + "-develop",
+                      source: {
+                        type: "vector",
+                        url: "mapbox://rolikasi.2kn4jvyh",
+                      },
+                      "source-layer": "ne_10m_admin_0_countries-dxlasx",
+                      type: "fill",
+                      paint: {
+                        // 'fill-color': '#db3d44', // this is the color you want your tileset to have (red)
+                        "fill-pattern": "hardware-15", //this helps us distinguish individual countries a bit better by giving them an outline
+                      },
                     },
-                    "source-layer": "ne_10m_admin_0_countries-dxlasx",
-                    type: "fill",
-                    paint: {
-                      // 'fill-color': '#db3d44', // this is the color you want your tileset to have (red)
-                      "fill-pattern": "hardware-15", //this helps us distinguish individual countries a bit better by giving them an outline
-                    },
-                  },
-                  firstSymbolId
-                );
-                map.setLayoutProperty(good.name + "-develop", "visibility", "none");
+                    firstSymbolId
+                  );
+                  map.setLayoutProperty(good.name + "-develop", "visibility", "none");
 
-                map.setFilter(
-                  good.name + "-develop",
-                  ["in", "ADM0_A3_IS"].concat(
-                    Object.keys(good.locations.developmentCountries)
-                  )
-                ); // This line lets us filter by country codes.
+                  map.setFilter(
+                    good.name + "-develop",
+                    ["in", "ADM0_A3_IS"].concat(
+                      Object.keys(good.locations.developmentCountries)
+                    )
+                  ); // This line lets us filter by country codes.
 
-                map.addLayer(
-                  {
-                    id: good.name + "-deploy",
-                    source: {
-                      type: "vector",
-                      url: "mapbox://rolikasi.2kn4jvyh",
+                  map.addLayer(
+                    {
+                      id: good.name + "-deploy",
+                      source: {
+                        type: "vector",
+                        url: "mapbox://rolikasi.2kn4jvyh",
+                      },
+                      "source-layer": "ne_10m_admin_0_countries-dxlasx",
+                      type: "fill",
+                      paint: {
+                        // 'fill-color': '#db3d44', // this is the color you want your tileset to have (red)
+                        "fill-color": "#3333AB", //this helps us distinguish individual countries a bit better by giving them an outline
+                        "fill-opacity": 0.2,
+                      },
                     },
-                    "source-layer": "ne_10m_admin_0_countries-dxlasx",
-                    type: "fill",
-                    paint: {
-                      // 'fill-color': '#db3d44', // this is the color you want your tileset to have (red)
-                      "fill-color": "#3333AB", //this helps us distinguish individual countries a bit better by giving them an outline
-                      "fill-opacity": 0.2,
-                    },
-                  },
-                  firstSymbolId
-                );
-                map.setLayoutProperty(good.name + "-deploy", "visibility", "none");
+                    firstSymbolId
+                  );
+                  map.setLayoutProperty(good.name + "-deploy", "visibility", "none");
 
-                map.setFilter(
-                  good.name + "-deploy",
-                  ["in", "ADM0_A3_IS"].concat(
-                    Object.keys(good.locations.deploymentCountries)
-                  )
-                ); // This line lets us filter by country codes.
+                  map.setFilter(
+                    good.name + "-deploy",
+                    ["in", "ADM0_A3_IS"].concat(
+                      Object.keys(good.locations.deploymentCountries)
+                    )
+                  ); // This line lets us filter by country codes.
+                }
               });
 
               // Declare the image
+              if (map.getLayer("DPG Pathfinders")) {
+                console.log("DPG Pathfinders is layer already created");
+                return;
+              } else {
+                let pathimg = new Image(20, 20);
+                pathimg.onload = () => map.addImage("pathfinders-pattern", pathimg);
+                pathimg.src = pathpattern;
 
-              let pathimg = new Image(20, 20);
-              pathimg.onload = () => map.addImage("pathfinders-pattern", pathimg);
-              pathimg.src = pathpattern;
-
-              // Use it
-              map.addLayer(
-                {
-                  // adding a layer containing the tileset with country boundaries
-                  id: "DPG Pathfinders", //this is the name of our layer, which we will need later
-                  source: {
-                    type: "vector",
-                    url: "mapbox://rolikasi.2kn4jvyh",
+                // Use it
+                map.addLayer(
+                  {
+                    // adding a layer containing the tileset with country boundaries
+                    id: "DPG Pathfinders", //this is the name of our layer, which we will need later
+                    source: {
+                      type: "vector",
+                      url: "mapbox://rolikasi.2kn4jvyh",
+                    },
+                    "source-layer": "ne_10m_admin_0_countries-dxlasx",
+                    type: "fill",
+                    paint: {
+                      "fill-pattern": "pathfinders-pattern",
+                      "fill-opacity": 0.5,
+                    },
                   },
-                  "source-layer": "ne_10m_admin_0_countries-dxlasx",
-                  type: "fill",
-                  paint: {
-                    "fill-pattern": "pathfinders-pattern",
-                    "fill-opacity": 0.5,
-                  },
-                },
-                firstSymbolId
-              );
-
-              map.setFilter(
-                "DPG Pathfinders",
-                ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderCountries))
-              ); // This line lets us filter by country codes.
-              console.log("path", Object.keys(props.pathfinderCountries));
-
-              // Declare the image
-              let implementedimg = new Image(20, 20);
-              implementedimg.onload = () =>
-                map.addImage("implemented-pattern", implementedimg);
-              implementedimg.src = implementedpattern;
-
-              // Use it
-              map.addLayer(
-                {
-                  // adding a layer containing the tileset with country boundaries
-                  id: "DPG Implemented", //this is the name of our layer, which we will need later
-                  source: {
-                    type: "vector",
-                    url: "mapbox://rolikasi.2kn4jvyh",
-                  },
-                  "source-layer": "ne_10m_admin_0_countries-dxlasx",
-                  type: "fill",
-                  paint: {
-                    "fill-pattern": "implemented-pattern",
-                    "fill-opacity": 0.5,
-                  },
-                },
-                firstSymbolId
-              );
-
-              map.setFilter(
-                "DPG Implemented",
-                ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderImplemented))
-              ); // This line lets us filter by country codes.
-
-              map.addLayer(
-                {
-                  // adding a layer containing the tileset with country boundaries
-                  id: "countries", //this is the name of our layer, which we will need later
-                  source: {
-                    type: "vector",
-                    url: "mapbox://rolikasi.2kn4jvyh",
-                  },
-                  "source-layer": "ne_10m_admin_0_countries-dxlasx",
-                  type: "fill",
-                  paint: {
-                    "fill-color": "white", //this helps us distinguish individual countries a bit better by giving them an outline
-                    "fill-opacity": 0,
-                  },
-                },
-                firstSymbolId
-              );
-
-              map.setFilter(
-                "countries",
-                ["in", "ADM0_A3_IS"].concat(Object.keys(props.countries))
-              ); // This line lets us filter by country codes.
-              console.log("all Layers", map.getStyle().layers);
-              map.on("click", "countries", function (mapElement) {
-                const countryCode = mapElement.features[0].properties.ADM0_A3_IS; // Grab the country code from the map properties.
-
-                let deployments = props.digitalGoods.filter((good) =>
-                  Object.keys(good.locations.deploymentCountries).includes(countryCode)
+                  firstSymbolId
                 );
-                let developments = props.digitalGoods.filter((good) =>
-                  Object.keys(good.locations.developmentCountries).includes(countryCode)
+
+                map.setFilter(
+                  "DPG Pathfinders",
+                  ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderCountries))
+                ); // This line lets us filter by country codes.
+              }
+
+              if (map.getLayer("DPG Implemented")) {
+                console.log("DPG Implemented layer is already created");
+                return;
+              } else {
+                // Declare the image
+                let implementedimg = new Image(20, 20);
+                implementedimg.onload = () =>
+                  map.addImage("implemented-pattern", implementedimg);
+                implementedimg.src = implementedpattern;
+
+                // Use it
+                map.addLayer(
+                  {
+                    // adding a layer containing the tileset with country boundaries
+                    id: "DPG Implemented", //this is the name of our layer, which we will need later
+                    source: {
+                      type: "vector",
+                      url: "mapbox://rolikasi.2kn4jvyh",
+                    },
+                    "source-layer": "ne_10m_admin_0_countries-dxlasx",
+                    type: "fill",
+                    paint: {
+                      "fill-pattern": "implemented-pattern",
+                      "fill-opacity": 0.5,
+                    },
+                  },
+                  firstSymbolId
                 );
-                let countryName = "";
-                let deployHtml = "";
-                let developHtml = "";
-                let pathHtml = "";
-                if (deployments.length > 0) {
-                  console.log(deployments);
-                  countryName = deployments[0].locations.deploymentCountries[countryCode];
-                  deployHtml += "<ul><b>" + deployments.length + " Goods deployed:</b>";
-                  deployments.map((d) => {
-                    deployHtml += "<li>" + d.name + "</li>";
-                  });
-                  deployHtml += "</ul>";
-                }
 
-                if (developments.length > 0) {
-                  countryName =
-                    developments[0].locations.developmentCountries[countryCode];
-                  developHtml +=
-                    "<ul><b>" + developments.length + " Goods developed:</b>";
-                  developments.map((d) => {
-                    developHtml += "<li>" + d.name + "</li>";
-                  });
-                  developHtml += "</ul>";
-                }
+                map.setFilter(
+                  "DPG Implemented",
+                  ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderImplemented))
+                ); // This line lets us filter by country codes.
+              }
+              console.log('map.getLayer("countries")', map.getLayer("countries"));
+              if (map.getLayer("countries")) {
+                console.log("countries layer is already created");
+                return;
+              } else {
+                map.addLayer(
+                  {
+                    // adding a layer containing the tileset with country boundaries
+                    id: "countries", //this is the name of our layer, which we will need later
+                    source: {
+                      type: "vector",
+                      url: "mapbox://rolikasi.2kn4jvyh",
+                    },
+                    "source-layer": "ne_10m_admin_0_countries-dxlasx",
+                    type: "fill",
+                    paint: {
+                      "fill-color": "white", //this helps us distinguish individual countries a bit better by giving them an outline
+                      "fill-opacity": 0,
+                    },
+                  },
+                  firstSymbolId
+                );
 
-                if (props.countries[countryCode].pathfinder) {
-                  countryName = props.countries[countryCode].pathfinder.country;
-                  pathHtml = "✅&nbsp;&nbsp;DPG Pathfinder Country<br/>";
-                  pathHtml += "<ul>";
-                  pathHtml +=
-                    "<li><b>Status:</b> " +
-                    props.countries[countryCode].pathfinder.status +
-                    "</li>";
-                  if (props.countries[countryCode].pathfinder.sector) {
-                    pathHtml +=
-                      "<li><b>Sector:</b> " +
-                      props.countries[countryCode].pathfinder.sector +
-                      "</li>";
+                map.setFilter(
+                  "countries",
+                  ["in", "ADM0_A3_IS"].concat(Object.keys(props.countries))
+                ); // This line lets us filter by country codes.
+
+                map.on("click", "countries", function (mapElement) {
+                  const countryCode = mapElement.features[0].properties.ADM0_A3_IS; // Grab the country code from the map properties.
+
+                  let deployments = props.digitalGoods.filter((good) =>
+                    Object.keys(good.locations.deploymentCountries).includes(countryCode)
+                  );
+                  let developments = props.digitalGoods.filter((good) =>
+                    Object.keys(good.locations.developmentCountries).includes(countryCode)
+                  );
+                  let countryName = "";
+                  let deployHtml = "";
+                  let developHtml = "";
+                  let pathHtml = "";
+                  if (deployments.length > 0) {
+                    console.log(deployments);
+                    countryName =
+                      deployments[0].locations.deploymentCountries[countryCode];
+                    deployHtml += "<ul><b>" + deployments.length + " Goods deployed:</b>";
+                    deployments.map((d) => {
+                      deployHtml += "<li>" + d.name + "</li>";
+                    });
+                    deployHtml += "</ul>";
                   }
-                  if (props.countries[countryCode].pathfinder.comments) {
-                    pathHtml +=
-                      "<li><b>Comments:</b> " +
-                      props.countries[countryCode].pathfinder.comments +
-                      "</li>";
-                  }
-                  pathHtml += "</ul>";
-                }
 
-                var html = `<h3>${countryName}</h3>
+                  if (developments.length > 0) {
+                    countryName =
+                      developments[0].locations.developmentCountries[countryCode];
+                    developHtml +=
+                      "<ul><b>" + developments.length + " Goods developed:</b>";
+                    developments.map((d) => {
+                      developHtml += "<li>" + d.name + "</li>";
+                    });
+                    developHtml += "</ul>";
+                  }
+
+                  if (props.countries[countryCode].pathfinder) {
+                    countryName = props.countries[countryCode].pathfinder.country;
+                    pathHtml = "✅&nbsp;&nbsp;DPG Pathfinder Country<br/>";
+                    pathHtml += "<ul>";
+                    pathHtml +=
+                      "<li><b>Status:</b> " +
+                      props.countries[countryCode].pathfinder.status +
+                      "</li>";
+                    if (props.countries[countryCode].pathfinder.sector) {
+                      pathHtml +=
+                        "<li><b>Sector:</b> " +
+                        props.countries[countryCode].pathfinder.sector +
+                        "</li>";
+                    }
+                    if (props.countries[countryCode].pathfinder.comments) {
+                      pathHtml +=
+                        "<li><b>Comments:</b> " +
+                        props.countries[countryCode].pathfinder.comments +
+                        "</li>";
+                    }
+                    pathHtml += "</ul>";
+                  }
+
+                  var html = `<h3>${countryName}</h3>
     				${pathHtml}
             ${deployHtml}
             ${developHtml}`;
 
-                new mapboxgl.Popup() //Create a new popup
-                  .setLngLat(mapElement.lngLat) // Set where we want it to appear (where we clicked)
-                  .setHTML(html) // Add the HTML we just made to the popup
-                  .addTo(map); // Add the popup to the map
-              });
+                  new mapboxgl.Popup() //Create a new popup
+                    .setLngLat(mapElement.lngLat) // Set where we want it to appear (where we clicked)
+                    .setHTML(html) // Add the HTML we just made to the popup
+                    .addTo(map); // Add the popup to the map
+                });
+              }
             }}
           >
             <ZoomControl />
@@ -496,7 +454,11 @@ export default function mapComponent(props) {
           </div>
         </InView>
         <div
-          className={selectedGood.name && props.story[currentStepIndex].image == 'false'  ? "map-overlay active" : "map-overlay"}
+          className={
+            selectedGood.name && props.story[currentStepIndex].image == "false"
+              ? "map-overlay active"
+              : "map-overlay"
+          }
           id="legend"
         >
           {legends.map((legend, index) => (
@@ -516,38 +478,43 @@ export default function mapComponent(props) {
       </div>
       <div>
         <div className="controls" onClick={scrollHandle}>
-          <span id="arrow-up" className="arrow up active" />
-          <div id="hamburger" className="hamburger-icon">
+          <span id="arrow-up" className={menuInView ? "arrow up active" : "arrow up"} />
+          <div
+            id="hamburger"
+            className={menuInView ? "hamburger-icon" : "hamburger-icon active"}
+          >
             <div className="bar1"></div>
           </div>
-          <span id="footer-text">Tap to see filters and info</span>
+          <span>{menuInView ? "Tap to see filters and info" : ""}</span>
         </div>
-        <ul id="menu">
-          {toggleableLayers.map((layer, index) => (
-            <li
-              id={layer}
-              key={layer + index}
-              onClick={(e) => handleLayerToggle(e, layer)}
-            >
-              <span>{visibleLayer[layer] ? layer : ""}</span>
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className={layer + (visibleLayer[layer] ? " active" : "")}
-                style={
-                  visibleLayer[layer]
-                    ? {
-                        backgroundImage:
-                          index == 0 ? "url(pathfinders.svg)" : "url(implemented.svg)",
-                      }
-                    : {backgroundImage: "none"}
-                }
+        <InView as="div" onChange={(inView) => setMenuInView(!inView)}>
+          <ul id="menu">
+            {toggleableLayers.map((layer, index) => (
+              <li
+                id={layer}
+                key={layer + index}
+                onClick={(e) => handleLayerToggle(e, layer)}
               >
-                {visibleLayer[layer] ? "" : layer}
-              </a>
-            </li>
-          ))}
-        </ul>
+                <span>{visibleLayer[layer] ? layer : ""}</span>
+                <a
+                  href="#"
+                  onClick={(e) => e.preventDefault()}
+                  className={layer + (visibleLayer[layer] ? " active" : "")}
+                  style={
+                    visibleLayer[layer]
+                      ? {
+                          backgroundImage:
+                            index == 0 ? "url(pathfinders.svg)" : "url(implemented.svg)",
+                        }
+                      : {backgroundImage: "none"}
+                  }
+                >
+                  {visibleLayer[layer] ? "" : layer}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </InView>
         {Object.keys(selectedGood).length != 0 && (
           <div className="infoGood">
             <div className="goodContainer">

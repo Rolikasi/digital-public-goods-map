@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import React, {useState, useEffect} from "react";
 import GSheetReader from "g-sheets-api";
 import dpgaLogo from "../public/logo.svg";
+import Footer from "../components/footer";
 
 const alpha3 = {
   Aruba: "ABW",
@@ -410,9 +411,6 @@ export default function Home() {
   const MapComponent = dynamic(import("../components/mapComponent"), {
     ssr: false,
   });
-  // const ScrollyComp = dynamic(import("../components/scrollyComp"), {
-  //   ssr: false,
-  // });
 
   return (
     <div className="main">
@@ -429,6 +427,9 @@ export default function Home() {
           story={story}
         />
       )}
+      {loaded && 
+      <Footer />
+}
     </div>
   );
 }
