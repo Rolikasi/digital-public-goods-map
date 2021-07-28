@@ -11,8 +11,8 @@ import SearchBox from "./searchBox";
 
 const legends = ["where it was developed", "where it was implemented"];
 const colors = ["#FF952A", "#d4d4ec"];
-const toggleableLayers = ["DPG Pathfinders", "DPG Implemented"];
 const zoomDefault = 2;
+const pitchDefault = 0;
 const sdgsDefault = [
   {name: "1. No Poverty", open: false},
   {name: "2. Zero Hunger", open: false},
@@ -35,15 +35,16 @@ const sdgsDefault = [
 
 const Map = ReactMapboxGl({
   accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
-  maxZoom: 6,
+  maxZoom: 9,
   minZoom: 0,
   logoPosition: "bottom-right",
+  pitchWithRotate: false,
 });
 
 export default function mapComponent(props) {
   const [zoom, setZoom] = useState(zoomDefault);
   const [lonLat, setLonLat] = useState([props.lon, props.lat]);
-  // const [lonLatMarker, setLonLatMarker] = useState([props.lon, props.lat]);
+  const [pitch, setPitch] = useState(pitchDefault);
   const [selectedGood, setSelectedGood] = useState({});
   const [prevGood, setPrevGood] = useState({});
   const [openCountries, setOpenCountries] = useState({
@@ -51,10 +52,10 @@ export default function mapComponent(props) {
     deployment: false,
   });
   const [visibleLayer, setVisibleLayer] = useState({
-    "DPG Pathfinders": true,
-    "DPG Implemented": true,
+    "DPG Pathfinders": false,
+    "DPG Implemented": false,
+    'polygons': false,
   });
-  // const [isActive, setActive] = useState(false);
   const [sdgs, setSdgs] = useState([...sdgsDefault]);
   const [mapInteractive, setMapInteractive] = useState(false);
   const [menuInView, setMenuInView] = useState(false);
@@ -115,6 +116,9 @@ export default function mapComponent(props) {
   const handleLayerToggle = (e, layer) => {
     e.preventDefault();
     e.stopPropagation();
+    if (layer == "polygons") {
+      pitch > 0 ? setPitch(0) : setPitch(60);
+    }
     setVisibleLayer((prevState) => ({...prevState, [layer]: !prevState[layer]}));
   };
 
@@ -139,7 +143,7 @@ export default function mapComponent(props) {
             style="mapbox://styles/rolikasi/ckn67a95j022m17mcqog82g05"
             center={lonLat}
             zoom={[zoom]}
-            // pitch={[30]} // pitch in degrees
+            pitch={pitch} // pitch in degrees
             // bearing in degrees
             containerStyle={{
               width: "100%",
@@ -151,9 +155,16 @@ export default function mapComponent(props) {
             className={mapInteractive ? "enabled" : "disabled"}
             movingMethod="flyTo"
             onMoveEnd={(map) => {
-              setZoom(map.getZoom());
               setLonLat([map.getCenter().lng, map.getCenter().lat]);
-              console.log(map.getCenter().lng, map.getCenter().lat, map.getZoom());
+              console.log(map.getCenter().lng, map.getCenter().lat);
+            }}
+            onZoomEnd={(map) => {
+              setZoom(map.getZoom());
+              console.log("zoom", map.getZoom());
+            }}
+            onPitchEnd={(map) => {
+              setPitch(map.getPitch());
+              console.log("pitch", map.getPitch());
             }}
             onStyleLoad={(map) => {
               console.log("story", props.story);
@@ -167,6 +178,7 @@ export default function mapComponent(props) {
                 }
               }
               console.log("firstSymbolId", firstSymbolId);
+              console.log("devpolygons", props.devPolygons);
               //add layer for each good with map
               props.digitalGoods.map((good) => {
                 // check if layer is already created
@@ -251,6 +263,9 @@ export default function mapComponent(props) {
                       "fill-pattern": "pathfinders-pattern",
                       "fill-opacity": 0.5,
                     },
+                    layout: {
+                      'visibility':'none'
+                    },
                   },
                   firstSymbolId
                 );
@@ -285,6 +300,9 @@ export default function mapComponent(props) {
                     paint: {
                       "fill-pattern": "implemented-pattern",
                       "fill-opacity": 0.5,
+                    },
+                    layout: {
+                      'visibility':'none'
                     },
                   },
                   firstSymbolId
@@ -323,6 +341,57 @@ export default function mapComponent(props) {
                   ["in", "ADM0_A3_IS"].concat(Object.keys(props.countries))
                 ); // This line lets us filter by country codes.
 
+                // Add 3d layer with extrudes
+                map.addSource("developments-polygons-source", {
+                  type: "geojson",
+                  data: props.devPolygons,
+                });
+                map.addSource("deployments-polygons-source", {
+                  type: "geojson",
+                  data: props.depPolygons,
+                });
+
+                map.addLayer({
+                  id: "developments-polygons",
+                  source: "developments-polygons-source",
+                  type: "fill-extrusion",
+                  paint: {
+                    "fill-extrusion-color": "red",
+                    "fill-extrusion-height": ["get", "height"],
+                    "fill-extrusion-base": ["get", "base"],
+                  },
+                  layout: {
+                    'visibility':'none'
+                  },
+                });
+
+                map.addLayer({
+                  id: "deployments-polygons",
+                  source: "deployments-polygons-source",
+                  type: "fill-extrusion",
+                  paint: {
+                    "fill-extrusion-color": "blue",
+                    "fill-extrusion-height": ["get", "height"],
+                    "fill-extrusion-base": ["get", "base"],
+                  },
+                  layout: {
+                    'visibility':'none'
+                  },
+                });
+                ["deployments", "developments"].map((layer) =>
+                  map.addLayer({
+                    id: `${layer}-text`,
+                    source: `${layer}-polygons-source`,
+                    type: "symbol",
+                    layout: {
+                      "text-field": ["get", "text-field"],
+                      "text-size": ["interpolate", ["linear"], ["zoom"], 4, 0, 5, 16],
+                      'visibility': 'none',
+                    },
+                    
+                  })
+                );
+                console.log("all layers:", map.getStyle());
                 map.on("click", "countries", function (mapElement) {
                   const countryCode = mapElement.features[0].properties.ADM0_A3_IS; // Grab the country code from the map properties.
 
@@ -399,13 +468,31 @@ export default function mapComponent(props) {
             <MapContext.Consumer>
               {(map) => {
                 Object.keys(visibleLayer).map((layer) => {
-                  map.getLayer(layer)
-                    ? map.setLayoutProperty(
-                        layer,
-                        "visibility",
-                        visibleLayer[layer] ? "visible" : "none"
-                      )
-                    : null;
+                  console.log("toggle ", layer, " visibility");
+                  if (layer == "polygons") {
+                    [
+                      "deployments-polygons",
+                      "developments-polygons",
+                      "deployments-text",
+                      "developments-text",
+                    ].map((polygonLayer) => {
+                      map.getLayer(polygonLayer)
+                        ? map.setLayoutProperty(
+                            polygonLayer,
+                            "visibility",
+                            visibleLayer[layer] ? "visible" : "none"
+                          )
+                        : null;
+                    });
+                  } else {
+                    map.getLayer(layer)
+                      ? map.setLayoutProperty(
+                          layer,
+                          "visibility",
+                          visibleLayer[layer] ? "visible" : "none"
+                        )
+                      : null;
+                  }
                 });
                 if (selectedGood.name) {
                   console.log("toggle selected good visibility");
@@ -489,7 +576,7 @@ export default function mapComponent(props) {
         </div>
         <InView as="div" onChange={(inView) => setMenuInView(!inView)}>
           <ul id="menu">
-            {toggleableLayers.map((layer, index) => (
+            {Object.keys(visibleLayer).map((layer, index) => (
               <li
                 id={layer}
                 key={layer + index}

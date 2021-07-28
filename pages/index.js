@@ -3,6 +3,8 @@ import React, {useState, useEffect} from "react";
 import GSheetReader from "g-sheets-api";
 import dpgaLogo from "../public/logo.svg";
 import Footer from "../components/footer";
+import developmentPolygons from "../public/polygons-developments.geojson";
+import deploymentPolygons from "../public/polygons-deployments.geojson";
 
 const alpha3 = {
   Aruba: "ABW",
@@ -264,6 +266,9 @@ export default function Home() {
   const [pathfinderImplemented, setPathfinderImplemented] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [story, setStory] = useState([]);
+  const [devPolygons, setDevPolygons] = useState({});
+  const [depPolygons, setDepPolygons] = useState({});
+
 
   const options = {
     sheetId: process.env.NEXT_PUBLIC_SHEET,
@@ -347,6 +352,27 @@ export default function Home() {
     setDigitalGoods((digitalGoods) => {
       if ([...digitalGoods, good].length == maxGoods) {
         setLoaded(true);
+        // set development polygons based on amount of goods developed in each country
+        developmentPolygons["features"].map((el) => {
+          el.properties["text-field"] = digitalGoods.filter((good) =>
+            Object.keys(good.locations.developmentCountries).includes(el.properties.iso)
+          ).length.toString();
+          el.properties["height"] = parseFloat(el.properties["text-field"]) * 10000;
+          el.properties["base"] = el.properties["height"] == 0 ? 999999999999 : 0;
+          el.properties["height"] += el.properties["height"] == 0 ? 999999999999 : 0;
+        });
+        setDevPolygons(developmentPolygons);
+        // set deployment polygons based on amount of goods deployed in each country
+        deploymentPolygons["features"].map((el) => {
+          el.properties["text-field"] = digitalGoods.filter((good) =>
+            Object.keys(good.locations.deploymentCountries).includes(el.properties.iso)
+          ).length.toString();
+          el.properties["height"] = parseFloat(el.properties["text-field"]) * 10000;
+          el.properties["base"] = el.properties["height"] == 0 ? 999999999999 : 0;
+          el.properties["height"] += el.properties["height"] == 0 ? 999999999999 : 0;
+          el.properties["offset"] = [0, -parseInt(el.properties["text-field"])]
+        });
+        setDepPolygons(deploymentPolygons);
       }
       return [...digitalGoods, good];
     });
@@ -425,11 +451,11 @@ export default function Home() {
           pathfinderImplemented={pathfinderImplemented}
           digitalGoods={digitalGoods}
           story={story}
+          devPolygons={devPolygons}
+          depPolygons={depPolygons}
         />
       )}
-      {loaded && 
-      <Footer />
-}
+      {loaded && <Footer />}
     </div>
   );
 }
