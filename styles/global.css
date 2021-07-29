@@ -82,6 +82,7 @@ ul {
   padding: 0;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
 }
 
@@ -93,7 +94,7 @@ ul#menu {
 #menu li {
   float: left;
   width: 8.5rem;
-  margin: 0 0.5rem;
+  margin: 0.5rem 0.5rem;
 }
 
 #menu a {
@@ -114,17 +115,23 @@ ul#menu {
   text-align: center;
   cursor: pointer;
 }
-#menu a.Implemented {
+#menu a.Confirmed {
   border: 2px solid rgba(42, 168, 168, 0.5);
 }
-#menu a.Pathfinders {
+#menu a.Exploratory {
   border: 2px solid rgba(240, 96, 118, 0.5);
 }
+#menu a.deployed {
+  border: 2px solid #3333ab50;
+}
+#menu a.developed {
+  border: 2px solid #ff952a4b;
+}
 
-#menu a.active.Implemented {
+#menu a.active.Confirmed {
   border: 2px solid #2aa8a8;
 }
-#menu a.active.Pathfinders {
+#menu a.active.Exploratory {
   border: 2px solid #f06076;
 }
 
