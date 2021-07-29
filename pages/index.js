@@ -370,7 +370,6 @@ export default function Home() {
           el.properties["height"] = parseFloat(el.properties["text-field"]) * 10000;
           el.properties["base"] = el.properties["height"] == 0 ? 999999999999 : 0;
           el.properties["height"] += el.properties["height"] == 0 ? 999999999999 : 0;
-          el.properties["offset"] = [0, -parseInt(el.properties["text-field"])]
         });
         setDepPolygons(deploymentPolygons);
       }

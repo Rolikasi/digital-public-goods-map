@@ -3,6 +3,7 @@ import ReactMapboxGl, {ZoomControl, MapContext} from "react-mapbox-gl";
 import mapboxgl from "mapbox-gl";
 import implementedpattern from "../public/implemented.svg";
 import pathpattern from "../public/pathfinders.svg";
+import hardwarePattern from "../public/hardware.svg";
 import webSymbol from "../public/globe.png";
 import ghLogo from "../public/github.png";
 import {Scrollama, Step} from "react-scrollama";
@@ -10,6 +11,20 @@ import {InView} from "react-intersection-observer";
 import SearchBox from "./searchBox";
 
 const legends = ["where it was developed", "where it was implemented"];
+const buttonStyles = {
+  "Pathfinders Exploratory": {
+    backgroundImage: "url(pathfinders.svg)"
+  },
+  "Pathfinders Confirmed": {
+    backgroundImage: "url(implemented.svg)"
+  },
+  "DPGs developed": {
+    backgroundColor: "#FF952A",
+  },
+  "DPGs deployed":{
+    backgroundColor: "#3333AB",
+  },
+}
 const colors = ["#FF952A", "#d4d4ec"];
 const zoomDefault = 2;
 const pitchDefault = 0;
@@ -44,7 +59,7 @@ const Map = ReactMapboxGl({
 export default function mapComponent(props) {
   const [zoom, setZoom] = useState(zoomDefault);
   const [lonLat, setLonLat] = useState([props.lon, props.lat]);
-  const [pitch, setPitch] = useState(pitchDefault);
+  // const [pitch, setPitch] = useState(pitchDefault);
   const [selectedGood, setSelectedGood] = useState({});
   const [prevGood, setPrevGood] = useState({});
   const [openCountries, setOpenCountries] = useState({
@@ -52,9 +67,10 @@ export default function mapComponent(props) {
     deployment: false,
   });
   const [visibleLayer, setVisibleLayer] = useState({
-    "DPG Pathfinders": false,
-    "DPG Implemented": false,
-    'polygons': false,
+    "Pathfinders Exploratory": false,
+    "Pathfinders Confirmed": false,
+    "DPGs developed": false,
+    "DPGs deployed": false,
   });
   const [sdgs, setSdgs] = useState([...sdgsDefault]);
   const [mapInteractive, setMapInteractive] = useState(false);
@@ -116,9 +132,6 @@ export default function mapComponent(props) {
   const handleLayerToggle = (e, layer) => {
     e.preventDefault();
     e.stopPropagation();
-    if (layer == "polygons") {
-      pitch > 0 ? setPitch(0) : setPitch(60);
-    }
     setVisibleLayer((prevState) => ({...prevState, [layer]: !prevState[layer]}));
   };
 
@@ -143,7 +156,9 @@ export default function mapComponent(props) {
             style="mapbox://styles/rolikasi/ckn67a95j022m17mcqog82g05"
             center={lonLat}
             zoom={[zoom]}
-            pitch={pitch} // pitch in degrees
+            pitch={
+              visibleLayer["DPGs developed"] || visibleLayer["DPGs deployed"] ? 60 : 0
+            } // pitch in degrees
             // bearing in degrees
             containerStyle={{
               width: "100%",
@@ -162,10 +177,6 @@ export default function mapComponent(props) {
               setZoom(map.getZoom());
               console.log("zoom", map.getZoom());
             }}
-            onPitchEnd={(map) => {
-              setPitch(map.getPitch());
-              console.log("pitch", map.getPitch());
-            }}
             onStyleLoad={(map) => {
               console.log("story", props.story);
               var layers = map.getStyle().layers;
@@ -179,6 +190,9 @@ export default function mapComponent(props) {
               }
               console.log("firstSymbolId", firstSymbolId);
               console.log("devpolygons", props.devPolygons);
+              let hardwareImg = new Image(20, 20);
+              hardwareImg.onload = () => map.addImage("hardware-pattern", hardwareImg);
+              hardwareImg.src = hardwarePattern;
               //add layer for each good with map
               props.digitalGoods.map((good) => {
                 // check if layer is already created
@@ -197,7 +211,7 @@ export default function mapComponent(props) {
                       type: "fill",
                       paint: {
                         // 'fill-color': '#db3d44', // this is the color you want your tileset to have (red)
-                        "fill-pattern": "hardware-15", //this helps us distinguish individual countries a bit better by giving them an outline
+                        "fill-pattern": "hardware-pattern", //this helps us distinguish individual countries a bit better by giving them an outline
                       },
                     },
                     firstSymbolId
@@ -240,8 +254,8 @@ export default function mapComponent(props) {
               });
 
               // Declare the image
-              if (map.getLayer("DPG Pathfinders")) {
-                console.log("DPG Pathfinders is layer already created");
+              if (map.getLayer("Pathfinders Exploratory")) {
+                console.log("Pathfinders Exploratory is layer already created");
                 return;
               } else {
                 let pathimg = new Image(20, 20);
@@ -252,7 +266,7 @@ export default function mapComponent(props) {
                 map.addLayer(
                   {
                     // adding a layer containing the tileset with country boundaries
-                    id: "DPG Pathfinders", //this is the name of our layer, which we will need later
+                    id: "Pathfinders Exploratory", //this is the name of our layer, which we will need later
                     source: {
                       type: "vector",
                       url: "mapbox://rolikasi.2kn4jvyh",
@@ -264,20 +278,20 @@ export default function mapComponent(props) {
                       "fill-opacity": 0.5,
                     },
                     layout: {
-                      'visibility':'none'
+                      visibility: "none",
                     },
                   },
                   firstSymbolId
                 );
 
                 map.setFilter(
-                  "DPG Pathfinders",
+                  "Pathfinders Exploratory",
                   ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderCountries))
                 ); // This line lets us filter by country codes.
               }
 
-              if (map.getLayer("DPG Implemented")) {
-                console.log("DPG Implemented layer is already created");
+              if (map.getLayer("Pathfinders Confirmed")) {
+                console.log("Pathfinders Confirmed layer is already created");
                 return;
               } else {
                 // Declare the image
@@ -290,7 +304,7 @@ export default function mapComponent(props) {
                 map.addLayer(
                   {
                     // adding a layer containing the tileset with country boundaries
-                    id: "DPG Implemented", //this is the name of our layer, which we will need later
+                    id: "Pathfinders Confirmed", //this is the name of our layer, which we will need later
                     source: {
                       type: "vector",
                       url: "mapbox://rolikasi.2kn4jvyh",
@@ -302,14 +316,14 @@ export default function mapComponent(props) {
                       "fill-opacity": 0.5,
                     },
                     layout: {
-                      'visibility':'none'
+                      visibility: "none",
                     },
                   },
                   firstSymbolId
                 );
 
                 map.setFilter(
-                  "DPG Implemented",
+                  "Pathfinders Confirmed",
                   ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderImplemented))
                 ); // This line lets us filter by country codes.
               }
@@ -342,53 +356,66 @@ export default function mapComponent(props) {
                 ); // This line lets us filter by country codes.
 
                 // Add 3d layer with extrudes
-                map.addSource("developments-polygons-source", {
+                map.addSource("DPGs developed-polygons-source", {
                   type: "geojson",
                   data: props.devPolygons,
                 });
-                map.addSource("deployments-polygons-source", {
+                map.addSource("DPGs deployed-polygons-source", {
                   type: "geojson",
                   data: props.depPolygons,
                 });
 
                 map.addLayer({
-                  id: "developments-polygons",
-                  source: "developments-polygons-source",
+                  id: "DPGs developed",
+                  source: "DPGs developed-polygons-source",
                   type: "fill-extrusion",
                   paint: {
-                    "fill-extrusion-color": "red",
+                    "fill-extrusion-color": "#FF952A",
                     "fill-extrusion-height": ["get", "height"],
                     "fill-extrusion-base": ["get", "base"],
                   },
                   layout: {
-                    'visibility':'none'
+                    visibility: "none",
                   },
                 });
 
                 map.addLayer({
-                  id: "deployments-polygons",
-                  source: "deployments-polygons-source",
+                  id: "DPGs deployed",
+                  source: "DPGs deployed-polygons-source",
                   type: "fill-extrusion",
                   paint: {
-                    "fill-extrusion-color": "blue",
+                    "fill-extrusion-color": "#3333AB",
                     "fill-extrusion-height": ["get", "height"],
                     "fill-extrusion-base": ["get", "base"],
                   },
                   layout: {
-                    'visibility':'none'
+                    visibility: "none",
                   },
                 });
-                ["deployments", "developments"].map((layer) =>
+                ["DPGs deployed", "DPGs developed"].map((layer, i) =>
                   map.addLayer({
                     id: `${layer}-text`,
                     source: `${layer}-polygons-source`,
                     type: "symbol",
+                    paint: {
+                      "text-color": ["#3333AB", "#FF952A"][i],
+                      "text-halo-color": "#fff",
+                      "text-halo-width": 1
+                    },
                     layout: {
                       "text-field": ["get", "text-field"],
-                      "text-size": ["interpolate", ["linear"], ["zoom"], 4, 0, 5, 16],
-                      'visibility': 'none',
+                      "text-size": ["interpolate", ["linear"], ["zoom"], 4.5, 0, 5, 16],
+                      "text-offset": [
+                        "interpolate",
+                        ["linear"],
+                        ["zoom"],
+                        4.5,
+                        ["literal", [0, 0.5]],
+                        9,
+                        ["literal", [0, 3]],
+                      ],
+                      visibility: "none",
                     },
-                    
                   })
                 );
                 console.log("all layers:", map.getStyle());
@@ -469,25 +496,19 @@ export default function mapComponent(props) {
               {(map) => {
                 Object.keys(visibleLayer).map((layer) => {
                   console.log("toggle ", layer, " visibility");
-                  if (layer == "polygons") {
-                    [
-                      "deployments-polygons",
-                      "developments-polygons",
-                      "deployments-text",
-                      "developments-text",
-                    ].map((polygonLayer) => {
-                      map.getLayer(polygonLayer)
-                        ? map.setLayoutProperty(
-                            polygonLayer,
-                            "visibility",
-                            visibleLayer[layer] ? "visible" : "none"
-                          )
-                        : null;
-                    });
-                  } else {
-                    map.getLayer(layer)
+                  map.getLayer(layer)
+                    ? map.setLayoutProperty(
+                        layer,
+                        "visibility",
+                        visibleLayer[layer] ? "visible" : "none"
+                      )
+                    : null;
+
+                    // toggle text layer for 3d visualizations
+                  if (["DPGs developed", "DPGs deployed"].includes(layer)) {
+                    map.getLayer(layer + "-text")
                       ? map.setLayoutProperty(
-                          layer,
+                          layer + "-text",
                           "visibility",
                           visibleLayer[layer] ? "visible" : "none"
                         )
@@ -589,11 +610,9 @@ export default function mapComponent(props) {
                   className={layer + (visibleLayer[layer] ? " active" : "")}
                   style={
                     visibleLayer[layer]
-                      ? {
-                          backgroundImage:
-                            index == 0 ? "url(pathfinders.svg)" : "url(implemented.svg)",
-                        }
-                      : {backgroundImage: "none"}
+                      ? 
+                        buttonStyles[layer]                        
+                      : {background: "none"}
                   }
                 >
                   {visibleLayer[layer] ? "" : layer}
