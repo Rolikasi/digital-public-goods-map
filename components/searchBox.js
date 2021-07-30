@@ -31,7 +31,7 @@ export default function SearchBox(props) {
           onMouseLeave={handleMouseLeave}
           id="dg-menu"
         >
-          <span id="dg-menu-text">{searchText}</span>{" "}
+          <span id="dg-menu-text" className={searchText == "Select a digital good" ? 'gray-text' : ''}>{searchText}</span>{" "}
           <span className={menuOpen ? "arrow up active" : "arrow down active"}></span>
           <div
             onClick={handleMenuSelect}
