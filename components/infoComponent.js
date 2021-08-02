@@ -2,6 +2,7 @@ import React, {useState, forwardRef, useImperativeHandle} from "react";
 import webSymbol from "../public/globe.png";
 import ghLogo from "../public/github.png";
 import {InView} from "react-intersection-observer";
+import Footer from "./footer";
 
 const buttonStyles = {
   "Pathfinders Exploratory": {
@@ -48,8 +49,8 @@ const InfoComponent = forwardRef((props, ref) => {
     setSdgs([...sdgs]);
   };
   const [visibleLayer, setVisibleLayer] = useState({
-    "Pathfinders Exploratory": false,
     "Pathfinders Confirmed": false,
+    "Pathfinders Exploratory": false,
     "DPGs developed": false,
     "DPGs deployed": false,
   });
@@ -251,6 +252,7 @@ const InfoComponent = forwardRef((props, ref) => {
           </div>
         </div>
       )}
+      <Footer />
     </div>
   );
 });

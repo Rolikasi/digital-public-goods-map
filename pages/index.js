@@ -2,7 +2,6 @@ import dynamic from "next/dynamic";
 import React, {useState, useEffect} from "react";
 import GSheetReader from "g-sheets-api";
 import dpgaLogo from "../public/logo.svg";
-import Footer from "../components/footer";
 import developmentPolygons from "../public/polygons-developments.geojson";
 import deploymentPolygons from "../public/polygons-deployments.geojson";
 
@@ -454,7 +453,6 @@ export default function Home() {
           depPolygons={depPolygons}
         />
       )}
-      {loaded && <Footer />}
     </div>
   );
 }

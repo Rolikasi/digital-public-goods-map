@@ -72,8 +72,12 @@ export default function mapComponent(props) {
             height: "100vh",
           }}
         >
-          {mapInteractive && width < 768 && (
-            <SearchBox goods={props.digitalGoods} onChange={handleChangeSearchbox} />
+          {mapInteractive && width < 1008 && (
+            <SearchBox
+              goods={props.digitalGoods}
+              selectedGood={selectedGood.name}
+              onChange={handleChangeSearchbox}
+            />
           )}
           {console.log("check story", props.story)}
           {props.story.length && props.story[currentStepIndex].image != "false" && (
@@ -488,40 +492,54 @@ export default function mapComponent(props) {
             </Scrollama>
           </div>
         </InView>
-        <div
-          className={
-            selectedGood.name && props.story[currentStepIndex].image == "false"
-              ? "map-overlay active"
-              : "map-overlay"
-          }
-          id="legend"
-        >
-          {legends.map((legend, index) => (
-            <div key={legend + index}>
-              <span
-                className="legend-key"
-                style={
-                  index == 0
-                    ? {backgroundImage: "url(hardware.svg"}
-                    : {backgroundColor: colors[index]}
-                }
-              ></span>
-              <span>{legend}</span>
-            </div>
-          ))}
+        
+          <div
+            className={
+              selectedGood.name && props.story[currentStepIndex].image == "false"
+                ? "map-overlay active"
+                : "map-overlay"
+            }
+            id="legend"
+          >
+            <div className="legendContainer">
+            {legends.map((legend, index) => (
+              <div key={legend + index}>
+                <span
+                  className="legend-key"
+                  style={
+                    index == 0
+                      ? {backgroundImage: "url(hardware.svg"}
+                      : {backgroundColor: colors[index]}
+                  }
+                ></span>
+                <span>{legend}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <InfoComponent
-        selectedGood={selectedGood}
-        onChange={handleLayerToggle}
-        ref={ref}
-        SearchBox={
-          width > 768 && (
-            <SearchBox goods={props.digitalGoods} onChange={handleChangeSearchbox} />
-          )
-        }
-      />
+      {mapInteractive && width >= 1008 && (
+        <InfoComponent
+          selectedGood={selectedGood}
+          onChange={handleLayerToggle}
+          ref={ref}
+          SearchBox={
+            <SearchBox
+              goods={props.digitalGoods}
+              selectedGood={selectedGood.name}
+              onChange={handleChangeSearchbox}
+            />
+          }
+        />
+      )}
+      {width < 1008 && (
+        <InfoComponent
+          selectedGood={selectedGood}
+          onChange={handleLayerToggle}
+          ref={ref}
+        />
+      )}
     </div>
   );
 }
