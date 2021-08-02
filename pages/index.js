@@ -353,7 +353,7 @@ export default function Home() {
         setLoaded(true);
         // set development polygons based on amount of goods developed in each country
         developmentPolygons["features"].map((el) => {
-          el.properties["text-field"] = digitalGoods.filter((good) =>
+          el.properties["text-field"] = [...digitalGoods, good].filter((good) =>
             Object.keys(good.locations.developmentCountries).includes(el.properties.iso)
           ).length.toString();
           el.properties["height"] = parseFloat(el.properties["text-field"]) * 10000;
@@ -363,7 +363,7 @@ export default function Home() {
         setDevPolygons(developmentPolygons);
         // set deployment polygons based on amount of goods deployed in each country
         deploymentPolygons["features"].map((el) => {
-          el.properties["text-field"] = digitalGoods.filter((good) =>
+          el.properties["text-field"] = [...digitalGoods, good].filter((good) =>
             Object.keys(good.locations.deploymentCountries).includes(el.properties.iso)
           ).length.toString();
           el.properties["height"] = parseFloat(el.properties["text-field"]) * 10000;
