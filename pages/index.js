@@ -303,6 +303,7 @@ export default function Home() {
     for (let i = 0; i < results.length; i++) {
       results[i].text = results[i].text.replace(/[\r\n]+/gm, " ");
       results[i].image = results[i].image.replace("FALSE", false);
+      results[i].image = results[i].image.replace("TRUE", true);
     }
     setStory(results);
   };
