@@ -81,7 +81,7 @@ export default function mapComponent(props) {
           )}
           {console.log("check story", props.story)}
           {props.story.length && props.story[currentStepIndex].image != "false" && (
-            <img className="stepImage" src={props.story[currentStepIndex].image} />
+            <img className="stepImage" src={props.story[currentStepIndex].imageurl} />
           )}
           <Map
             style="mapbox://styles/rolikasi/ckn67a95j022m17mcqog82g05"
