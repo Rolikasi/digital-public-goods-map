@@ -382,6 +382,8 @@ ul#menu {
     display: none;
   }
   .infoGood {
+    display: flex;
+    flex-direction: column;
     position: fixed;
     max-width: 30rem;
     border-right: solid 1px rgba(0, 0, 0, 0.2);
@@ -411,5 +413,9 @@ ul#menu {
     justify-content: flex-end;
     bottom: 3rem;
     margin-right: 3rem;
+  }
+
+  .footer {
+    margin: auto 0 0 0;
   }
 }
