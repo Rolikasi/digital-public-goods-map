@@ -61,6 +61,13 @@ export default function mapComponent(props) {
   const handleLayerToggle = (layer) => {
     setVisibleLayer((prevState) => ({...prevState, [layer]: !prevState[layer]}));
   };
+  const handleClearSearchbox = () => {
+    setSelectedGood((prevState) => {
+      setPrevGood(prevState);
+      return {};
+    });
+    ref.current.clearStatesFromParent();
+  };
 
   return (
     <div>
@@ -77,6 +84,7 @@ export default function mapComponent(props) {
               goods={props.digitalGoods}
               selectedGood={selectedGood.name}
               onChange={handleChangeSearchbox}
+              clearSelectedGood={handleClearSearchbox}
             />
           )}
           {console.log("check story", props.story)}
@@ -446,30 +454,25 @@ export default function mapComponent(props) {
                       : null;
                   }
                 });
+                
+                
+                if (prevGood.name) {
+                  console.log("toggle prevgood visibility");
+                  map.setLayoutProperty(prevGood.name + "-develop", "visibility", "none");
+                  map.setLayoutProperty(prevGood.name + "-deploy", "visibility", "none");
+                }
                 if (selectedGood.name) {
                   console.log("toggle selected good visibility");
-                  if (prevGood.name) {
-                    map.setLayoutProperty(
-                      prevGood.name + "-develop",
-                      "visibility",
-                      "none"
-                    );
-                    map.setLayoutProperty(
-                      prevGood.name + "-deploy",
-                      "visibility",
-                      "none"
-                    );
-                  }
-                  map.setLayoutProperty(
-                    selectedGood.name + "-develop",
-                    "visibility",
-                    "visible"
-                  );
-                  map.setLayoutProperty(
-                    selectedGood.name + "-deploy",
-                    "visibility",
-                    "visible"
-                  );
+                map.setLayoutProperty(
+                  selectedGood.name + "-develop",
+                  "visibility",
+                  "visible"
+                );
+                map.setLayoutProperty(
+                  selectedGood.name + "-deploy",
+                  "visibility",
+                  "visible"
+                );
                 }
               }}
             </MapContext.Consumer>
@@ -492,16 +495,16 @@ export default function mapComponent(props) {
             </Scrollama>
           </div>
         </InView>
-        
-          <div
-            className={
-              selectedGood.name && props.story[currentStepIndex].image == "false"
-                ? "map-overlay active"
-                : "map-overlay"
-            }
-            id="legend"
-          >
-            <div className="legendContainer">
+
+        <div
+          className={
+            selectedGood.name && props.story[currentStepIndex].image == "false"
+              ? "map-overlay active"
+              : "map-overlay"
+          }
+          id="legend"
+        >
+          <div className="legendContainer">
             {legends.map((legend, index) => (
               <div key={legend + index}>
                 <span
@@ -529,6 +532,7 @@ export default function mapComponent(props) {
               goods={props.digitalGoods}
               selectedGood={selectedGood.name}
               onChange={handleChangeSearchbox}
+              clearSelectedGood={handleClearSearchbox}
             />
           }
         />
