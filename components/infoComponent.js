@@ -49,16 +49,9 @@ const InfoComponent = forwardRef((props, ref) => {
     sdgs[i].open = !sdgs[i].open;
     setSdgs([...sdgs]);
   };
-  const [visibleLayer, setVisibleLayer] = useState({
-    "Pathfinders Confirmed": false,
-    "Pathfinders Exploratory": false,
-    "DPGs developed": false,
-    "DPGs deployed": false,
-  });
   const handleLayerToggle = (e, layer) => {
     e.preventDefault();
     e.stopPropagation();
-    setVisibleLayer((prevState) => ({...prevState, [layer]: !prevState[layer]}));
     props.onChange(layer);
   };
 
@@ -115,20 +108,20 @@ const InfoComponent = forwardRef((props, ref) => {
 
       <InView as="div" onChange={(inView) => setMenuInView(!inView)}>
         <ul id="menu" ref={divRef}>
-          {Object.keys(visibleLayer).map((layer, index) => (
+          {Object.keys(props.visibleLayer).map((layer, index) => (
             <li
               id={layer}
               key={layer + index}
               onClick={(e) => handleLayerToggle(e, layer)}
             >
-              <span>{visibleLayer[layer] ? layer : ""}</span>
+              <span>{props.visibleLayer[layer] ? layer : ""}</span>
               <a
                 href="#"
                 onClick={(e) => e.preventDefault()}
-                className={layer + (visibleLayer[layer] ? " active" : "")}
-                style={visibleLayer[layer] ? buttonStyles[layer] : {background: "none"}}
+                className={layer + (props.visibleLayer[layer] ? " active" : "")}
+                style={props.visibleLayer[layer] ? buttonStyles[layer] : {background: "none"}}
               >
-                {visibleLayer[layer] ? "" : layer}
+                {props.visibleLayer[layer] ? "" : layer}
               </a>
             </li>
           ))}

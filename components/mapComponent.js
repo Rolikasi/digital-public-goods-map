@@ -45,11 +45,17 @@ export default function mapComponent(props) {
   // data prop of the step, which in this demo stores the index of the step.
   const onStepEnter = ({data}) => {
     setCurrentStepIndex(data);
-    setZoom(parseFloat(props.story[data].zoom));
     setLonLat([
       parseFloat(props.story[data].longitude),
       parseFloat(props.story[data].latitude),
     ]);
+    setZoom(parseFloat(props.story[data].zoom));
+    let newVisibleLayer = {};
+    Object.keys(visibleLayer).forEach(
+      (v) => (newVisibleLayer[v] = props.story[data].showfilter.includes(v))
+    );
+    setVisibleLayer(newVisibleLayer);
+    
   };
 
   const handleChangeSearchbox = (good) => {
@@ -108,7 +114,6 @@ export default function mapComponent(props) {
             pitch={
               visibleLayer["DPGs developed"] || visibleLayer["DPGs deployed"] ? 60 : 0
             } // pitch in degrees
-            // bearing in degrees
             containerStyle={{
               width: "100%",
               height: "100%",
@@ -119,12 +124,16 @@ export default function mapComponent(props) {
             className={mapInteractive ? "enabled" : "disabled"}
             movingMethod="flyTo"
             onMoveEnd={(map) => {
-              setLonLat([map.getCenter().lng, map.getCenter().lat]);
-              console.log(map.getCenter().lng, map.getCenter().lat);
+              if (mapInteractive) {
+                setLonLat([map.getCenter().lng, map.getCenter().lat]);
+                console.log(map.getCenter().lng, map.getCenter().lat);
+              }
             }}
             onZoomEnd={(map) => {
-              setZoom(map.getZoom());
-              console.log("zoom", map.getZoom());
+              if (mapInteractive) {
+                setZoom(map.getZoom());
+                console.log("zoom", map.getZoom());
+              }
             }}
             onStyleLoad={(map) => {
               console.log("story", props.story);
@@ -385,9 +394,14 @@ export default function mapComponent(props) {
                     console.log(deployments);
                     countryName =
                       deployments[0].locations.deploymentCountries[countryCode];
-                    deployHtml += "<div class='header'><b>" + deployments.length + " Goods deployed:</b>";
+                    deployHtml +=
+                      "<div class='header'><b>" +
+                      deployments.length +
+                      " Goods deployed:</b>";
                     deployments.map((d, i) => {
-                      deployHtml += d.website ? `<a href=${d.website}>${d.name}</a>` : `<span>${d.name}</span>`;
+                      deployHtml += d.website
+                        ? `<a href=${d.website}>${d.name}</a>`
+                        : `<span>${d.name}</span>`;
                     });
                     deployHtml += "</div>";
                   }
@@ -396,9 +410,13 @@ export default function mapComponent(props) {
                     countryName =
                       developments[0].locations.developmentCountries[countryCode];
                     developHtml +=
-                      "<div class='header'><b>" + developments.length + " Goods developed:</b>";
+                      "<div class='header'><b>" +
+                      developments.length +
+                      " Goods developed:</b>";
                     developments.map((d) => {
-                      developHtml += d.website ? `<a href=${d.website}>${d.name}</a>` : `<span>${d.name}</span>`;
+                      developHtml += d.website
+                        ? `<a href=${d.website}>${d.name}</a>`
+                        : `<span>${d.name}</span>`;
                     });
                     developHtml += "</div>";
                   }
@@ -443,6 +461,7 @@ export default function mapComponent(props) {
 
             <MapContext.Consumer>
               {(map) => {
+                console.log("check visible layer", visibleLayer);
                 Object.keys(visibleLayer).map((layer) => {
                   console.log("toggle ", layer, " visibility");
                   map.getLayer(layer)
@@ -500,10 +519,13 @@ export default function mapComponent(props) {
                     <p>{_.text}</p>
                     {stepIndex == 0 && (
                       <div>
-                        <p>Scroll down to see the story or skip it and <span className="button" onClick={handleScrollToBottom}>
-                          explore the map
-                        </span></p>
-                        
+                        <p>
+                          Scroll down to see the story or skip it and{" "}
+                          <span className="button" onClick={handleScrollToBottom}>
+                            explore the map
+                          </span>
+                        </p>
+
                         <div className="scrollArrows">
                           <span></span>
                           <span></span>
@@ -547,6 +569,7 @@ export default function mapComponent(props) {
         <InfoComponent
           selectedGood={selectedGood}
           onChange={handleLayerToggle}
+          visibleLayer={visibleLayer}
           ref={ref}
           SearchBox={
             <SearchBox
@@ -561,6 +584,7 @@ export default function mapComponent(props) {
       {width < 1008 && (
         <InfoComponent
           selectedGood={selectedGood}
+          visibleLayer={visibleLayer}
           onChange={handleLayerToggle}
           ref={ref}
         />
