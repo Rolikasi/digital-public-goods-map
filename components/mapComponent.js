@@ -23,7 +23,8 @@ const Map = ReactMapboxGl({
 });
 
 export default function mapComponent(props) {
-  const ref = useRef(null);
+  const ref = useRef();
+  const mainRef = useRef();
   const {width, height} = UseWindowDimensions();
   const [zoom, setZoom] = useState(zoomDefault);
   const [lonLat, setLonLat] = useState([props.lon, props.lat]);
@@ -68,9 +69,18 @@ export default function mapComponent(props) {
     });
     ref.current.clearStatesFromParent();
   };
+  const handleScrollToBottom = () => {
+    width < 1008
+      ? ref.current.scrollFromParent()
+      : mainRef.current.scrollIntoView(false, {
+          behavior: "smooth",
+          block: "end",
+          inline: "nearest",
+        });
+  };
 
   return (
-    <div>
+    <div ref={mainRef}>
       <div className="map">
         <div
           style={{
@@ -375,22 +385,22 @@ export default function mapComponent(props) {
                     console.log(deployments);
                     countryName =
                       deployments[0].locations.deploymentCountries[countryCode];
-                    deployHtml += "<ul><b>" + deployments.length + " Goods deployed:</b>";
-                    deployments.map((d) => {
-                      deployHtml += "<li>" + d.name + "</li>";
+                    deployHtml += "<div class='header'><b>" + deployments.length + " Goods deployed:</b>";
+                    deployments.map((d, i) => {
+                      deployHtml += d.website ? `<a href=${d.website}>${d.name}</a>` : `<span>${d.name}</span>`;
                     });
-                    deployHtml += "</ul>";
+                    deployHtml += "</div>";
                   }
 
                   if (developments.length > 0) {
                     countryName =
                       developments[0].locations.developmentCountries[countryCode];
                     developHtml +=
-                      "<ul><b>" + developments.length + " Goods developed:</b>";
+                      "<div class='header'><b>" + developments.length + " Goods developed:</b>";
                     developments.map((d) => {
-                      developHtml += "<li>" + d.name + "</li>";
+                      developHtml += d.website ? `<a href=${d.website}>${d.name}</a>` : `<span>${d.name}</span>`;
                     });
-                    developHtml += "</ul>";
+                    developHtml += "</div>";
                   }
 
                   if (props.countries[countryCode].pathfinder) {
@@ -454,8 +464,7 @@ export default function mapComponent(props) {
                       : null;
                   }
                 });
-                
-                
+
                 if (prevGood.name) {
                   console.log("toggle prevgood visibility");
                   map.setLayoutProperty(prevGood.name + "-develop", "visibility", "none");
@@ -463,16 +472,16 @@ export default function mapComponent(props) {
                 }
                 if (selectedGood.name) {
                   console.log("toggle selected good visibility");
-                map.setLayoutProperty(
-                  selectedGood.name + "-develop",
-                  "visibility",
-                  "visible"
-                );
-                map.setLayoutProperty(
-                  selectedGood.name + "-deploy",
-                  "visibility",
-                  "visible"
-                );
+                  map.setLayoutProperty(
+                    selectedGood.name + "-develop",
+                    "visibility",
+                    "visible"
+                  );
+                  map.setLayoutProperty(
+                    selectedGood.name + "-deploy",
+                    "visibility",
+                    "visible"
+                  );
                 }
               }}
             </MapContext.Consumer>
@@ -489,6 +498,18 @@ export default function mapComponent(props) {
                     }`}
                   >
                     <p>{_.text}</p>
+                    {stepIndex == 0 && (
+                      <div>
+                        <p>Scroll down to see the story or skip it and <span className="button" onClick={handleScrollToBottom}>
+                          explore the map
+                        </span></p>
+                        
+                        <div className="scrollArrows">
+                          <span></span>
+                          <span></span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </Step>
               ))}

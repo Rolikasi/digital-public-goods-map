@@ -6,6 +6,7 @@ export default function Footer() {
       <a target="_blank" href="https://github.com/Rolikasi/digital-public-goods-map">
         Contribute
       </a>
+      <a target="_blank" href="mailto:hello@digitalpublicgoods.net">Report issue</a>
       <span>
         Data:{" "}
         <a
