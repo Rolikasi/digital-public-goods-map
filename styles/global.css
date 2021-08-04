@@ -357,6 +357,58 @@ ul#menu {
 }
 .scrolly-p p {
   padding: 1rem;
+  margin-bottom: 0;
+}
+
+.scrollArrows {
+  position: absolute;
+  right: 50%;
+}
+.scrollArrows span {
+  display: block;
+  margin: auto;
+  width: 1rem;
+  height: 1rem;
+  border-bottom: 0.2rem solid #3333ab;
+  border-right: 0.2rem solid #3333ab;
+  transform: rotate(225deg);
+  animation: animate 3s infinite;
+}
+
+.scrollArrows span:nth-child(1) {
+  animation-delay: -0.2s;
+}
+@keyframes animate {
+  0% {
+    opacity: 0;
+    transform: rotate(225deg) translate(-30px, -30px);
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: rotate(225deg) translate(0px, 0px);
+  }
+}
+
+.button {
+  border: 1px solid rgba(0, 0, 0, 0.459);
+  padding: 0.2rem;
+  cursor: pointer;
+  color: #404040;
+  margin: 0;
+  text-decoration: none;
+  border-radius: 5px;
+  text-align: center;
+  display: inline-block;
+}
+.button:hover {
+  background-color: #3333ab;
+  border: 1px solid #3333ab;
+  color: #fff;
 }
 .enabled {
   pointer-events: all;

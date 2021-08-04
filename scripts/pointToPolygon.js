@@ -1,4 +1,5 @@
 const turf = require("@turf/circle");
+const turfRotate = require("@turf/transform-rotate");
 const fs = require("fs");
 
 const storeData = (data, path) => {
@@ -24,15 +25,25 @@ csv()
           "Latitude (average)": lat,
           "Longitude (average)": lon,
         }) => {
-          return {country: Country, iso: alpha3, center: [parseFloat(lon) + 0.3*i, parseFloat(lat)]};
+          return {
+            country: Country,
+            iso: alpha3,
+            center: [parseFloat(lon) + 0.3 * i, parseFloat(lat)],
+          };
         }
       );
       var result = arr.map((el, i) =>
-        turf.default(
-          el.center,
-          10,
-          //TODO: add height proprty based on the amount of publicgoods in each country 
-          (options = {steps: 3, units: 'kilometers', properties: {country: el.country, iso: el.iso, layer: desc, i:i*1000}})
+        turfRotate(
+          turf.default(
+            el.center,
+            10,
+            (options = {
+              steps: 4,
+              units: "kilometers",
+              properties: {country: el.country, iso: el.iso, layer: desc},
+            })
+          ),
+          45
         )
       );
       storeData(

@@ -1,4 +1,4 @@
-import React, {useState, forwardRef, useImperativeHandle} from "react";
+import React, {useState, forwardRef, useImperativeHandle, useRef} from "react";
 import webSymbol from "../public/globe.png";
 import ghLogo from "../public/github.png";
 import {InView} from "react-intersection-observer";
@@ -42,6 +42,7 @@ const InfoComponent = forwardRef((props, ref) => {
     development: false,
     deployment: false,
   });
+  
   const [menuInView, setMenuInView] = useState(false);
   const [sdgs, setSdgs] = useState([...sdgsDefault]);
   const toggleEvidence = (i) => {
@@ -64,9 +65,11 @@ const InfoComponent = forwardRef((props, ref) => {
   const toggleCountries = (type) => {
     setOpenCountries((prevState) => ({...prevState, [type]: !prevState[type]}));
   };
+  const divRef = useRef(null);
+  const infoRef = useRef(null);
   const scrollHandle = () => {
     if (menuInView) {
-      document.getElementById("menu").scrollIntoView({
+      divRef.current.scrollIntoView({
         behavior: "smooth",
         block: "center",
         inline: "nearest",
@@ -87,15 +90,19 @@ const InfoComponent = forwardRef((props, ref) => {
     setSdgs([...sdgs]);
     setOpenCountries({...{development: false, deployment: false}});
   };
+  const scrollToInfo = () => {
+    infoRef.current.scrollIntoView({behavior: "smooth", block:"end"});
+  }
   useImperativeHandle(ref, () => {
     return {
       clearStatesFromParent: clearStates,
+      scrollFromParent: scrollToInfo,
     };
   });
   return (
-    <div className="infoGood">
+    <div className="infoGood" >
         <div>{props.SearchBox}</div>
-      <div className="controls" onClick={scrollHandle}>
+      <div className="controls" onClick={scrollHandle} ref={infoRef}>
         <span id="arrow-up" className={menuInView ? "arrow up active" : "arrow up"} />
         <div
           id="hamburger"
@@ -107,7 +114,7 @@ const InfoComponent = forwardRef((props, ref) => {
       </div>
 
       <InView as="div" onChange={(inView) => setMenuInView(!inView)}>
-        <ul id="menu">
+        <ul id="menu" ref={divRef}>
           {Object.keys(visibleLayer).map((layer, index) => (
             <li
               id={layer}
