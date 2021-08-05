@@ -10,7 +10,7 @@ import SearchBox from "./searchBox";
 import InfoComponent from "./infoComponent";
 import UseWindowDimensions from "./UseWindowDimensions";
 
-const legends = ["where it was developed", "where it was implemented"];
+const legends = ["where it was developed", "where it was deployed"];
 const colors = ["#FF952A", "#d4d4ec"];
 const zoomDefault = 2;
 
@@ -33,8 +33,8 @@ export default function mapComponent(props) {
   const [visibleLayer, setVisibleLayer] = useState({
     "Pathfinders Exploratory": false,
     "Pathfinders Confirmed": false,
-    "DPGs developed": false,
     "DPGs deployed": false,
+    "DPGs developed": false,
   });
   const [mapInteractive, setMapInteractive] = useState(false);
 
@@ -45,17 +45,11 @@ export default function mapComponent(props) {
   // data prop of the step, which in this demo stores the index of the step.
   const onStepEnter = ({data}) => {
     setCurrentStepIndex(data);
-    setLonLat([
-      parseFloat(props.story[data].longitude),
-      parseFloat(props.story[data].latitude),
-    ]);
-    setZoom(parseFloat(props.story[data].zoom));
     let newVisibleLayer = {};
     Object.keys(visibleLayer).forEach(
       (v) => (newVisibleLayer[v] = props.story[data].showfilter.includes(v))
     );
     setVisibleLayer(newVisibleLayer);
-    
   };
 
   const handleChangeSearchbox = (good) => {
@@ -109,8 +103,17 @@ export default function mapComponent(props) {
           )}
           <Map
             style="mapbox://styles/rolikasi/ckn67a95j022m17mcqog82g05"
-            center={lonLat}
-            zoom={[zoom]}
+            center={
+              mapInteractive
+                ? lonLat
+                : [
+                    parseFloat(props.story[currentStepIndex].longitude),
+                    parseFloat(props.story[currentStepIndex].latitude),
+                  ]
+            }
+            zoom={
+              mapInteractive ? [zoom] : [parseFloat(props.story[currentStepIndex].zoom)]
+            }
             pitch={
               visibleLayer["DPGs developed"] || visibleLayer["DPGs deployed"] ? 60 : 0
             } // pitch in degrees

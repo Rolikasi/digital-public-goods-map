@@ -16,7 +16,7 @@ const csv = require("csvtojson");
 csv()
   .fromFile(csvFilePath)
   .then((jsonObj) => {
-    ["developments", "deployments"].map((desc, i) => {
+    ["deployments", "developments"].map((desc, i) => {
       var arr = [];
       arr = jsonObj.map(
         ({
