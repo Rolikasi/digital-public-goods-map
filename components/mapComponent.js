@@ -47,7 +47,7 @@ export default function mapComponent(props) {
     setCurrentStepIndex(data);
     let newVisibleLayer = {};
     Object.keys(visibleLayer).forEach(
-      (v) => (newVisibleLayer[v] = props.story[data].showfilter.includes(v))
+      (v) => (newVisibleLayer[v] = props.story[data].showFilter.includes(v))
     );
     setVisibleLayer(newVisibleLayer);
   };
@@ -99,7 +99,7 @@ export default function mapComponent(props) {
           )}
           {console.log("check story", props.story)}
           {props.story.length && props.story[currentStepIndex].image != "false" && (
-            <img className="stepImage" src={props.story[currentStepIndex].imageurl} />
+            <img className="stepImage" src={props.story[currentStepIndex].imageUrl} />
           )}
           <Map
             style="mapbox://styles/rolikasi/ckn67a95j022m17mcqog82g05"
@@ -247,7 +247,7 @@ export default function mapComponent(props) {
 
                 map.setFilter(
                   "Pathfinders Exploratory",
-                  ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderCountries))
+                  ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderExploratory))
                 ); // This line lets us filter by country codes.
               }
 
@@ -285,7 +285,7 @@ export default function mapComponent(props) {
 
                 map.setFilter(
                   "Pathfinders Confirmed",
-                  ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderImplemented))
+                  ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderConfirmed))
                 ); // This line lets us filter by country codes.
               }
               console.log('map.getLayer("countries")', map.getLayer("countries"));
