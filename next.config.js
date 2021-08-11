@@ -6,9 +6,9 @@ module.exports = withCSS(
     webpack(config) {
       config.module.rules.push({
         test: /\.geojson$/,
-        use: ["json-loader"]
+        use: ["json-loader"],
       });
-  
+
       return config;
     },
     cssLoaderOptions: {
