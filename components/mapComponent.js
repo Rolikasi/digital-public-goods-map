@@ -9,6 +9,7 @@ import {InView} from "react-intersection-observer";
 import SearchBox from "./searchBox";
 import InfoComponent from "./infoComponent";
 import UseWindowDimensions from "./UseWindowDimensions";
+import dpgaLogo from "../public/logo.svg";
 
 const legends = ["where it was developed", "where it was deployed"];
 const colors = ["#FF952A", "#d4d4ec"];
@@ -40,6 +41,7 @@ export default function mapComponent(props) {
 
   // scrollama states
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   // This callback fires when a Step hits the offset threshold. It receives the
   // data prop of the step, which in this demo stores the index of the step.
@@ -81,7 +83,8 @@ export default function mapComponent(props) {
 
   return (
     <div ref={mainRef}>
-      <div className="map">
+      <div className={loading ? 'whiteBack' : 'inactive'}><img className={'loader'} src={dpgaLogo}></img></div>
+      <div className='map'>
         <div
           style={{
             position: "sticky",
@@ -380,6 +383,8 @@ export default function mapComponent(props) {
                   })
                 );
                 console.log("all layers:", map.getStyle());
+                console.log('style loaded!');
+                setLoading(false);
                 map.on("click", "countries", function (mapElement) {
                   const countryCode = mapElement.features[0].properties.ADM0_A3_IS; // Grab the country code from the map properties.
 

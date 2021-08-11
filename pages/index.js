@@ -1,32 +1,25 @@
 import dynamic from "next/dynamic";
 import React from "react";
-import dpgaLogo from "../public/logo.svg";
 import {promises as fs} from "fs";
 import path from "path";
 
 export default function Home(props) {
-
   const MapComponent = dynamic(import("../components/mapComponent"), {
     ssr: false,
   });
-
   return (
     <div className="main">
-      {console.log(props)}
-      {!props.data.digitalGoods && <img className="loader" src={dpgaLogo}></img>}
-      {props.data.digitalGoods && (
-        <MapComponent
-          lon="-14"
-          lat="24.5"
-          countries={props.data.countries}
-          pathfinderExploratory={props.data.pathfinders.exploratory}
-          pathfinderConfirmed={props.data.pathfinders.confirmed}
-          digitalGoods={props.data.digitalGoods}
-          story={props.data.story}
-          devPolygons={props.data.polygons[1]}
-          depPolygons={props.data.polygons[0]}
-        />
-      )}
+      <MapComponent
+        lon="-14"
+        lat="24.5"
+        countries={props.data.countries}
+        pathfinderExploratory={props.data.pathfinders.exploratory}
+        pathfinderConfirmed={props.data.pathfinders.confirmed}
+        digitalGoods={props.data.digitalGoods}
+        story={props.data.story}
+        devPolygons={props.data.polygons[1]}
+        depPolygons={props.data.polygons[0]}
+      />
     </div>
   );
 }
@@ -453,7 +446,7 @@ export async function getStaticProps() {
         }
       });
       countries = c;
-      return {confirmed : s, exploratory: l};
+      return {confirmed: s, exploratory: l};
     };
     const pathfinderData = await loadGsheet(process.env.NEXT_PUBLIC_SHEET, 1);
     const pathfinders = await addCountries(
