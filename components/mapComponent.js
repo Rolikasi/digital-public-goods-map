@@ -432,23 +432,23 @@ export default function mapComponent(props) {
                   }
 
                   if (props.countries[countryCode].pathfinder) {
-                    countryName = props.countries[countryCode].pathfinder.country;
+                    countryName = props.countries[countryCode].pathfinder.Country;
                     pathHtml = "✅&nbsp;&nbsp;DPG Pathfinder Country<br/>";
                     pathHtml += "<ul>";
                     pathHtml +=
                       "<li><b>Status:</b> " +
-                      props.countries[countryCode].pathfinder.status +
+                      props.countries[countryCode].pathfinder.Status +
                       "</li>";
-                    if (props.countries[countryCode].pathfinder.sector) {
+                    if (props.countries[countryCode].pathfinder.Sector) {
                       pathHtml +=
                         "<li><b>Sector:</b> " +
-                        props.countries[countryCode].pathfinder.sector +
+                        props.countries[countryCode].pathfinder.Sector +
                         "</li>";
                     }
-                    if (props.countries[countryCode].pathfinder.comments) {
+                    if (props.countries[countryCode].pathfinder.Comments) {
                       pathHtml +=
                         "<li><b>Comments:</b> " +
-                        props.countries[countryCode].pathfinder.comments +
+                        props.countries[countryCode].pathfinder.Comments +
                         "</li>";
                     }
                     pathHtml += "</ul>";
