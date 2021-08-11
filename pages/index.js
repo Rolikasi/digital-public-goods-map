@@ -10,8 +10,8 @@ export default function Home(props) {
   return (
     <div className="main">
       <MapComponent
-        lon="-14"
-        lat="24.5"
+        lon={6}
+        lat={24.5}
         countries={props.data.countries}
         pathfinderExploratory={props.data.pathfinders.exploratory}
         pathfinderConfirmed={props.data.pathfinders.confirmed}
