@@ -493,7 +493,19 @@ ul#menu {
   justify-content: space-around;
   padding: 0 1rem 1rem 1rem;
 }
-
+.helper-overlay {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  min-width: 10rem;
+  padding: 1rem;
+  -webkit-box-shadow: 0 3px 3px 1px rgb(0 0 0 / 11%);
+  box-shadow: 0 3px 3px 1px rgb(0 0 0 / 11%);
+}
 @media screen and (min-width: 768px) {
   #dg-menu-dropdown {
     margin: 2.4rem 0;
