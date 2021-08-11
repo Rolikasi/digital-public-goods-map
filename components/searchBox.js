@@ -2,7 +2,7 @@ import React, {useState} from "react";
 
 export default function SearchBox(props) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(props.selectedGood ? props.selectedGood : '');
   const handleMouseOver = () => {
     menuOpen ? null : setMenuOpen(true);
   };
