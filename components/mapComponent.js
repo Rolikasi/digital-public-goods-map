@@ -9,6 +9,7 @@ import {InView} from "react-intersection-observer";
 import SearchBox from "./searchBox";
 import InfoComponent from "./infoComponent";
 import UseWindowDimensions from "./UseWindowDimensions";
+import dpgaLogo from "../public/logo.svg";
 
 const legends = ["where it was developed", "where it was deployed"];
 const colors = ["#FF952A", "#d4d4ec"];
@@ -40,6 +41,7 @@ export default function mapComponent(props) {
 
   // scrollama states
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   // This callback fires when a Step hits the offset threshold. It receives the
   // data prop of the step, which in this demo stores the index of the step.
@@ -47,7 +49,7 @@ export default function mapComponent(props) {
     setCurrentStepIndex(data);
     let newVisibleLayer = {};
     Object.keys(visibleLayer).forEach(
-      (v) => (newVisibleLayer[v] = props.story[data].showfilter.includes(v))
+      (v) => (newVisibleLayer[v] = props.story[data].showFilter.includes(v))
     );
     setVisibleLayer(newVisibleLayer);
   };
@@ -81,7 +83,8 @@ export default function mapComponent(props) {
 
   return (
     <div ref={mainRef}>
-      <div className="map">
+      <div className={loading ? 'whiteBack' : 'inactive'}><img className={'loader'} src={dpgaLogo}></img></div>
+      <div className='map'>
         <div
           style={{
             position: "sticky",
@@ -99,7 +102,7 @@ export default function mapComponent(props) {
           )}
           {console.log("check story", props.story)}
           {props.story.length && props.story[currentStepIndex].image != "false" && (
-            <img className="stepImage" src={props.story[currentStepIndex].imageurl} />
+            <img className="stepImage" src={props.story[currentStepIndex].imageUrl} />
           )}
           <Map
             style="mapbox://styles/rolikasi/ckn67a95j022m17mcqog82g05"
@@ -247,7 +250,7 @@ export default function mapComponent(props) {
 
                 map.setFilter(
                   "Pathfinders Exploratory",
-                  ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderCountries))
+                  ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderExploratory))
                 ); // This line lets us filter by country codes.
               }
 
@@ -285,7 +288,7 @@ export default function mapComponent(props) {
 
                 map.setFilter(
                   "Pathfinders Confirmed",
-                  ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderImplemented))
+                  ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderConfirmed))
                 ); // This line lets us filter by country codes.
               }
               console.log('map.getLayer("countries")', map.getLayer("countries"));
@@ -380,6 +383,8 @@ export default function mapComponent(props) {
                   })
                 );
                 console.log("all layers:", map.getStyle());
+                console.log('style loaded!');
+                setLoading(false);
                 map.on("click", "countries", function (mapElement) {
                   const countryCode = mapElement.features[0].properties.ADM0_A3_IS; // Grab the country code from the map properties.
 
