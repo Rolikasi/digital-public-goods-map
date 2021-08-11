@@ -83,8 +83,10 @@ export default function mapComponent(props) {
 
   return (
     <div ref={mainRef}>
-      <div className={loading ? 'whiteBack' : 'inactive'}><img className={'loader'} src={dpgaLogo}></img></div>
-      <div className='map'>
+      <div className={loading ? "whiteBack" : "inactive"}>
+        <img className={"loader"} src={dpgaLogo}></img>
+      </div>
+      <div className="map">
         <div
           style={{
             position: "sticky",
@@ -383,7 +385,7 @@ export default function mapComponent(props) {
                   })
                 );
                 console.log("all layers:", map.getStyle());
-                console.log('style loaded!');
+                console.log("style loaded!");
                 setLoading(false);
                 map.on("click", "countries", function (mapElement) {
                   const countryCode = mapElement.features[0].properties.ADM0_A3_IS; // Grab the country code from the map properties.
@@ -408,7 +410,7 @@ export default function mapComponent(props) {
                       " Goods deployed:</b>";
                     deployments.map((d, i) => {
                       deployHtml += d.website
-                        ? `<a href=${d.website}>${d.name}</a>`
+                        ? `<a href=${d.website} target="_blank">${d.name}</a>`
                         : `<span>${d.name}</span>`;
                     });
                     deployHtml += "</div>";
@@ -423,7 +425,7 @@ export default function mapComponent(props) {
                       " Goods developed:</b>";
                     developments.map((d) => {
                       developHtml += d.website
-                        ? `<a href=${d.website}>${d.name}</a>`
+                        ? `<a href=${d.website} target="_blank">${d.name}</a>`
                         : `<span>${d.name}</span>`;
                     });
                     developHtml += "</div>";
