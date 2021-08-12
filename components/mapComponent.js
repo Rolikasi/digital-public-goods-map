@@ -47,14 +47,16 @@ export default function mapComponent(props) {
   // data prop of the step, which in this demo stores the index of the step.
   const onStepEnter = ({data}) => {
     setCurrentStepIndex(data);
-    // Check and set selectedGood from gsheet 
+    // Check and set selectedGood from gsheet
     if (props.story[data].showDPG) {
-      setSelectedGood(
-        props.digitalGoods.filter(
+      console.log('found dpg in sheet: ', props.story[data].showDPG)
+      setSelectedGood((prevState) => {
+        setPrevGood(prevState);
+        return props.digitalGoods.filter(
           (el) =>
             el.name.toLowerCase().indexOf(props.story[data].showDPG.toLowerCase()) !== -1
-        )[0] // filter and grab 1st result
-      );
+        )[0]; // filter and grab 1st result
+      });
     } else {
       // clear state if there is no dpg in gsheet
       setSelectedGood((prevState) => {
