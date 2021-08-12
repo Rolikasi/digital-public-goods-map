@@ -290,7 +290,7 @@ export async function getStaticProps() {
       let c = countries;
       data.locations.deploymentCountries.map((country) => {
         if (!alpha3[country]) {
-          // console.log("Mismatched good" + country);
+          console.log("Mismatched good " + country);
         } else {
           if (!Object.keys(c).find((e) => e == alpha3[country])) {
             c[alpha3[country]] = {};
@@ -305,7 +305,7 @@ export async function getStaticProps() {
       data.locations.deploymentCountries = deployGoods;
       data.locations.developmentCountries.forEach((country) => {
         if (!alpha3[country]) {
-          // console.log("Mismatched good" + country);
+          console.log("Mismatched good " + country);
         } else {
           if (!Object.keys(c).find((e) => e == alpha3[country])) {
             c[alpha3[country]] = {};
