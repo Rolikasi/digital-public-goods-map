@@ -501,7 +501,7 @@ export default function mapComponent(props) {
                 )}
                 {popup.deployments.length > 0 && (
                   <div className="header">
-                    <b>Goods deployed:</b>{" "}
+                    <b>{popup.deployments.length} Goods deployed:</b>{" "}
                     {popup.deployments.map((good, i) => (
                       <a
                         key={good.name + i + "popupdep"}
@@ -514,7 +514,7 @@ export default function mapComponent(props) {
                 )}
                 {popup.developments.length > 0 && (
                   <div className="header">
-                    <b>Goods developed:</b>
+                    <b>{popup.developments.length} Goods developed:</b>
 
                     {popup.developments.map((good, i) => (
                       <a
