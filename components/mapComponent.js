@@ -1,5 +1,5 @@
 import React, {useState, useRef} from "react";
-import ReactMapboxGl, {ZoomControl, MapContext} from "react-mapbox-gl";
+import ReactMapboxGl, {ZoomControl, MapContext, Popup} from "react-mapbox-gl";
 import mapboxgl from "mapbox-gl";
 import implementedpattern from "../public/implemented.svg";
 import pathpattern from "../public/pathfinders.svg";
@@ -26,6 +26,7 @@ const Map = ReactMapboxGl({
 export default function mapComponent(props) {
   const ref = useRef();
   const mainRef = useRef();
+  const searchRef = useRef();
   const {width, height} = UseWindowDimensions();
   const [zoom, setZoom] = useState(zoomDefault);
   const [lonLat, setLonLat] = useState([props.lon, props.lat]);
@@ -42,6 +43,8 @@ export default function mapComponent(props) {
   // scrollama states
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [popup, setPopup] = useState({visible: false});
+  // const [popupCoords, setPopupCoords] = useState([])
 
   // This callback fires when a Step hits the offset threshold. It receives the
   // data prop of the step, which in this demo stores the index of the step.
@@ -49,7 +52,7 @@ export default function mapComponent(props) {
     setCurrentStepIndex(data);
     // Check and set selectedGood from gsheet
     if (props.story[data].showDPG) {
-      console.log('found dpg in sheet: ', props.story[data].showDPG)
+      console.log("found dpg in sheet: ", props.story[data].showDPG);
       setSelectedGood((prevState) => {
         setPrevGood(prevState);
         return props.digitalGoods.filter(
@@ -71,7 +74,25 @@ export default function mapComponent(props) {
         (v) => (newVisibleLayer[v] = props.story[data].showFilter.includes(v))
       );
       setVisibleLayer(newVisibleLayer);
+    } else {
+      setVisibleLayer({
+        "Pathfinders Exploratory": false,
+        "Pathfinders Confirmed": false,
+        "DPGs deployed": false,
+        "DPGs developed": false,
+      });
     }
+  };
+  const handleSelectPopup = (event, goodName) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setSelectedGood((prevState) => {
+      setPrevGood(prevState);
+      return props.digitalGoods.filter(
+        (el) => el.name.toLowerCase().indexOf(goodName.toLowerCase()) !== -1
+      )[0]; // filter and grab 1st result
+    });
+    searchRef.current.changeInput(goodName);
   };
 
   const handleChangeSearchbox = (good) => {
@@ -116,6 +137,7 @@ export default function mapComponent(props) {
         >
           {mapInteractive && width < 1008 && (
             <SearchBox
+              ref={searchRef}
               goods={props.digitalGoods}
               selectedGood={selectedGood.name}
               onChange={handleChangeSearchbox}
@@ -407,6 +429,13 @@ export default function mapComponent(props) {
                 console.log("all layers:", map.getStyle());
                 console.log("style loaded!");
                 setLoading(false);
+                // close popup if click anywhere on map 
+                map.on("click", () => {
+                  setPopup((prevstate) => {
+                    return {...prevstate, visible: false};
+                  });
+                });
+                // open popup when clicked on country with any data
                 map.on("click", "countries", function (mapElement) {
                   const countryCode = mapElement.features[0].properties.ADM0_A3_IS; // Grab the country code from the map properties.
 
@@ -416,79 +445,89 @@ export default function mapComponent(props) {
                   let developments = props.digitalGoods.filter((good) =>
                     Object.keys(good.locations.developmentCountries).includes(countryCode)
                   );
-                  let countryName = "";
-                  let deployHtml = "";
-                  let developHtml = "";
-                  let pathHtml = "";
-                  if (deployments.length > 0) {
-                    console.log(deployments);
-                    countryName =
-                      deployments[0].locations.deploymentCountries[countryCode];
-                    deployHtml +=
-                      "<div class='header'><b>" +
-                      deployments.length +
-                      " Goods deployed:</b>";
-                    deployments.map((d, i) => {
-                      deployHtml += d.website
-                        ? `<a href=${d.website} target="_blank">${d.name}</a>`
-                        : `<span>${d.name}</span>`;
-                    });
-                    deployHtml += "</div>";
-                  }
-
-                  if (developments.length > 0) {
-                    countryName =
-                      developments[0].locations.developmentCountries[countryCode];
-                    developHtml +=
-                      "<div class='header'><b>" +
-                      developments.length +
-                      " Goods developed:</b>";
-                    developments.map((d) => {
-                      developHtml += d.website
-                        ? `<a href=${d.website} target="_blank">${d.name}</a>`
-                        : `<span>${d.name}</span>`;
-                    });
-                    developHtml += "</div>";
-                  }
-
-                  if (props.countries[countryCode].pathfinder) {
-                    countryName = props.countries[countryCode].pathfinder.Country;
-                    pathHtml = "✅&nbsp;&nbsp;DPG Pathfinder Country<br/>";
-                    pathHtml += "<ul>";
-                    pathHtml +=
-                      "<li><b>Status:</b> " +
-                      props.countries[countryCode].pathfinder.Status +
-                      "</li>";
-                    if (props.countries[countryCode].pathfinder.Sector) {
-                      pathHtml +=
-                        "<li><b>Sector:</b> " +
-                        props.countries[countryCode].pathfinder.Sector +
-                        "</li>";
-                    }
-                    if (props.countries[countryCode].pathfinder.Comments) {
-                      pathHtml +=
-                        "<li><b>Comments:</b> " +
-                        props.countries[countryCode].pathfinder.Comments +
-                        "</li>";
-                    }
-                    pathHtml += "</ul>";
-                  }
-
-                  var html = `<h3>${countryName}</h3>
-    				${pathHtml}
-            ${deployHtml}
-            ${developHtml}`;
-
-                  new mapboxgl.Popup() //Create a new popup
-                    .setLngLat(mapElement.lngLat) // Set where we want it to appear (where we clicked)
-                    .setHTML(html) // Add the HTML we just made to the popup
-                    .addTo(map); // Add the popup to the map
+                  let countryName =
+                    deployments[0].locations.deploymentCountries[countryCode] ||
+                    developments[0].locations.developmentCountries[countryCode] ||
+                    props.countries[countryCode].pathfinder.Country;
+                  setPopup({
+                    visible: true,
+                    coords: [mapElement.lngLat.lng, mapElement.lngLat.lat],
+                    deployments: deployments,
+                    developments: developments,
+                    pathfinder: props.countries[countryCode].pathfinder,
+                    country: countryName,
+                  });
                 });
               }
             }}
           >
             <ZoomControl position="bottom-right" />
+            {popup.visible && (
+              <Popup coordinates={popup.coords} className="popup">
+                <span
+                  className="closePopup"
+                  onClick={() =>
+                    setPopup((prevstate) => {
+                      return {...prevstate, visible: false};
+                    })
+                  }
+                >
+                  x
+                </span>
+                <h3>{popup.country}</h3>
+                {popup.pathfinder && (
+                  <div>
+                    <span>✅&nbsp;&nbsp;DPG Pathfinder Country</span>
+                    <ul>
+                      <li>
+                        <b>Status: </b>
+                        {popup.pathfinder.Status}
+                      </li>
+                      {popup.pathfinder.Sector && (
+                        <li>
+                          <b>Sector: </b>
+                          {popup.pathfinder.Sector}
+                        </li>
+                      )}
 
+                      {popup.pathfinder.Comments && (
+                        <li>
+                          <b>Comments: </b>
+                          {popup.pathfinder.Comments}
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                )}
+                {popup.deployments.length > 0 && (
+                  <div className="header">
+                    <b>Goods deployed:</b>{" "}
+                    {popup.deployments.map((good, i) => (
+                      <a
+                        key={good.name + i + "popupdep"}
+                        onClick={(e) => handleSelectPopup(e, good.name)}
+                      >
+                        {good.name}
+                      </a>
+                    ))}
+                  </div>
+                )}
+                {popup.developments.length > 0 && (
+                  <div className="header">
+                    <b>Goods developed:</b>
+
+                    {popup.developments.map((good, i) => (
+                      <a
+                        key={good.name + i + "popupdev"}
+                        onClick={(e) => handleSelectPopup(e, good.name)}
+                      >
+                        {good.name}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </Popup>
+            )}
             <MapContext.Consumer>
               {(map) => {
                 console.log("check visible layer", visibleLayer);
@@ -603,6 +642,7 @@ export default function mapComponent(props) {
           ref={ref}
           SearchBox={
             <SearchBox
+              ref={searchRef}
               goods={props.digitalGoods}
               selectedGood={selectedGood.name}
               onChange={handleChangeSearchbox}
