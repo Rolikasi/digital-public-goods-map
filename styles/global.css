@@ -399,7 +399,7 @@ ul#menu {
   z-index: 99999;
   background-color: #fff;
   border: 1px solid #e5e7eb;
-  margin: 40rem auto;
+  margin: 50rem auto;
   text-align: left;
   border-radius: 5px;
   -webkit-box-shadow: 0 3px 3px 1px rgba(0, 0, 0, 0.11);
@@ -407,7 +407,7 @@ ul#menu {
   border: 1px solid #d0cccc;
 }
 .scrolly-p.first {
-  margin-top: -70vh;
+  margin-top: -60vh;
 }
 .scrolly-p.last {
   margin-bottom: 90vh;

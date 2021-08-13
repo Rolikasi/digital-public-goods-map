@@ -429,7 +429,7 @@ export default function mapComponent(props) {
                 console.log("all layers:", map.getStyle());
                 console.log("style loaded!");
                 setLoading(false);
-                // close popup if click anywhere on map 
+                // close popup if click anywhere on map
                 map.on("click", () => {
                   setPopup((prevstate) => {
                     return {...prevstate, visible: false};
@@ -577,7 +577,7 @@ export default function mapComponent(props) {
         </div>
         <InView as="div" onChange={(inView) => setMapInteractive(!inView)}>
           <div className="scroller">
-            <Scrollama onStepEnter={onStepEnter} offset="0.5">
+            <Scrollama onStepEnter={onStepEnter} offset="0.7">
               {props.story.map((_, stepIndex) => (
                 <Step data={stepIndex} key={stepIndex}>
                   <div
