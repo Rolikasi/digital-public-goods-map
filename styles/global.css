@@ -295,6 +295,9 @@ ul#menu {
   display: flex;
   flex-direction: column;
 }
+.header a {
+  cursor: pointer;
+}
 
 .text-bold {
   font-weight: bold;
@@ -505,6 +508,21 @@ ul#menu {
   padding: 1rem;
   -webkit-box-shadow: 0 3px 3px 1px rgb(0 0 0 / 11%);
   box-shadow: 0 3px 3px 1px rgb(0 0 0 / 11%);
+}
+.popup {
+  max-width: 20rem;
+}
+.closePopup {
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: pointer;
+  color:black;
+  padding: 0 0.7rem;
+  font-weight: bold;
+}
+.closePopup:hover {
+  color:#404040;
 }
 @media screen and (min-width: 768px) {
   #dg-menu-dropdown {
