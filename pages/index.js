@@ -424,7 +424,7 @@ export async function getStaticProps() {
         .slice(0, -2);
       return await JSON.parse(formattedText);
     };
-    const storyGData = await loadGsheet(process.env.NEXT_PUBLIC_SHEET, 3);
+    const storyGData = await loadGsheet(process.env.NEXT_PUBLIC_SHEET, 2);
     const storyData = addStory(await processGSheetResults(storyGData));
 
     const addCountries = async (results, label) => {

@@ -13,7 +13,7 @@ The design requirements were as follows:
 
 The above requirements were addressed with the following strategies:
 
-1. Data is maintained in a Google Spreadsheets that any member of the team can easily edit. The spreadsheet is published on the web, and changes in data automatically and instantaneoulsy propagate to the web application. The integration is done through the [g-sheets-api](`https://www.npmjs.com/package/g-sheets-api) package. 
+1. Data for Pathfinders and storyline is maintained in a Google Spreadsheets that any member of the team can easily edit. The spreadsheet is published on the web, and changes in data automatically and instantaneoulsy propagate to the web application.
 
 2. Map pulls set of JSONs from [publicgoods-candidates]('https://github.com/unicef/publicgoods-candidates')
 
@@ -23,22 +23,27 @@ The above requirements were addressed with the following strategies:
 
 5. Theming can easily be modified through CSS.
 
+6. Storytelling feature realized with [react-scrollama](https://github.com/jsonkao/react-scrollama) library.
+
 ## 🛠 Architecture
 
-This webapp is built using [Next.js](https://nextjs.org/) as a React Framework and deployed using [Vercel](https://vercel.com/). [Bootstrap](https://getbootstrap.com/) is used as the baseline theme. This application is as simple as it gets: it consists of one page and one component.
+This webapp is built using [Next.js](https://nextjs.org/) as a React Framework and deployed using [Vercel](https://vercel.com/).
+There are 2 pages: `index.js` and `helper.js`
 
 * `pages/_app.js` is the application entry point, which loads the required stylesheets and loads `index.js`
 * `pages/index.js` wraps most of the logic of the application:
-    - loads the data asynchronously from Google spreadsheet and https://github.com/unicef/publicgoods-candidates, and stores each dataset in its own React state variable, as well as combining them into a one single list.
-    - displays a loader and footer.
+    - loads the data from [google spreadsheet](https://docs.google.com/spreadsheets/d/1t75gYVhdUjPD1532DbPYN49FLXFhpRwEBFiS4Hbk6_Q) and [unicef/publicgoods-candidates](https://github.com/unicef/publicgoods-candidates) using [Incremental Static Regeneration](https://nextjs.org/docs/basic-features/data-fetching#incremental-static-regeneration). It allows us to prerender data as JSONs, create or update static pages after the site is built. It significantly improves loading time and requires no fetches from client side. All data passed to react components as `props`.
     - loads the MapComponent from `components/mapComponents.js`
-* `components/mapComponent.js` loads the Mapbox map, adds a layer for each dataset, programmatically creates a popup for each country, searchBar menu to toggle the visibility of each layer of digitalpublic good, and creates filters for other layers of data.
+* `pages/helper.js` tool which allows team easily find logitude, latitude and zoom variables for cards in [google spreadsheet](https://docs.google.com/spreadsheets/d/1t75gYVhdUjPD1532DbPYN49FLXFhpRwEBFiS4Hbk6_Q)
+* `components/mapComponent.js` loads the Mapbox map, adds a layer for each dataset, creates a popup for each country, searchBar menu to toggle the visibility of each layer of digitalpublic good, and creates filters for other layers of data.
+* `components/infoComponent.js` display information about selected digital public good.
+* `components/searchBox.js` interface that allows users to select and search for digital public good.
 
 ## ✏️ Configuration
 
 In order to run this application, you need to:
 - open an account with [Mapbox](https://www.mapbox.com/) to obtain an *Access Token*. 
-- Copy [google spreadsheet](https://docs.google.com/spreadsheets/d/1t75gYVhdUjPD1532DbPYN49FLXFhpRwEBFiS4Hbk6_Q) for this project and [set up](https://github.com/bpk68/g-sheets-api#readme) it so you can obtain sheets id.
+- Copy [google spreadsheet](https://docs.google.com/spreadsheets/d/1t75gYVhdUjPD1532DbPYN49FLXFhpRwEBFiS4Hbk6_Q) for this project and [set up](https://github.com/bpk68/g-sheets-api#set-up-a-google-sheet) it so you can obtain sheets id.
 The following [environment variables](https://nextjs.org/docs/basic-features/environment-variables) need to be set in `.env` or `.env.local`:
 ```
 NEXT_PUBLIC_ACCESS_TOKEN="MAPBOX_ACCESS_TOKEN"
