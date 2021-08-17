@@ -14,6 +14,25 @@ import dpgaLogo from "../public/logo.svg";
 const legends = ["where it was developed", "where it was deployed"];
 const colors = ["#FF952A", "#d4d4ec"];
 const zoomDefault = 2;
+const sdgsDefault = {
+  1: 0,
+  2: 0,
+  3: 0,
+  4: 0,
+  5: 0,
+  6: 0,
+  7: 0,
+  8: 0,
+  9: 0,
+  10: 0,
+  11: 0,
+  12: 0,
+  13: 0,
+  14: 0,
+  15: 0,
+  16: 0,
+  17: 0,
+};
 
 const Map = ReactMapboxGl({
   accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
@@ -31,6 +50,7 @@ export default function mapComponent(props) {
   const [zoom, setZoom] = useState(zoomDefault);
   const [lonLat, setLonLat] = useState([props.lon, props.lat]);
   const [selectedGood, setSelectedGood] = useState({});
+  const [selectedCountry, setSelectedCountry] = useState({});
   const [prevGood, setPrevGood] = useState({});
   const [visibleLayer, setVisibleLayer] = useState({
     "Pathfinders Exploratory": false,
@@ -43,8 +63,7 @@ export default function mapComponent(props) {
   // scrollama states
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [popup, setPopup] = useState({visible: false});
-  // const [popupCoords, setPopupCoords] = useState([])
+  // const [popup, setPopup] = useState({visible: false});
 
   // This callback fires when a Step hits the offset threshold. It receives the
   // data prop of the step, which in this demo stores the index of the step.
@@ -83,15 +102,77 @@ export default function mapComponent(props) {
       });
     }
   };
-  const handleSelectPopup = (event, goodName) => {
-    event.preventDefault();
-    event.stopPropagation();
+
+  const handleSelectCountry = (code, mapElement) => {
+    
+    setSelectedGood((prevState) => {
+      setPrevGood(prevState);
+      return {};
+    });
+    const countryCode = mapElement
+      ? mapElement.features[0].properties.ADM0_A3_IS
+      : code; // Grab the country code from the map properties.
+
+    const deployments = props.digitalGoods.filter((good) =>
+      Object.keys(good.locations.deploymentCountries).includes(countryCode)
+    );
+    const developments = props.digitalGoods.filter((good) =>
+      Object.keys(good.locations.developmentCountries).includes(countryCode)
+    );
+    const countryName =
+      deployments[0].locations.deploymentCountries[countryCode] ||
+      developments[0].locations.developmentCountries[countryCode] ||
+      props.countries[countryCode].pathfinder.Country;
+    // set country name in searchbox
+    mapElement && searchRef.current.changeInput(countryName);
+    // count sdgs for each country
+    const sdgsDeploymentsInfo = Object.entries(
+      deployments
+        .reduce((accum, curr) => [...accum, ...curr.SDGs.map((sdg) => sdg.SDGNumber)], [])
+        .reduce(
+          (acc, curr) => {
+            return acc[curr] ? ++acc[curr] : (acc[curr] = 1), acc;
+          },
+          //initial value helps us create all elements of object
+          {...sdgsDefault}
+        )
+    );
+    // count types of dpgs for each country
+    const typeDeploymentsInfo = Object.entries(
+      deployments
+        .reduce((accum, curr) => [...accum, ...curr.type.map((type) => type)], [])
+        .reduce(
+          (acc, curr) => {
+            return acc[curr] ? ++acc[curr] : (acc[curr] = 1), acc;
+          },
+          //initial value helps us create all elements of object
+          {content: 0, data: 0, software: 0, standard: 0, "AI model": 0}
+        )
+    );
+    if (mapElement) {
+      setZoom(4);
+      setLonLat([mapElement.lngLat.lng, mapElement.lngLat.lat]);
+    }
+    setSelectedCountry({
+      deployments: deployments,
+      developments: developments,
+      pathfinder: props.countries[countryCode].pathfinder,
+      name: countryName,
+      sdgsDeployments: sdgsDeploymentsInfo,
+      typeDeployments: typeDeploymentsInfo,
+    });
+    ref.current.clearStatesFromParent();
+    searchRef.current.changeInput(countryName);
+    ref.current.scrollFromMap(true)
+  };
+  const handleSelectGoodPopup = (goodName) => {
     setSelectedGood((prevState) => {
       setPrevGood(prevState);
       return props.digitalGoods.filter(
         (el) => el.name.toLowerCase().indexOf(goodName.toLowerCase()) !== -1
       )[0]; // filter and grab 1st result
     });
+    setSelectedCountry({});
     searchRef.current.changeInput(goodName);
   };
 
@@ -100,6 +181,7 @@ export default function mapComponent(props) {
       setPrevGood(prevState);
       return good;
     });
+    setSelectedCountry({});
     ref.current.clearStatesFromParent();
   };
   const handleLayerToggle = (layer) => {
@@ -110,6 +192,7 @@ export default function mapComponent(props) {
       setPrevGood(prevState);
       return {};
     });
+    setSelectedCountry({});
     ref.current.clearStatesFromParent();
   };
   const handleScrollToBottom = () => {
@@ -139,7 +222,11 @@ export default function mapComponent(props) {
             <SearchBox
               ref={searchRef}
               goods={props.digitalGoods}
+              countries={props.countries}
+              onSelectCountry={handleSelectCountry}
               selectedGood={selectedGood.name}
+              selectedCountry={selectedCountry.name}
+              //TODO change onchange to selectGood
               onChange={handleChangeSearchbox}
               clearSelectedGood={handleClearSearchbox}
             />
@@ -430,104 +517,28 @@ export default function mapComponent(props) {
                 console.log("style loaded!");
                 setLoading(false);
                 // close popup if click anywhere on map
-                map.on("click", () => {
-                  setPopup((prevstate) => {
-                    return {...prevstate, visible: false};
-                  });
-                });
+                // map.on("click", () => {
+                //   setPopup((prevstate) => {
+                //     return {...prevstate, visible: false};
+                //   });
+                // });
                 // open popup when clicked on country with any data
                 map.on("click", "countries", function (mapElement) {
-                  const countryCode = mapElement.features[0].properties.ADM0_A3_IS; // Grab the country code from the map properties.
-
-                  let deployments = props.digitalGoods.filter((good) =>
-                    Object.keys(good.locations.deploymentCountries).includes(countryCode)
-                  );
-                  let developments = props.digitalGoods.filter((good) =>
-                    Object.keys(good.locations.developmentCountries).includes(countryCode)
-                  );
-                  let countryName =
-                    deployments[0].locations.deploymentCountries[countryCode] ||
-                    developments[0].locations.developmentCountries[countryCode] ||
-                    props.countries[countryCode].pathfinder.Country;
-                  setPopup({
-                    visible: true,
-                    coords: [mapElement.lngLat.lng, mapElement.lngLat.lat],
-                    deployments: deployments,
-                    developments: developments,
-                    pathfinder: props.countries[countryCode].pathfinder,
-                    country: countryName,
-                  });
+                  //remove selected digital public good after clicking on map
+                  
+                  handleSelectCountry(null, mapElement);
+                  
+                });
+                map.on("mouseenter", "countries", () => {
+                  map.getCanvas().style.cursor = "pointer";
+                });
+                map.on("mouseleave", "countries", () => {
+                  map.getCanvas().style.cursor = "";
                 });
               }
             }}
           >
             <ZoomControl position="bottom-right" />
-            {popup.visible && (
-              <Popup coordinates={popup.coords} className="popup">
-                <span
-                  className="closePopup"
-                  onClick={() =>
-                    setPopup((prevstate) => {
-                      return {...prevstate, visible: false};
-                    })
-                  }
-                >
-                  x
-                </span>
-                <h3>{popup.country}</h3>
-                {popup.pathfinder && (
-                  <div>
-                    <span>✅&nbsp;&nbsp;DPG Pathfinder Country</span>
-                    <ul>
-                      <li>
-                        <b>Status: </b>
-                        {popup.pathfinder.Status}
-                      </li>
-                      {popup.pathfinder.Sector && (
-                        <li>
-                          <b>Sector: </b>
-                          {popup.pathfinder.Sector}
-                        </li>
-                      )}
-
-                      {popup.pathfinder.Comments && (
-                        <li>
-                          <b>Comments: </b>
-                          {popup.pathfinder.Comments}
-                        </li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-                {popup.deployments.length > 0 && (
-                  <div className="header">
-                    <b>{popup.deployments.length} Goods deployed:</b>{" "}
-                    {popup.deployments.map((good, i) => (
-                      <a
-                        key={good.name + i + "popupdep"}
-                        onClick={(e) => handleSelectPopup(e, good.name)}
-                      >
-                        {good.name}
-                      </a>
-                    ))}
-                  </div>
-                )}
-                {popup.developments.length > 0 && (
-                  <div className="header">
-                    <b>{popup.developments.length} Goods developed:</b>
-
-                    {popup.developments.map((good, i) => (
-                      <a
-                        key={good.name + i + "popupdev"}
-                        onClick={(e) => handleSelectPopup(e, good.name)}
-                      >
-                        {good.name}
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </Popup>
-            )}
             <MapContext.Consumer>
               {(map) => {
                 console.log("check visible layer", visibleLayer);
@@ -637,6 +648,9 @@ export default function mapComponent(props) {
       {mapInteractive && width >= 1008 && (
         <InfoComponent
           selectedGood={selectedGood}
+          selectedCountry={selectedCountry}
+          selectGood={handleSelectGoodPopup}
+          onSelectCountry={handleSelectCountry}
           onChange={handleLayerToggle}
           visibleLayer={visibleLayer}
           ref={ref}
@@ -644,7 +658,10 @@ export default function mapComponent(props) {
             <SearchBox
               ref={searchRef}
               goods={props.digitalGoods}
+              countries={props.countries}
+              onSelectCountry={handleSelectCountry}
               selectedGood={selectedGood.name}
+              selectedCountry={selectedCountry.name}
               onChange={handleChangeSearchbox}
               clearSelectedGood={handleClearSearchbox}
             />
@@ -654,6 +671,9 @@ export default function mapComponent(props) {
       {width < 1008 && (
         <InfoComponent
           selectedGood={selectedGood}
+          selectedCountry={selectedCountry}
+          selectGood={handleSelectGoodPopup}
+          onSelectCountry={handleSelectCountry}
           visibleLayer={visibleLayer}
           onChange={handleLayerToggle}
           ref={ref}

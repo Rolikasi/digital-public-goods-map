@@ -279,7 +279,8 @@ export async function getStaticProps() {
   };
   const fetchData = async () => {
     var countries = {};
-
+    const nodefetch = require('node-fetch')
+    const csv = require("csvtojson");
     const result = await fetch(
       "https://api.github.com/search/code?q=repo:unicef/publicgoods-candidates+path:digitalpublicgoods+filename:.json"
     );
@@ -297,6 +298,8 @@ export async function getStaticProps() {
           }
           let code = alpha3[country];
           deployGoods[code] = country;
+          c[code]["name"] = country
+          c[code]["code"] = code
           c[code].deployGoods
             ? c[code].deployGoods.push(data.name)
             : (c[code].deployGoods = [data.name]);
@@ -312,6 +315,8 @@ export async function getStaticProps() {
           }
           let code = alpha3[country];
           developmentGoods[code] = country;
+          c[code]["name"] = country
+          c[code]["code"] = code
           c[code].devGoods
             ? c[code].devGoods.push(data.name)
             : (c[code].devGoods = [data.name]);
@@ -357,54 +362,6 @@ export async function getStaticProps() {
       }
     });
     var digitalGoodsArr = await Promise.all(digitalGoodsData);
-    // slightly changed function from g-sheets-api https://github.com/bpk68/g-sheets-api/blob/master/src/gsheetsprocessor.js
-    async function processGSheetResults(JSONResponse) {
-      const data = JSONResponse.feed.entry;
-      const startRow = 2; // skip the header row(1), don't need it
-
-      let processedResults = [{}];
-      let colNames = {};
-
-      for (let item of data) {
-        const cell = item["gs$cell"]; // gets cell data
-        const val = cell["$t"]; // gets cell value
-        const columnNum = cell["col"]; // gets the col number
-        const thisRow = cell["row"]; // gets the row number
-
-        const colNameToAdd = colNames[columnNum]; // careful, this will be undefined if we hit it on the first pass
-
-        // don't add this row to the return data, but add it to list of column names
-        if (thisRow < startRow) {
-          colNames[columnNum] = val;
-          continue; // skip the header row
-        }
-
-        if (typeof processedResults[thisRow] === "undefined") {
-          processedResults[thisRow] = {};
-        }
-
-        if (typeof colNameToAdd !== "undefined" && colNameToAdd.length > 0) {
-          processedResults[thisRow][colNameToAdd] = val;
-        }
-      }
-
-      // make sure we're only returning valid, filled data items
-      processedResults = processedResults.filter((result) => Object.keys(result).length);
-
-      // account for cells with empty data
-      processedResults = processedResults.map((obj) => {
-        const row = {};
-        if (obj !== undefined && Object.keys(obj).length > 0) {
-          Object.values(colNames).forEach((colName) => {
-            row[colName] = obj[colName] || null;
-          });
-          return row;
-        }
-        return;
-      });
-
-      return processedResults;
-    }
     const addStory = (results) => {
       // replace all //n //r, FALSE
       for (let i = 0; i < results.length; i++) {
@@ -415,17 +372,15 @@ export async function getStaticProps() {
       return results;
     };
     const loadGsheet = async (sheetId, sheetNumber) => {
-      let sheetResponse = await fetch(
-        `https://spreadsheets.google.com/feeds/cells/${sheetId}/${sheetNumber}/public/values?alt=json-in-script`
+      
+      let sheetResponse = await nodefetch(
+        `https://docs.google.com/spreadsheets/u/1/d/${sheetId}/export?format=csv&id=${sheetId}&gid=${sheetNumber}`
       );
       let resultText = await sheetResponse.text();
-      let formattedText = resultText
-        .replace("gdata.io.handleScriptLoaded(", "")
-        .slice(0, -2);
-      return await JSON.parse(formattedText);
+      console.log(resultText);
+      return await csv().fromString(resultText);
     };
-    const storyGData = await loadGsheet(process.env.NEXT_PUBLIC_SHEET, 2);
-    const storyData = addStory(await processGSheetResults(storyGData));
+    const storyData = addStory(await loadGsheet(process.env.NEXT_PUBLIC_SHEET, 728344896));
 
     const addCountries = async (results, label) => {
       let s = {};
@@ -439,7 +394,8 @@ export async function getStaticProps() {
             c[alpha3[el.Country]] = {};
           }
           c[alpha3[el.Country]][label] = el;
-
+          c[alpha3[el.Country]]["name"] = el.Country
+          c[alpha3[el.Country]]["code"] = alpha3[el.Country]
           el.Status == "Confirmed"
             ? (s[alpha3[el.Country]] = el)
             : (l[alpha3[el.Country]] = el);
@@ -448,9 +404,9 @@ export async function getStaticProps() {
       countries = c;
       return {confirmed: s, exploratory: l};
     };
-    const pathfinderData = await loadGsheet(process.env.NEXT_PUBLIC_SHEET, 1);
+    const pathfinderData = await loadGsheet(process.env.NEXT_PUBLIC_SHEET, 635692465);
     const pathfinders = await addCountries(
-      await processGSheetResults(pathfinderData),
+      pathfinderData,
       "pathfinder"
     );
 

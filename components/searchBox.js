@@ -1,10 +1,9 @@
 import React, {forwardRef, useImperativeHandle, useRef, useState} from "react";
 
 const SearchBox = forwardRef((props, ref) => {
-  console.log("selectedgoodname", props.selectedGood);
   const [menuOpen, setMenuOpen] = useState(false);
   const [inputValue, setInputValue] = useState(
-    props.selectedGood ? props.selectedGood : ""
+    props.selectedGood ? props.selectedGood : (props.selectedCountry ? props.selectedCountry : '')
   );
   const handleMouseOver = () => {
     menuOpen ? null : setMenuOpen(true);
@@ -18,11 +17,18 @@ const SearchBox = forwardRef((props, ref) => {
   const handleMenuSelect = () => {
     menuOpen ? setMenuOpen(false) : null;
   };
+  console.log('rerender?', props.selectedGood, props.selectedCountry)
   const handleSelect = (item, event) => {
     event.preventDefault();
     // Here, we invoke the callback with the new value
     setInputValue(item.name);
     props.onChange(item);
+  };
+  const handleSelectCountry = (item, event) => {
+    event.preventDefault();
+    // Here, we invoke the callback with the new value
+    setInputValue(item.name);
+    props.onSelectCountry(item.code);
   };
   const handleClear = (event) => {
     event.preventDefault();
@@ -47,18 +53,18 @@ const SearchBox = forwardRef((props, ref) => {
 
   return (
     <div className="selectContainer">
+      {console.log('countries in search', Object.values(props.countries))}
       <div
         onClick={handleMenuClick}
         onMouseOver={handleMouseOver}
         onMouseLeave={handleMouseLeave}
         id="dg-menu"
       >
-        {console.log("selectedgoodname INPUT VALUE", inputValue)}
         <textarea
           className="searchInput"
           type="text"
           value={inputValue}
-          placeholder="Select a digital good"
+          placeholder="Select a digital good or country"
           onChange={(e) => handleChangeInput(e)}
         ></textarea>
         <span className={menuOpen ? "arrow up active" : "arrow down active"}></span>
@@ -77,6 +83,16 @@ const SearchBox = forwardRef((props, ref) => {
                 {item.name}
               </a>
             ))}
+            {
+            Object.values(props.countries).filter(
+              (el) => el.name.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1
+            )
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((item, index) => (
+              <a key={item.name + index} href="#" onClick={(e) => handleSelectCountry(item, e)}>
+                {item.name}
+              </a>
+            )) }
         </div>
       </div>
       <div className="closeIcon" onClick={(e) => handleClear(e)}>

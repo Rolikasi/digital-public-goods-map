@@ -150,7 +150,7 @@ ul {
   display: none;
 }
 
-#menu {
+.menu {
   background: #fff;
   border-radius: 3px;
   font-family: "Open Sans", sans-serif;
@@ -161,20 +161,21 @@ ul {
   justify-content: center;
 }
 
-ul#menu {
+ul.menu {
   list-style-type: none;
   overflow: hidden;
   max-width: 30rem;
   margin: auto;
+  margin-bottom: 1rem;
 }
 
-#menu li {
+.menu li {
   float: left;
   width: 10rem;
   margin: 0.5rem 0.5rem;
 }
 
-#menu a {
+.menu a {
   font-size: 13px;
   color: #404040;
   display: block;
@@ -184,7 +185,7 @@ ul#menu {
   border-radius: 5px;
   text-align: center;
 }
-#menu span {
+.menu span {
   font-size: 13px;
   color: #404040;
   display: block;
@@ -192,27 +193,27 @@ ul#menu {
   text-align: center;
   cursor: pointer;
 }
-#menu a.Confirmed {
+.menu a.Confirmed {
   border: 2px solid rgba(42, 168, 168, 0.5);
 }
-#menu a.Exploratory {
+.menu a.Exploratory {
   border: 2px solid rgba(240, 96, 118, 0.5);
 }
-#menu a.deployed {
+.menu a.deployed {
   border: 2px solid #3333ab50;
 }
-#menu a.developed {
+.menu a.developed {
   border: 2px solid #ff952a4b;
 }
 
-#menu a.active.Confirmed {
+.menu a.active.Confirmed {
   border: 2px solid #2aa8a8;
 }
-#menu a.active.Exploratory {
+.menu a.active.Exploratory {
   border: 2px solid #f06076;
 }
 
-#menu li:hover > a {
+.menu li:hover > a {
   background-color: #f8f8f8;
   color: #404040;
 }
@@ -298,6 +299,9 @@ ul#menu {
 .header a {
   cursor: pointer;
 }
+.header a.last{
+  margin-bottom: 1rem;
+}
 
 .text-bold {
   font-weight: bold;
@@ -312,6 +316,7 @@ ul#menu {
   border: solid black;
   border-width: 0 0 1px 0;
   justify-content: space-between;
+  cursor: pointer;
 }
 .loader {
   max-width: 22%;
@@ -578,7 +583,7 @@ ul#menu {
     margin: 0.5rem 0 1rem 0;
     max-width: unset;
   }
-  ul#menu {
+  ul .menu {
     margin-bottom: 0.5rem;
   }
   #dg-menu {

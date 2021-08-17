@@ -22,6 +22,7 @@
     "next-images": "^1.7.0",
     "react": "^16.14.0",
     "react-dom": "16.13.1",
+    "react-google-charts": "^3.0.15",
     "react-intersection-observer": "^8.32.0",
     "react-mapbox-gl": "^4.8.6",
     "react-scrollama": "^2.2.16"
