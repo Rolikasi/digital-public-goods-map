@@ -17,7 +17,6 @@ const SearchBox = forwardRef((props, ref) => {
   const handleMenuSelect = () => {
     menuOpen ? setMenuOpen(false) : null;
   };
-  console.log('rerender?', props.selectedGood, props.selectedCountry)
   const handleSelect = (item, event) => {
     event.preventDefault();
     // Here, we invoke the callback with the new value
@@ -37,7 +36,6 @@ const SearchBox = forwardRef((props, ref) => {
     props.clearSelectedGood();
   };
   const handleChangeInput = (event) => {
-    console.log("handlechange", event.target.value);
     setInputValue(event.target.value);
     event.target.style.height = "2rem";
     event.target.style.height = event.target.scrollHeight + "px";
@@ -53,7 +51,6 @@ const SearchBox = forwardRef((props, ref) => {
 
   return (
     <div className="selectContainer">
-      {console.log('countries in search', Object.values(props.countries))}
       <div
         onClick={handleMenuClick}
         onMouseOver={handleMouseOver}
@@ -78,6 +75,7 @@ const SearchBox = forwardRef((props, ref) => {
             .filter(
               (el) => el.name.toLowerCase().indexOf(inputValue.toLowerCase()) !== -1
             )
+            .sort((a, b) => a.name.localeCompare(b.name))
             .map((item, index) => (
               <a key={item.name + index} href="#" onClick={(e) => handleSelect(item, e)}>
                 {item.name}

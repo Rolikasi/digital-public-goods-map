@@ -14,24 +14,31 @@ import dpgaLogo from "../public/logo.svg";
 const legends = ["where it was developed", "where it was deployed"];
 const colors = ["#FF952A", "#d4d4ec"];
 const zoomDefault = 2;
-const sdgsDefault = {
-  1: 0,
-  2: 0,
-  3: 0,
-  4: 0,
-  5: 0,
-  6: 0,
-  7: 0,
-  8: 0,
-  9: 0,
-  10: 0,
-  11: 0,
-  12: 0,
-  13: 0,
-  14: 0,
-  15: 0,
-  16: 0,
-  17: 0,
+const SDGS = [
+  "No Poverty",
+  "Zero Hunger",
+  "Good Health and Well-being",
+  "Quality Education",
+  "Gender Equality",
+  "Clean Water and Sanitation",
+  "Affordable and Clean Energy",
+  "Decent Work and Economic Growth",
+  "Industry, Innovation and Infrastructure",
+  "Reduced Inequality",
+  "Sustainable Cities and Communities",
+  "Responsible Consumption and Production",
+  "Climate Action",
+  "Life Below Water",
+  "Life on Land",
+  "Peace and Justice Strong Institutions",
+  "Partnerships to achieve the Goal",
+];
+const sdgsDefault = () => {
+  let obj = {};
+  for (let i = 0; i < SDGS.length; i++) {
+    obj[i + 1] = {dpgs: 0, ann: SDGS[i]};
+  }
+  return obj;
 };
 
 const Map = ReactMapboxGl({
@@ -43,6 +50,7 @@ const Map = ReactMapboxGl({
 });
 
 export default function mapComponent(props) {
+  const [mapInstance, setMapInstance] = useState();
   const ref = useRef();
   const mainRef = useRef();
   const searchRef = useRef();
@@ -63,7 +71,6 @@ export default function mapComponent(props) {
   // scrollama states
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  // const [popup, setPopup] = useState({visible: false});
 
   // This callback fires when a Step hits the offset threshold. It receives the
   // data prop of the step, which in this demo stores the index of the step.
@@ -71,7 +78,6 @@ export default function mapComponent(props) {
     setCurrentStepIndex(data);
     // Check and set selectedGood from gsheet
     if (props.story[data].showDPG) {
-      console.log("found dpg in sheet: ", props.story[data].showDPG);
       setSelectedGood((prevState) => {
         setPrevGood(prevState);
         return props.digitalGoods.filter(
@@ -103,38 +109,40 @@ export default function mapComponent(props) {
     }
   };
 
-  const handleSelectCountry = (code, mapElement) => {
-    
+  const handleSelectCountry = (code) => {
     setSelectedGood((prevState) => {
       setPrevGood(prevState);
       return {};
     });
-    const countryCode = mapElement
-      ? mapElement.features[0].properties.ADM0_A3_IS
-      : code; // Grab the country code from the map properties.
 
     const deployments = props.digitalGoods.filter((good) =>
-      Object.keys(good.locations.deploymentCountries).includes(countryCode)
+      Object.keys(good.locations.deploymentCountries).includes(code)
     );
     const developments = props.digitalGoods.filter((good) =>
-      Object.keys(good.locations.developmentCountries).includes(countryCode)
+      Object.keys(good.locations.developmentCountries).includes(code)
     );
-    const countryName =
-      deployments[0].locations.deploymentCountries[countryCode] ||
-      developments[0].locations.developmentCountries[countryCode] ||
-      props.countries[countryCode].pathfinder.Country;
+    const countryName = props.countries[code].name;
     // set country name in searchbox
-    mapElement && searchRef.current.changeInput(countryName);
+    searchRef.current.changeInput(countryName);
     // count sdgs for each country
     const sdgsDeploymentsInfo = Object.entries(
       deployments
-        .reduce((accum, curr) => [...accum, ...curr.SDGs.map((sdg) => sdg.SDGNumber)], [])
+        .reduce(
+          (accum, curr) => [
+            ...accum,
+            ...curr.SDGs.map((sdg) => {
+              return sdg.SDGNumber;
+            }),
+          ],
+          []
+        )
         .reduce(
           (acc, curr) => {
-            return acc[curr] ? ++acc[curr] : (acc[curr] = 1), acc;
+            console.log("acc", acc);
+            return acc[curr] ? ++acc[curr]["dpgs"] : (acc[curr]["dpgs"] = 1), acc;
           },
           //initial value helps us create all elements of object
-          {...sdgsDefault}
+          {...sdgsDefault()}
         )
     );
     // count types of dpgs for each country
@@ -149,21 +157,20 @@ export default function mapComponent(props) {
           {content: 0, data: 0, software: 0, standard: 0, "AI model": 0}
         )
     );
-    if (mapElement) {
-      setZoom(4);
-      setLonLat([mapElement.lngLat.lng, mapElement.lngLat.lat]);
-    }
+
+    setZoom(5.5);
+    setLonLat([props.countries[code].lon, props.countries[code].lat]);
     setSelectedCountry({
       deployments: deployments,
       developments: developments,
-      pathfinder: props.countries[countryCode].pathfinder,
+      pathfinder: props.countries[code].pathfinder,
       name: countryName,
       sdgsDeployments: sdgsDeploymentsInfo,
       typeDeployments: typeDeploymentsInfo,
     });
     ref.current.clearStatesFromParent();
     searchRef.current.changeInput(countryName);
-    ref.current.scrollFromMap(true)
+    width < 1008 && ref.current.scrollFromMap();
   };
   const handleSelectGoodPopup = (goodName) => {
     setSelectedGood((prevState) => {
@@ -211,13 +218,7 @@ export default function mapComponent(props) {
         <img className={"loader"} src={dpgaLogo}></img>
       </div>
       <div className="map">
-        <div
-          style={{
-            position: "sticky",
-            top: 0,
-            height: "100vh",
-          }}
-        >
+        <div className={mapInteractive ? "mapContainer right" : "mapContainer"}>
           {mapInteractive && width < 1008 && (
             <SearchBox
               ref={searchRef}
@@ -231,7 +232,6 @@ export default function mapComponent(props) {
               clearSelectedGood={handleClearSearchbox}
             />
           )}
-          {console.log("check story", props.story)}
           {props.story.length && props.story[currentStepIndex].image != "false" && (
             <img className="stepImage" src={props.story[currentStepIndex].imageUrl} />
           )}
@@ -260,20 +260,17 @@ export default function mapComponent(props) {
             }}
             className={mapInteractive ? "enabled" : "disabled"}
             movingMethod="flyTo"
-            onMoveEnd={(map) => {
+            onDragEnd={(map, eventData) => {
               if (mapInteractive) {
                 setLonLat([map.getCenter().lng, map.getCenter().lat]);
-                console.log(map.getCenter().lng, map.getCenter().lat);
               }
             }}
-            onZoomEnd={(map) => {
+            onZoomEnd={(map, eventData) => {
               if (mapInteractive) {
                 setZoom(map.getZoom());
-                console.log("zoom", map.getZoom());
               }
             }}
             onStyleLoad={(map) => {
-              console.log("story", props.story);
               var layers = map.getStyle().layers;
               // Find the index of the first symbol layer in the map style
               var firstSymbolId;
@@ -283,8 +280,6 @@ export default function mapComponent(props) {
                   break;
                 }
               }
-              console.log("firstSymbolId", firstSymbolId);
-              console.log("devpolygons", props.devPolygons);
               let hardwareImg = new Image(20, 20);
               hardwareImg.onload = () => map.addImage("hardware-pattern", hardwareImg);
               hardwareImg.src = hardwarePattern;
@@ -513,21 +508,13 @@ export default function mapComponent(props) {
                     },
                   })
                 );
-                console.log("all layers:", map.getStyle());
-                console.log("style loaded!");
                 setLoading(false);
-                // close popup if click anywhere on map
-                // map.on("click", () => {
-                //   setPopup((prevstate) => {
-                //     return {...prevstate, visible: false};
-                //   });
-                // });
-                // open popup when clicked on country with any data
+                // set map so we can resize() it in future from anywhere
+                setMapInstance(map);
+
+                // set country info when clicked on country with any data
                 map.on("click", "countries", function (mapElement) {
-                  //remove selected digital public good after clicking on map
-                  
-                  handleSelectCountry(null, mapElement);
-                  
+                  handleSelectCountry(mapElement.features[0].properties.ADM0_A3_IS);
                 });
                 map.on("mouseenter", "countries", () => {
                   map.getCanvas().style.cursor = "pointer";
@@ -541,7 +528,6 @@ export default function mapComponent(props) {
             <ZoomControl position="bottom-right" />
             <MapContext.Consumer>
               {(map) => {
-                console.log("check visible layer", visibleLayer);
                 Object.keys(visibleLayer).map((layer) => {
                   console.log("toggle ", layer, " visibility");
                   map.getLayer(layer)
@@ -586,7 +572,13 @@ export default function mapComponent(props) {
             </MapContext.Consumer>
           </Map>
         </div>
-        <InView as="div" onChange={(inView) => setMapInteractive(!inView)}>
+        <InView
+          as="div"
+          onChange={(inView) => {
+            setMapInteractive(!inView);
+            if (mapInstance) mapInstance.resize();
+          }}
+        >
           <div className="scroller">
             <Scrollama onStepEnter={onStepEnter} offset="0.7">
               {props.story.map((_, stepIndex) => (

@@ -21,7 +21,7 @@ csv()
       arr = jsonObj.map(
         ({
           Country,
-          "Alpha-3 code": alpha3,
+          "Alpha-3": alpha3,
           "Latitude (average)": lat,
           "Longitude (average)": lon,
         }) => {

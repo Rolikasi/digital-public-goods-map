@@ -111,6 +111,12 @@ ul {
   top: 0;
   border-bottom: solid 1px rgba(0, 0, 0, 0.2);
 }
+.mapContainer {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+}
 .scroller {
   position: relative;
   z-index: 9999;
@@ -163,9 +169,8 @@ ul {
 
 ul.menu {
   list-style-type: none;
-  overflow: hidden;
   max-width: 30rem;
-  margin: auto;
+  margin: 0 auto;
   margin-bottom: 1rem;
 }
 
@@ -299,7 +304,7 @@ ul.menu {
 .header a {
   cursor: pointer;
 }
-.header a.last{
+.header a.last {
   margin-bottom: 1rem;
 }
 
@@ -522,12 +527,16 @@ ul.menu {
   right: 0;
   top: 0;
   cursor: pointer;
-  color:black;
+  color: black;
   padding: 0 0.7rem;
   font-weight: bold;
 }
 .closePopup:hover {
-  color:#404040;
+  color: #404040;
+}
+.chart-container rect {
+  rx: 4;
+  ry: 4;
 }
 @media screen and (min-width: 768px) {
   #dg-menu-dropdown {
@@ -583,9 +592,9 @@ ul.menu {
     margin: 0.5rem 0 1rem 0;
     max-width: unset;
   }
-  ul .menu {
+  /* ul.menu {
     margin-bottom: 0.5rem;
-  }
+  } */
   #dg-menu {
     width: 100%;
   }
@@ -594,6 +603,10 @@ ul.menu {
     justify-content: flex-end;
     bottom: 3rem;
     margin-right: 3rem;
+  }
+  .mapContainer.right{
+    left: 30rem;
+    width: calc(100% - 30rem);
   }
 
   .footer {

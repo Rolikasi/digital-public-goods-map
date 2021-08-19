@@ -63,8 +63,8 @@ const InfoComponent = forwardRef((props, ref) => {
   };
   const divRef = useRef(null);
   const infoRef = useRef(null);
-  const scrollHandle = (scrollAnyway) => {
-    if (!menuInView || scrollAnyway) {
+  const scrollHandle = () => {
+    if (!menuInView) {
       divRef.current.scrollIntoView({
         behavior: "smooth",
         block: "center",
@@ -125,29 +125,25 @@ const InfoComponent = forwardRef((props, ref) => {
         <span>{menuInView ? "" : "Tap to see filters and info"}</span>
       </div>
 
-      <InView as="div" onChange={(inView) => setMenuInView(inView)}>
-        <ul className="menu" ref={divRef}>
-          {Object.keys(props.visibleLayer).map((layer, index) => (
-            <li
-              id={layer}
-              key={layer + index}
-              onClick={(e) => handleLayerToggle(e, layer)}
+      <ul className="menu" ref={divRef}>
+        {Object.keys(props.visibleLayer).map((layer, index) => (
+          <li id={layer} key={layer + index} onClick={(e) => handleLayerToggle(e, layer)}>
+            <span>{props.visibleLayer[layer] ? layer : ""}</span>
+            <a
+              href="#"
+              onClick={(e) => e.preventDefault()}
+              className={layer + (props.visibleLayer[layer] ? " active" : "")}
+              style={
+                props.visibleLayer[layer] ? buttonStyles[layer] : {background: "none"}
+              }
             >
-              <span>{props.visibleLayer[layer] ? layer : ""}</span>
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className={layer + (props.visibleLayer[layer] ? " active" : "")}
-                style={
-                  props.visibleLayer[layer] ? buttonStyles[layer] : {background: "none"}
-                }
-              >
-                {props.visibleLayer[layer] ? "" : layer}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </InView>
+              {props.visibleLayer[layer] ? "" : layer}
+            </a>
+          </li>
+        ))}
+        <InView as="div" onChange={(inView) => setMenuInView(inView)}></InView>
+      </ul>
+      
       {Object.keys(props.selectedCountry).length != 0 && (
         <div>
           {props.selectedCountry.pathfinder && (
@@ -211,56 +207,114 @@ const InfoComponent = forwardRef((props, ref) => {
 
               <p>
                 DPGs deployed in this country are related to{" "}
+                {console.log("check", props.selectedCountry.sdgsDeployments)}
                 {
-                  props.selectedCountry.sdgsDeployments.filter((sdg) => sdg[1] >= 1)
+                  props.selectedCountry.sdgsDeployments.filter((sdg) => sdg[1].dpgs >= 1)
                     .length
                 }{" "}
                 of 17(
                 {(
-                  (props.selectedCountry.sdgsDeployments.filter((sdg) => sdg[1] >= 1)
+                  (props.selectedCountry.sdgsDeployments.filter((sdg) => sdg[1].dpgs >= 1)
                     .length /
                     17) *
                   100
                 ).toFixed(1)}
                 %) Sustainable Development Goals
               </p>
-              <Chart
-                width={"100%"}
-                height={"500px"}
-                chartType="BarChart"
-                loader={<div>Loading Chart</div>}
-                data={[["SDG", "DPGs"], ...props.selectedCountry.sdgsDeployments]}
-                options={{
-                  colors: ["#3333AB"],
-                  chartArea: {width: "85%", height: "85%"},
-                  hAxis: {
-                    title: "DPGs",
-                    minValue: 0,
-                  },
-                  legend: {position: "none"},
-                }}
-                // For tests
-                rootProps={{"data-testid": "1"}}
-              />
-              <b>Types of DPGs deployed in {props.selectedCountry.name}</b>
-              <Chart
-                width={"100%"}
-                height={"250px"}
-                chartType="BarChart"
-                loader={<div>Loading Chart</div>}
-                data={[["SDG", "DPGs"], ...props.selectedCountry.typeDeployments]}
-                options={{
-                  colors: ["#3333AB"],
-                  chartArea: {width: "85%"},
-                  hAxis: {
-                    title: "DPGs",
-                    minValue: 0,
-                  },
-                  legend: {position: "none"},
-                }}
-                // For tests
-                rootProps={{"data-testid": "2"}}
-              />
+              {console.log(
+                "data for chart",
+                ...props.selectedCountry.typeDeployments.map((el) => [...el, null])
+              )}
+              <div className={"chart-container"}>
+                <Chart
+                  width={"100%"}
+                  height={"600px"}
+                  chartType="BarChart"
+                  loader={<div>Loading Chart</div>}
+                  data={[
+                    [
+                      "SDG",
+                      "DPGs",
+                      {role: "annotation", calc: "stringify", type: "string"},
+                    ],
+                    ...props.selectedCountry.sdgsDeployments.map((sdg) => [
+                      sdg[0],
+                      sdg[1].dpgs,
+                      sdg[1].ann + ": " + sdg[1].dpgs,
+                    ]),
+                  ]}
+                  options={{
+                    animation: {
+                      startup: true,
+                      easing: "out",
+                      duration: 500,
+                    },
+                    annotations: {
+                      textStyle: {
+                        fontSize: 11,
+                        bold: false,
+                      },
+                    },
+                    colors: ["#3333AB"],
+                    chartArea: {width: "85%", height: "85%", top: 0},
+                    hAxis: {
+                      baselineColor: "#cccccc",
+                      titleTextStyle: {italic: false},
+                      title: "Digital public goods",
+                      minValue: 0,
+                    },
+                    legend: {position: "none"},
+                  }}
+                  chartEvents={[
+                    {
+                      eventName: "ready",
+                      callback({chartWrapper}) {
+                        console.log("Selected ", chartWrapper.getChart());
+                      },
+                    },
+                  ]}
+                  // For tests
+                  rootProps={{"data-testid": "1"}}
+                />
+
+                <b>Types of DPGs deployed in {props.selectedCountry.name}</b>
+                <Chart
+                  width={"100%"}
+                  height={"170px"}
+                  chartType="BarChart"
+                  loader={<div>Loading Chart</div>}
+                  data={[
+                    ["SDG", "DPGs", {role: "annotation", calc: "stringify"}],
+                    ...props.selectedCountry.typeDeployments.map((el) => [
+                      ...el,
+                      el[0] + ": " + el[1],
+                    ]),
+                  ]}
+                  options={{
+                    animation: {
+                      startup: true,
+                      easing: "out",
+                      duration: 500,
+                    },
+                    colors: ["#3333AB"],
+                    chartArea: {width: "85%", height: "85%", top: 0},
+                    hAxis: {
+                      baselineColor: "#cccccc",
+                      titleTextStyle: {italic: false},
+                      title: "Digital public goods",
+                      minValue: 0,
+                    },
+                    vAxis: {
+                      // title:'Types',
+                      // titleTextStyle: {italic:false,},
+                      textPosition: "none",
+                    },
+                    legend: {position: "none"},
+                  }}
+                  // For tests
+                  rootProps={{"data-testid": "2"}}
+                />
+              </div>
             </div>
           )}
           {props.selectedCountry.developments.length > 0 && (
@@ -366,10 +420,6 @@ const InfoComponent = forwardRef((props, ref) => {
             })}
           </div>
           <div className="goodContainer">
-            {console.log(
-              "selectedGood",
-              Object.entries(props.selectedGood.locations.deploymentCountries)
-            )}
             {Object.keys(props.selectedGood.locations.deploymentCountries).length > 0 && (
               <div className="header">
                 <p
