@@ -25,7 +25,7 @@ export default function Home(props) {
 }
 
 export async function getStaticProps() {
-  const alpha3 = {
+  const alpha = {
     Aruba: "ABW",
     Afghanistan: "AFG",
     Angola: "AGO",
@@ -277,10 +277,25 @@ export async function getStaticProps() {
     Zambia: "ZMB",
     Zimbabwe: "ZWE",
   };
+
+  const convertArrayToObject = (array, key) =>
+    array.reduce((acc, curr) => ((acc[curr[key]] = curr), acc), {});
+  const csv = require("csvtojson");
+  const nodefetch = require("node-fetch");
+  const csvFilePath = path.join(
+    process.cwd(),
+    "public/countries_codes_and_coordinates.csv"
+  );
+  const loadAlpha = await csv()
+    .fromFile(csvFilePath)
+    .then((jsonObj) => {
+      console.log("loaded csv");
+      return convertArrayToObject(jsonObj, "Country");
+    });
   const fetchData = async () => {
+    const alpha3 = {...loadAlpha} 
+    console.log('check alpha', alpha3)
     var countries = {};
-    const nodefetch = require('node-fetch')
-    const csv = require("csvtojson");
     const result = await fetch(
       "https://api.github.com/search/code?q=repo:unicef/publicgoods-candidates+path:digitalpublicgoods+filename:.json"
     );
@@ -293,13 +308,15 @@ export async function getStaticProps() {
         if (!alpha3[country]) {
           console.log("Mismatched good " + country);
         } else {
-          if (!Object.keys(c).find((e) => e == alpha3[country])) {
-            c[alpha3[country]] = {};
+          if (!Object.keys(c).find((e) => e == alpha3[country]["Alpha-3"])) {
+            c[alpha3[country]["Alpha-3"]] = {};
           }
-          let code = alpha3[country];
+          let code = alpha3[country]["Alpha-3"];
           deployGoods[code] = country;
-          c[code]["name"] = country
-          c[code]["code"] = code
+          c[code]["name"] = country;
+          c[code]["code"] = code;
+          c[code]["lat"] = alpha3[country]["Latitude (average)"];
+          c[code]["lon"] = alpha3[country]["Longitude (average)"];
           c[code].deployGoods
             ? c[code].deployGoods.push(data.name)
             : (c[code].deployGoods = [data.name]);
@@ -310,13 +327,15 @@ export async function getStaticProps() {
         if (!alpha3[country]) {
           console.log("Mismatched good " + country);
         } else {
-          if (!Object.keys(c).find((e) => e == alpha3[country])) {
-            c[alpha3[country]] = {};
+          if (!Object.keys(c).find((e) => e == alpha3[country]["Alpha-3"])) {
+            c[alpha3[country]["Alpha-3"]] = {};
           }
-          let code = alpha3[country];
+          let code = alpha3[country]["Alpha-3"];
           developmentGoods[code] = country;
-          c[code]["name"] = country
-          c[code]["code"] = code
+          c[code]["name"] = country;
+          c[code]["code"] = code;
+          c[code]["lat"] = alpha3[country]["Latitude (average)"];
+          c[code]["lon"] = alpha3[country]["Longitude (average)"];
           c[code].devGoods
             ? c[code].devGoods.push(data.name)
             : (c[code].devGoods = [data.name]);
@@ -345,6 +364,7 @@ export async function getStaticProps() {
         return {...handleCountries(goodsData), ...nomineeData};
       } catch (error) {
         // handle linked json
+        console.log('before error', error)
         const res = await fetch(
           "https://raw.githubusercontent.com/unicef/publicgoods-candidates/master/digitalpublicgoods/" +
             fileContents
@@ -372,15 +392,16 @@ export async function getStaticProps() {
       return results;
     };
     const loadGsheet = async (sheetId, sheetNumber) => {
-      
       let sheetResponse = await nodefetch(
         `https://docs.google.com/spreadsheets/u/1/d/${sheetId}/export?format=csv&id=${sheetId}&gid=${sheetNumber}`
       );
       let resultText = await sheetResponse.text();
-      console.log(resultText);
+      // console.log(resultText);
       return await csv().fromString(resultText);
     };
-    const storyData = addStory(await loadGsheet(process.env.NEXT_PUBLIC_SHEET, 728344896));
+    const storyData = addStory(
+      await loadGsheet(process.env.NEXT_PUBLIC_SHEET, 728344896)
+    );
 
     const addCountries = async (results, label) => {
       let s = {};
@@ -390,25 +411,24 @@ export async function getStaticProps() {
         if (!alpha3[el.Country]) {
           console.log("Mismatched " + el.country);
         } else {
-          if (!Object.keys(c).find((e) => e == alpha3[el.Country])) {
-            c[alpha3[el.Country]] = {};
+          if (!Object.keys(c).find((e) => e == alpha3[el.Country]["Alpha-3"])) {
+            c[alpha3[el.Country]["Alpha-3"]] = {};
           }
-          c[alpha3[el.Country]][label] = el;
-          c[alpha3[el.Country]]["name"] = el.Country
-          c[alpha3[el.Country]]["code"] = alpha3[el.Country]
+          c[alpha3[el.Country]["Alpha-3"]][label] = el;
+          c[alpha3[el.Country]["Alpha-3"]]["name"] = el.Country;
+          c[alpha3[el.Country]["Alpha-3"]]["code"] = alpha3[el.Country]["Alpha-3"];
+          c[alpha3[el.Country]["Alpha-3"]]["lat"] = alpha3[el.Country]["Latitude (average)"];
+          c[alpha3[el.Country]["Alpha-3"]]["lon"] = alpha3[el.Country]["Longitude (average)"];
           el.Status == "Confirmed"
-            ? (s[alpha3[el.Country]] = el)
-            : (l[alpha3[el.Country]] = el);
+            ? (s[alpha3[el.Country]["Alpha-3"]] = el)
+            : (l[alpha3[el.Country]["Alpha-3"]] = el);
         }
       });
       countries = c;
       return {confirmed: s, exploratory: l};
     };
     const pathfinderData = await loadGsheet(process.env.NEXT_PUBLIC_SHEET, 635692465);
-    const pathfinders = await addCountries(
-      pathfinderData,
-      "pathfinder"
-    );
+    const pathfinders = await addCountries(pathfinderData, "pathfinder");
 
     const polygonsDirectory = path.join(process.cwd(), "public");
     const filenames = await fs.readdir(polygonsDirectory);
@@ -430,7 +450,7 @@ export async function getStaticProps() {
                 )
               )
               .length.toString();
-            el.properties["height"] = parseFloat(el.properties["text-field"]) * 10000;
+            el.properties["height"] = parseFloat(el.properties["text-field"]) * 20000;
             el.properties["base"] = el.properties["height"] == 0 ? 999999999999 : 0;
             el.properties["height"] += el.properties["height"] == 0 ? 999999999999 : 0;
           });
@@ -443,7 +463,7 @@ export async function getStaticProps() {
                 )
               )
               .length.toString();
-            el.properties["height"] = parseFloat(el.properties["text-field"]) * 10000;
+            el.properties["height"] = parseFloat(el.properties["text-field"]) * 20000;
             el.properties["base"] = el.properties["height"] == 0 ? 999999999999 : 0;
             el.properties["height"] += el.properties["height"] == 0 ? 999999999999 : 0;
           });
