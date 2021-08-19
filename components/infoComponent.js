@@ -256,7 +256,7 @@ const InfoComponent = forwardRef((props, ref) => {
                       },
                     },
                     colors: ["#3333AB"],
-                    chartArea: {width: "85%", height: "85%", top: 0},
+                    chartArea: {width: "85%", height: "90%", top: 0},
                     hAxis: {
                       baselineColor: "#cccccc",
                       titleTextStyle: {italic: false},
