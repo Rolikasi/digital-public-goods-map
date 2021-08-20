@@ -55,7 +55,7 @@ const InfoComponent = forwardRef((props, ref) => {
   const handleLayerToggle = (e, layer) => {
     e.preventDefault();
     e.stopPropagation();
-    props.onChange(layer);
+    props.onLayerToggle(layer);
   };
 
   const toggleCountries = (type) => {
@@ -75,7 +75,7 @@ const InfoComponent = forwardRef((props, ref) => {
   const handleSelectGood = (event, good) => {
     event.preventDefault();
     event.stopPropagation();
-    props.selectGood(good);
+    props.onSelectGood(good);
   };
   const handleSelectCountry = (event, countryCode) => {
     event.preventDefault();
@@ -143,7 +143,7 @@ const InfoComponent = forwardRef((props, ref) => {
         ))}
         <InView as="div" onChange={(inView) => setMenuInView(inView)}></InView>
       </ul>
-      
+
       {Object.keys(props.selectedCountry).length != 0 && (
         <div>
           {props.selectedCountry.pathfinder && (

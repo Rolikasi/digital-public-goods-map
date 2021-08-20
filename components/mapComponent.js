@@ -1,6 +1,5 @@
 import React, {useState, useRef} from "react";
-import ReactMapboxGl, {ZoomControl, MapContext, Popup} from "react-mapbox-gl";
-import mapboxgl from "mapbox-gl";
+import ReactMapboxGl, {ZoomControl, MapContext} from "react-mapbox-gl";
 import implementedpattern from "../public/implemented.svg";
 import pathpattern from "../public/pathfinders.svg";
 import hardwarePattern from "../public/hardware.svg";
@@ -226,8 +225,7 @@ export default function mapComponent(props) {
               onSelectCountry={handleSelectCountry}
               selectedGood={selectedGood.name}
               selectedCountry={selectedCountry.name}
-              //TODO change onchange to selectGood
-              onChange={handleChangeSearchbox}
+              onSelectGood={handleChangeSearchbox}
               clearSelectedGood={handleClearSearchbox}
             />
           )}
@@ -416,7 +414,7 @@ export default function mapComponent(props) {
                   ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderConfirmed))
                 ); // This line lets us filter by country codes.
               }
-              
+
               if (map.getLayer("countries")) {
                 console.log("countries layer is already created");
                 return;
@@ -641,9 +639,9 @@ export default function mapComponent(props) {
         <InfoComponent
           selectedGood={selectedGood}
           selectedCountry={selectedCountry}
-          selectGood={handleSelectGoodPopup}
+          onSelectGood={handleSelectGoodPopup}
           onSelectCountry={handleSelectCountry}
-          onChange={handleLayerToggle}
+          onLayerToggle={handleLayerToggle}
           visibleLayer={visibleLayer}
           ref={ref}
           SearchBox={
@@ -654,7 +652,7 @@ export default function mapComponent(props) {
               onSelectCountry={handleSelectCountry}
               selectedGood={selectedGood.name}
               selectedCountry={selectedCountry.name}
-              onChange={handleChangeSearchbox}
+              onSelectGood={handleChangeSearchbox}
               clearSelectedGood={handleClearSearchbox}
             />
           }
@@ -664,10 +662,10 @@ export default function mapComponent(props) {
         <InfoComponent
           selectedGood={selectedGood}
           selectedCountry={selectedCountry}
-          selectGood={handleSelectGoodPopup}
+          onSelectGood={handleSelectGoodPopup}
           onSelectCountry={handleSelectCountry}
           visibleLayer={visibleLayer}
-          onChange={handleLayerToggle}
+          onLayerToggle={handleLayerToggle}
           ref={ref}
         />
       )}

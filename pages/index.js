@@ -114,47 +114,29 @@ export async function getStaticProps() {
       let deployGoods = {};
       let developmentGoods = {};
       let c = countries;
-      data.locations.deploymentCountries.map((country) => {
-        country = renameCountry[country] ? renameCountry[country] : country;
-        if (!alpha3[country]) {
-          // console.log("Mismatched good " + country);
-          mismatched[country] = country + " deploy " + data.name;
-        } else {
-          if (!Object.keys(c).find((e) => e == alpha3[country]["Alpha-3"])) {
-            c[alpha3[country]["Alpha-3"]] = {};
+
+      ["deploymentCountries", "developmentCountries"].map((el) => {
+        data.locations[el].map((country) => {
+          country = renameCountry[country] ? renameCountry[country] : country;
+          if (!alpha3[country]) {
+            // console.log("Mismatched good " + country);
+            mismatched[country] = country + " deploy " + data.name;
+          } else {
+            if (!Object.keys(c).find((e) => e == alpha3[country]["Alpha-3"])) {
+              c[alpha3[country]["Alpha-3"]] = {};
+            }
+            let code = alpha3[country]["Alpha-3"];
+            el == "deploymentCountries"
+              ? (deployGoods[code] = country)
+              : (developmentGoods[code] = country);
+            c[code]["name"] = country;
+            c[code]["code"] = code;
+            c[code]["lat"] = alpha3[country]["Latitude (average)"];
+            c[code]["lon"] = alpha3[country]["Longitude (average)"];
           }
-          let code = alpha3[country]["Alpha-3"];
-          deployGoods[code] = country;
-          c[code]["name"] = country;
-          c[code]["code"] = code;
-          c[code]["lat"] = alpha3[country]["Latitude (average)"];
-          c[code]["lon"] = alpha3[country]["Longitude (average)"];
-          c[code].deployGoods
-            ? c[code].deployGoods.push(data.name)
-            : (c[code].deployGoods = [data.name]);
-        }
+        });
       });
       data.locations.deploymentCountries = deployGoods;
-      data.locations.developmentCountries.map((country) => {
-        country = renameCountry[country] ? renameCountry[country] : country;
-        if (!alpha3[country]) {
-          // console.log("Mismatched good " + country);
-          mismatched[country] = country + " devel " + data.name;
-        } else {
-          if (!Object.keys(c).find((e) => e == alpha3[country]["Alpha-3"])) {
-            c[alpha3[country]["Alpha-3"]] = {};
-          }
-          let code = alpha3[country]["Alpha-3"];
-          developmentGoods[code] = country;
-          c[code]["name"] = country;
-          c[code]["code"] = code;
-          c[code]["lat"] = alpha3[country]["Latitude (average)"];
-          c[code]["lon"] = alpha3[country]["Longitude (average)"];
-          c[code].devGoods
-            ? c[code].devGoods.push(data.name)
-            : (c[code].devGoods = [data.name]);
-        }
-      });
       data.locations.developmentCountries = developmentGoods;
 
       countries = c;
@@ -204,9 +186,9 @@ export async function getStaticProps() {
       }
       return results;
     };
-    const loadGsheet = async (sheetId, sheetNumber) => {
+    const loadGsheet = async (sheetId, sheetGidNumber) => {
       let sheetResponse = await nodefetch(
-        `https://docs.google.com/spreadsheets/u/1/d/${sheetId}/export?format=csv&id=${sheetId}&gid=${sheetNumber}`
+        `https://docs.google.com/spreadsheets/u/1/d/${sheetId}/export?format=csv&id=${sheetId}&gid=${sheetGidNumber}`
       );
       let resultText = await sheetResponse.text();
       return await csv().fromString(resultText);
@@ -220,24 +202,21 @@ export async function getStaticProps() {
       let l = {};
       let c = countries;
       results.map((el, i) => {
-        el.Country = renameCountry[el.Country] ? renameCountry[el.Country] : el.Country;
-        if (!alpha3[el.Country]) {
-          console.log("Mismatched " + el.Country);
-          mismatched[el.Country] = el.Country + " " + label;
+        let country = renameCountry[el.Country] ? renameCountry[el.Country] : el.Country;
+        if (!alpha3[country]) {
+          console.log("Mismatched " + country);
+          mismatched[country] = country + " " + label;
         } else {
-          if (!Object.keys(c).find((e) => e == alpha3[el.Country]["Alpha-3"])) {
-            c[alpha3[el.Country]["Alpha-3"]] = {};
+          if (!Object.keys(c).find((e) => e == alpha3[country]["Alpha-3"])) {
+            c[alpha3[country]["Alpha-3"]] = {};
           }
-          c[alpha3[el.Country]["Alpha-3"]][label] = el;
-          c[alpha3[el.Country]["Alpha-3"]]["name"] = el.Country;
-          c[alpha3[el.Country]["Alpha-3"]]["code"] = alpha3[el.Country]["Alpha-3"];
-          c[alpha3[el.Country]["Alpha-3"]]["lat"] =
-            alpha3[el.Country]["Latitude (average)"];
-          c[alpha3[el.Country]["Alpha-3"]]["lon"] =
-            alpha3[el.Country]["Longitude (average)"];
-          el.Status == "Confirmed"
-            ? (s[alpha3[el.Country]["Alpha-3"]] = el)
-            : (l[alpha3[el.Country]["Alpha-3"]] = el);
+          let code = alpha3[country]["Alpha-3"];
+          c[code][label] = el;
+          c[code]["name"] = country;
+          c[code]["code"] = code;
+          c[code]["lat"] = alpha3[country]["Latitude (average)"];
+          c[code]["lon"] = alpha3[country]["Longitude (average)"];
+          el.Status == "Confirmed" ? (s[code] = el) : (l[code] = el);
         }
       });
       countries = c;
@@ -256,34 +235,18 @@ export async function getStaticProps() {
         const filePath = path.join(polygonsDirectory, filename);
         const fileContents = await fs.readFile(filePath, "utf8");
         const polygon = JSON.parse(fileContents);
-
-        if (index == 1) {
-          polygon["features"].map((el) => {
-            el.properties["text-field"] = digitalGoodsArr
-              .filter((good) =>
-                Object.keys(good.locations.developmentCountries).includes(
-                  el.properties.iso
-                )
-              )
-              .length.toString();
-            el.properties["height"] = parseFloat(el.properties["text-field"]) * 20000;
-            el.properties["base"] = el.properties["height"] == 0 ? 999999999999 : 0;
-            el.properties["height"] += el.properties["height"] == 0 ? 999999999999 : 0;
-          });
-        } else {
-          polygon["features"].map((el) => {
-            el.properties["text-field"] = digitalGoodsArr
-              .filter((good) =>
-                Object.keys(good.locations.deploymentCountries).includes(
-                  el.properties.iso
-                )
-              )
-              .length.toString();
-            el.properties["height"] = parseFloat(el.properties["text-field"]) * 20000;
-            el.properties["base"] = el.properties["height"] == 0 ? 999999999999 : 0;
-            el.properties["height"] += el.properties["height"] == 0 ? 999999999999 : 0;
-          });
-        }
+        let arrayOfCountries =
+          index == 0 ? "deploymentCountries" : "developmentCountries";
+        polygon["features"].map((el) => {
+          el.properties["text-field"] = digitalGoodsArr
+            .filter((good) =>
+              Object.keys(good.locations[arrayOfCountries]).includes(el.properties.iso)
+            )
+            .length.toString();
+          el.properties["height"] = parseFloat(el.properties["text-field"]) * 20000;
+          el.properties["base"] = el.properties["height"] == 0 ? 999999999999 : 0;
+          el.properties["height"] += el.properties["height"] == 0 ? 999999999999 : 0;
+        });
         return polygon;
       });
     console.log("missmathes", mismatched);
