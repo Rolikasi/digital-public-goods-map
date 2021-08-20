@@ -41,16 +41,16 @@ export async function getStaticProps() {
     "Iran (Islamic Republic Of)": "Iran",
     Luxemburg: "Luxembourg",
     "Micronesia, Federated States Of": "Micronesia",
-    "Saint Kitts And Nevis": "Saint Kitts And Nevis",
-    "Saint Vincent And The Grenadines": "Saint Vincent And The Grenadines", // +
-    "Sao Tome And Principe": "Sao Tome And Principe", // +
-    "Sint Maarten": "Sint Maarten (Dutch Part)",
+    "Saint Kitts And Nevis": "Saint Kitts and Nevis",
+    "Saint Vincent And The Grenadines": "Saint Vincent and the Grenadines", // +
+    "Sao Tome And Principe": "Sao Tome and Principe", // +
+    "Sint Maarten": "Sint Maarten (Dutch part)",
     "Slovakia (Slovak Republic)": "Slovakia",
     "South Georgia And South S.S.": "South Georgia and the South Sandwich Islands",
     "St. Pierre And Miquelon": "Saint Pierre and Miquelon",
     "State of Palestine": "Palestine",
     "Syrian Arab Republic": "Syria",
-    "Trinidad And Tobago": "Trinidad And Tobago",
+    "Trinidad And Tobago": "Trinidad and Tobago",
     "Turks And Caicos Islands": "Turks and Caicos Islands",
     "United Republic of Tanzania": "United Republic of Tanzania",
     "Virgin Islands (British)": "Virgin Islands, British",
@@ -72,7 +72,7 @@ export async function getStaticProps() {
     "Palestine State": "Palestine",
     "United Kingdom of Great Britain and Northern Ireland": "United Kingdom",
     "Korea (the Republic of Korea)": "Korea, Democratic People's Republic of",
-    "Viet Nam": "VietNam",
+    "Viet Nam": "Vietnam",
     Macedonia: "North Macedonia",
     "Congo (the Democratic Republic of the Congo)":
       "Congo, the Democratic Republic of the",
@@ -118,7 +118,7 @@ export async function getStaticProps() {
         country = renameCountry[country] ? renameCountry[country] : country;
         if (!alpha3[country]) {
           // console.log("Mismatched good " + country);
-          mismatched[country] = country;
+          mismatched[country] = country + " deploy " + data.name;
         } else {
           if (!Object.keys(c).find((e) => e == alpha3[country]["Alpha-3"])) {
             c[alpha3[country]["Alpha-3"]] = {};
@@ -139,7 +139,7 @@ export async function getStaticProps() {
         country = renameCountry[country] ? renameCountry[country] : country;
         if (!alpha3[country]) {
           // console.log("Mismatched good " + country);
-          mismatched[country] = country;
+          mismatched[country] = country + " devel " + data.name;
         } else {
           if (!Object.keys(c).find((e) => e == alpha3[country]["Alpha-3"])) {
             c[alpha3[country]["Alpha-3"]] = {};
@@ -219,11 +219,11 @@ export async function getStaticProps() {
       let s = {};
       let l = {};
       let c = countries;
-      results.forEach((el, i) => {
+      results.map((el, i) => {
         el.Country = renameCountry[el.Country] ? renameCountry[el.Country] : el.Country;
         if (!alpha3[el.Country]) {
           console.log("Mismatched " + el.Country);
-          mismatched[el.Country] = el.Country;
+          mismatched[el.Country] = el.Country + " " + label;
         } else {
           if (!Object.keys(c).find((e) => e == alpha3[el.Country]["Alpha-3"])) {
             c[alpha3[el.Country]["Alpha-3"]] = {};
