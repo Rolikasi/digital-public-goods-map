@@ -25,259 +25,70 @@ export default function Home(props) {
 }
 
 export async function getStaticProps() {
-  const alpha = {
-    Aruba: "ABW",
-    Afghanistan: "AFG",
-    Angola: "AGO",
-    Anguilla: "AIA",
-    "Åland Islands": "ALA",
-    Albania: "ALB",
-    Andorra: "AND",
-    "Netherlands Antilles": "ANT",
-    "United Arab Emirates": "ARE",
-    Argentina: "ARG",
-    Armenia: "ARM",
-    "American Samoa": "ASM",
-    Antarctica: "ATA",
-    "French Southern Territories": "ATF",
-    "Antigua and Barbuda": "ATG",
-    Australia: "AUS",
-    Austria: "AUT",
-    Azerbaijan: "AZE",
-    Burundi: "BDI",
-    Belgium: "BEL",
-    Benin: "BEN",
-    "Burkina Faso": "BFA",
-    Bangladesh: "BGD",
-    Bulgaria: "BGR",
-    Bahrain: "BHR",
-    Bahamas: "BHS",
-    "Bosnia and Herzegovina": "BIH",
-    "Saint Barthélemy": "BLM",
-    Belarus: "BLR",
-    Belize: "BLZ",
-    Bermuda: "BMU",
-    Bolivia: "BOL",
-    Brazil: "BRA",
-    Barbados: "BRB",
-    "Brunei Darussalam": "BRN",
-    Bhutan: "BTN",
-    "Bouvet Island": "BVT",
-    Botswana: "BWA",
-    "Central African Republic": "CAF",
-    Canada: "CAN",
-    "Cocos (Keeling) Islands": "CCK",
-    Switzerland: "CHE",
-    Chile: "CHL",
-    China: "CHN",
-    "Côte d'Ivoire": "CIV",
-    Cameroon: "CMR",
-    "Congo, DRC": "COD",
-    Congo: "COG",
-    "Cook Islands": "COK",
-    Colombia: "COL",
-    Comoros: "COM",
-    "Cape Verde": "CPV",
-    "Costa Rica": "CRI",
-    Cuba: "CUB",
-    "Christmas Island": "CXR",
-    "Cayman Islands": "CYM",
-    Cyprus: "CYP",
-    "Czech Republic": "CZE",
-    Czechia: "CZE",
-    Germany: "DEU",
-    Djibouti: "DJI",
-    Dominica: "DMA",
-    Denmark: "DNK",
-    "Dominican Republic": "DOM",
-    Algeria: "DZA",
-    Ecuador: "ECU",
-    Egypt: "EGY",
-    Eritrea: "ERI",
-    "Western Sahara": "ESH",
-    Spain: "ESP",
-    Estonia: "EST",
-    Ethiopia: "ETH",
-    Finland: "FIN",
-    Fiji: "FJI",
-    "Falkland Islands (Malvinas)": "FLK",
-    France: "FRA",
-    "Faroe Islands": "FRO",
-    "Micronesia, Federated States of": "FSM",
-    Gabon: "GAB",
-    "United Kingdom": "GBR",
-    Georgia: "GEO",
-    Guernsey: "GGY",
-    Ghana: "GHA",
-    Gibraltar: "GIB",
-    Guinea: "GIN",
-    Guadeloupe: "GLP",
-    Gambia: "GMB",
-    "Guinea-Bissau": "GNB",
-    "Equatorial Guinea": "GNQ",
-    Greece: "GRC",
-    Grenada: "GRD",
-    Greenland: "GRL",
-    Guatemala: "GTM",
-    "French Guiana": "GUF",
-    Guam: "GUM",
-    Guyana: "GUY",
-    "Hong Kong": "HKG",
-    "Heard Island and McDonald Islands": "HMD",
-    Honduras: "HND",
-    Croatia: "HRV",
-    Haiti: "HTI",
-    Hungary: "HUN",
-    Indonesia: "IDN",
-    "Isle of Man": "IMN",
-    India: "IND",
-    "British Indian Ocean Territory": "IOT",
-    Ireland: "IRL",
-    "Iran, Islamic Republic of": "IRN",
-    Iran: "IRN",
-    Iraq: "IRQ",
-    Iceland: "ISL",
-    Israel: "ISR",
-    Italy: "ITA",
-    Jamaica: "JAM",
-    Jersey: "JEY",
-    Jordan: "JOR",
-    Japan: "JPN",
-    Kazakhstan: "KAZ",
-    Kenya: "KEN",
-    Kyrgyzstan: "KGZ",
-    Cambodia: "KHM",
-    Kiribati: "KIR",
-    "Saint Kitts and Nevis": "KNA",
-    "Korea, Republic of": "KOR",
-    Kuwait: "KWT",
-    "Lao People's Democratic Republic": "LAO",
-    Lebanon: "LBN",
-    Liberia: "LBR",
-    "Libyan Arab Jamahiriya": "LBY",
-    "Saint Lucia": "LCA",
-    Liechtenstein: "LIE",
-    "Sri Lanka": "LKA",
-    Lesotho: "LSO",
-    Lithuania: "LTU",
-    Luxembourg: "LUX",
-    Latvia: "LVA",
-    Macao: "MAC",
-    "Saint Martin (French part)": "MAF",
-    Morocco: "MAR",
-    Monaco: "MCO",
-    "Moldova, Republic of": "MDA",
-    Madagascar: "MDG",
-    Maldives: "MDV",
-    Mexico: "MEX",
-    "Marshall Islands": "MHL",
-    "Macedonia, the former Yugoslav Republic of": "MKD",
-    Mali: "MLI",
-    Malta: "MLT",
-    Myanmar: "MMR",
-    Montenegro: "MNE",
-    Mongolia: "MNG",
-    "Northern Mariana Islands": "MNP",
-    Mozambique: "MOZ",
-    Mauritania: "MRT",
-    Montserrat: "MSR",
-    Martinique: "MTQ",
-    Mauritius: "MUS",
-    Malawi: "MWI",
-    Malaysia: "MYS",
-    Mayotte: "MYT",
-    Namibia: "NAM",
-    "New Caledonia": "NCL",
-    Niger: "NER",
-    "Norfolk Island": "NFK",
-    Nigeria: "NGA",
-    Nicaragua: "NIC",
-    Niue: "NIU",
-    Netherlands: "NLD",
-    Norway: "NOR",
-    Nepal: "NPL",
-    Nauru: "NRU",
-    "New Zealand": "NZL",
-    Oman: "OMN",
-    Pakistan: "PAK",
-    Panama: "PAN",
-    Pitcairn: "PCN",
-    Peru: "PER",
-    Philippines: "PHL",
-    Palau: "PLW",
-    "Papua New Guinea": "PNG",
-    Poland: "POL",
-    "Puerto Rico": "PRI",
-    "Korea, Democratic People's Republic of": "PRK",
-    Portugal: "PRT",
-    Paraguay: "PRY",
-    Palestine: "PSE",
-    "French Polynesia": "PYF",
-    Qatar: "QAT",
-    Réunion: "REU",
-    Romania: "ROU",
-    "Russian Federation": "RUS",
-    Rwanda: "RWA",
-    "Saudi Arabia": "SAU",
-    Sudan: "SDN",
-    Senegal: "SEN",
-    Singapore: "SGP",
-    "South Georgia and the South Sandwich Islands": "SGS",
-    "Saint Helena, Ascension and Tristan da Cunha": "SHN",
-    "Svalbard and Jan Mayen": "SJM",
-    "Solomon Islands": "SLB",
-    "Sierra Leone": "SLE",
-    "El Salvador": "SLV",
-    "San Marino": "SMR",
-    Somalia: "SOM",
-    "Saint Pierre and Miquelon": "SPM",
-    Serbia: "SRB",
-    "Sao Tome and Principe": "STP",
-    Suriname: "SUR",
-    Slovakia: "SVK",
-    Slovenia: "SVN",
-    Sweden: "SWE",
-    Swaziland: "SWZ",
-    Seychelles: "SYC",
-    Syria: "SYR",
-    "Turks and Caicos Islands": "TCA",
-    Chad: "TCD",
-    Togo: "TGO",
-    Thailand: "THA",
-    Tajikistan: "TJK",
-    Tokelau: "TKL",
-    Turkmenistan: "TKM",
-    "Timor-Leste": "TLS",
-    Tonga: "TON",
-    "Trinidad and Tobago": "TTO",
-    Tunisia: "TUN",
-    Turkey: "TUR",
-    Tuvalu: "TUV",
-    "Taiwan, Province of China": "TWN",
-    Taiwan: "TWN",
-    Tanzania: "TZA",
-    Uganda: "UGA",
-    Ukraine: "UKR",
-    "United States Minor Outlying Islands": "UMI",
-    Uruguay: "URY",
-    "United States": "USA",
-    USA: "USA",
-    Uzbekistan: "UZB",
-    "Holy See (Vatican City State)": "VAT",
-    "Saint Vincent and the Grenadines": "VCT",
-    "Venezuela, Bolivarian Republic of": "VEN",
-    "Virgin Islands, British": "VGB",
-    "Virgin Islands, U.S.": "VIR",
-    Vietnam: "VNM",
-    Vanuatu: "VUT",
-    "Wallis and Futuna": "WLF",
-    Samoa: "WSM",
-    Yemen: "YEM",
-    "South Africa": "ZAF",
-    Zambia: "ZMB",
-    Zimbabwe: "ZWE",
+  const renameCountry = {
+    "Cote d'Ivoire": "Ivory Coast",
+    DRC: "Congo, the Democratic Republic of the",
+    Eswatini: "eSwatini (former Swaziland)",
+    Tanzania: "United Republic of Tanzania",
+    "United States of America": "United States",
+    "Antigua And Barbuda": "Antigua and Barbuda",
+    "Bolivia (Plurinational State of)": "Bolivia",
+    "Bosnia And Herzegowina": "Bosnia and Herzegovina",
+    "Cabo Verde": "Cape Verde",
+    Czechia: "Czech Republic",
+    "Côte d'Ivoire": "Ivory Coast",
+    "Democratic Republic of the Congo": "Congo, the Democratic Republic of the",
+    "Iran (Islamic Republic Of)": "Iran",
+    Luxemburg: "Luxembourg",
+    "Micronesia, Federated States Of": "Micronesia",
+    "Saint Kitts And Nevis": "Saint Kitts And Nevis",
+    "Saint Vincent And The Grenadines": "Saint Vincent And The Grenadines", // +
+    "Sao Tome And Principe": "Sao Tome And Principe", // +
+    "Sint Maarten": "Sint Maarten (Dutch Part)",
+    "Slovakia (Slovak Republic)": "Slovakia",
+    "South Georgia And South S.S.": "South Georgia and the South Sandwich Islands",
+    "St. Pierre And Miquelon": "Saint Pierre and Miquelon",
+    "State of Palestine": "Palestine",
+    "Syrian Arab Republic": "Syria",
+    "Trinidad And Tobago": "Trinidad And Tobago",
+    "Turks And Caicos Islands": "Turks and Caicos Islands",
+    "United Republic of Tanzania": "United Republic of Tanzania",
+    "Virgin Islands (British)": "Virgin Islands, British",
+    US: "United States",
+    UK: "United Kingdom",
+    "Cote D'Ivoire": "Ivory Coast",
+    USA: "United States",
+    Africa: "Africa", // ???
+    Bravil: "Bravil", // ???
+    Haita: "Haiti", // ???
+    Zimbwabwe: "Zimbabwe",
+    "United Kingdom of Great Britain And Northern Ireland": "United Kingdom",
+    Vanuata: "Vanuatu",
+    Bosnia: "Bosnia and Herzegovina",
+    "Cote d’Ivoire": "Ivory Coast",
+    Kazahkstan: "Kazakhstan",
+    "North Korea": "Korea, Democratic People's Republic of",
+    "Republic of Congo": "Congo",
+    "Palestine State": "Palestine",
+    "United Kingdom of Great Britain and Northern Ireland": "United Kingdom",
+    "Korea (the Republic of Korea)": "Korea, Democratic People's Republic of",
+    "Viet Nam": "VietNam",
+    Macedonia: "North Macedonia",
+    "Congo (the Democratic Republic of the Congo)":
+      "Congo, the Democratic Republic of the",
+    "Brunei Darussalam": "Brunei",
+    Curaçao: "Curaçao", // The Netherlands Antilles (AN, ANT, 530) was divided into Bonaire, Saint Eustatius and Saba (BQ, BES, 535), Curaçao (CW, CUW, 531) and Sint Maarten (Dutch part) (SX, SXM, 534).
+    "Virgin Islands (U.S.)": "Virgin Islands, U.S.",
+    "Bonaire, Sint Eustatius, and Saba": "Bonaire, Sint Eustatius, and Saba", // The Netherlands Antilles (AN, ANT, 530) was divided into Bonaire, Saint Eustatius and Saba (BQ, BES, 535), Curaçao (CW, CUW, 531) and Sint Maarten (Dutch part) (SX, SXM, 534).
+    "Falkland Islands": "Falkland Islands (Malvinas)",
+    "The Faroe Islands": "Faroe Islands",
+    Kyrgyztan: "Kyrgyzstan",
+    SouthAfrica: "South Africa",
+    Swaziland: "eSwatini (former Swaziland)",
+    VietNam: "Vietnam",
+    Curaçao: "Curaçao",
+    "Lao People's Democratic Republic": "Laos",
   };
-
   const convertArrayToObject = (array, key) =>
     array.reduce((acc, curr) => ((acc[curr[key]] = curr), acc), {});
   const csv = require("csvtojson");
@@ -289,13 +100,12 @@ export async function getStaticProps() {
   const loadAlpha = await csv()
     .fromFile(csvFilePath)
     .then((jsonObj) => {
-      console.log("loaded csv");
       return convertArrayToObject(jsonObj, "Country");
     });
   const fetchData = async () => {
-    const alpha3 = {...loadAlpha} 
-    console.log('check alpha', alpha3)
+    const alpha3 = {...loadAlpha};
     var countries = {};
+    var mismatched = {};
     const result = await fetch(
       "https://api.github.com/search/code?q=repo:unicef/publicgoods-candidates+path:digitalpublicgoods+filename:.json"
     );
@@ -305,8 +115,10 @@ export async function getStaticProps() {
       let developmentGoods = {};
       let c = countries;
       data.locations.deploymentCountries.map((country) => {
+        country = renameCountry[country] ? renameCountry[country] : country;
         if (!alpha3[country]) {
-          console.log("Mismatched good " + country);
+          // console.log("Mismatched good " + country);
+          mismatched[country] = country;
         } else {
           if (!Object.keys(c).find((e) => e == alpha3[country]["Alpha-3"])) {
             c[alpha3[country]["Alpha-3"]] = {};
@@ -323,9 +135,11 @@ export async function getStaticProps() {
         }
       });
       data.locations.deploymentCountries = deployGoods;
-      data.locations.developmentCountries.forEach((country) => {
+      data.locations.developmentCountries.map((country) => {
+        country = renameCountry[country] ? renameCountry[country] : country;
         if (!alpha3[country]) {
-          console.log("Mismatched good " + country);
+          // console.log("Mismatched good " + country);
+          mismatched[country] = country;
         } else {
           if (!Object.keys(c).find((e) => e == alpha3[country]["Alpha-3"])) {
             c[alpha3[country]["Alpha-3"]] = {};
@@ -364,7 +178,6 @@ export async function getStaticProps() {
         return {...handleCountries(goodsData), ...nomineeData};
       } catch (error) {
         // handle linked json
-        console.log('before error', error)
         const res = await fetch(
           "https://raw.githubusercontent.com/unicef/publicgoods-candidates/master/digitalpublicgoods/" +
             fileContents
@@ -396,7 +209,6 @@ export async function getStaticProps() {
         `https://docs.google.com/spreadsheets/u/1/d/${sheetId}/export?format=csv&id=${sheetId}&gid=${sheetNumber}`
       );
       let resultText = await sheetResponse.text();
-      // console.log(resultText);
       return await csv().fromString(resultText);
     };
     const storyData = addStory(
@@ -408,8 +220,10 @@ export async function getStaticProps() {
       let l = {};
       let c = countries;
       results.forEach((el, i) => {
+        el.Country = renameCountry[el.Country] ? renameCountry[el.Country] : el.Country;
         if (!alpha3[el.Country]) {
-          console.log("Mismatched " + el.country);
+          console.log("Mismatched " + el.Country);
+          mismatched[el.Country] = el.Country;
         } else {
           if (!Object.keys(c).find((e) => e == alpha3[el.Country]["Alpha-3"])) {
             c[alpha3[el.Country]["Alpha-3"]] = {};
@@ -417,8 +231,10 @@ export async function getStaticProps() {
           c[alpha3[el.Country]["Alpha-3"]][label] = el;
           c[alpha3[el.Country]["Alpha-3"]]["name"] = el.Country;
           c[alpha3[el.Country]["Alpha-3"]]["code"] = alpha3[el.Country]["Alpha-3"];
-          c[alpha3[el.Country]["Alpha-3"]]["lat"] = alpha3[el.Country]["Latitude (average)"];
-          c[alpha3[el.Country]["Alpha-3"]]["lon"] = alpha3[el.Country]["Longitude (average)"];
+          c[alpha3[el.Country]["Alpha-3"]]["lat"] =
+            alpha3[el.Country]["Latitude (average)"];
+          c[alpha3[el.Country]["Alpha-3"]]["lon"] =
+            alpha3[el.Country]["Longitude (average)"];
           el.Status == "Confirmed"
             ? (s[alpha3[el.Country]["Alpha-3"]] = el)
             : (l[alpha3[el.Country]["Alpha-3"]] = el);
@@ -470,6 +286,7 @@ export async function getStaticProps() {
         }
         return polygon;
       });
+    console.log("missmathes", mismatched);
 
     return {
       countries: countries,

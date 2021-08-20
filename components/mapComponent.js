@@ -138,7 +138,6 @@ export default function mapComponent(props) {
         )
         .reduce(
           (acc, curr) => {
-            console.log("acc", acc);
             return acc[curr] ? ++acc[curr]["dpgs"] : (acc[curr]["dpgs"] = 1), acc;
           },
           //initial value helps us create all elements of object
@@ -417,7 +416,7 @@ export default function mapComponent(props) {
                   ["in", "ADM0_A3_IS"].concat(Object.keys(props.pathfinderConfirmed))
                 ); // This line lets us filter by country codes.
               }
-              console.log('map.getLayer("countries")', map.getLayer("countries"));
+              
               if (map.getLayer("countries")) {
                 console.log("countries layer is already created");
                 return;
@@ -444,6 +443,7 @@ export default function mapComponent(props) {
                   "countries",
                   ["in", "ADM0_A3_IS"].concat(Object.keys(props.countries))
                 ); // This line lets us filter by country codes.
+                console.log('map.getLayer("countries")', map.getLayer("countries"));
 
                 // Add 3d layer with extrudes
                 map.addSource("DPGs developed-polygons-source", {

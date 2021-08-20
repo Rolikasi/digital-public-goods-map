@@ -207,7 +207,6 @@ const InfoComponent = forwardRef((props, ref) => {
 
               <p>
                 DPGs deployed in this country are related to{" "}
-                {console.log("check", props.selectedCountry.sdgsDeployments)}
                 {
                   props.selectedCountry.sdgsDeployments.filter((sdg) => sdg[1].dpgs >= 1)
                     .length
@@ -221,10 +220,6 @@ const InfoComponent = forwardRef((props, ref) => {
                 ).toFixed(1)}
                 %) Sustainable Development Goals
               </p>
-              {console.log(
-                "data for chart",
-                ...props.selectedCountry.typeDeployments.map((el) => [...el, null])
-              )}
               <div className={"chart-container"}>
                 <Chart
                   width={"100%"}
@@ -265,16 +260,6 @@ const InfoComponent = forwardRef((props, ref) => {
                     },
                     legend: {position: "none"},
                   }}
-                  chartEvents={[
-                    {
-                      eventName: "ready",
-                      callback({chartWrapper}) {
-                        console.log("Selected ", chartWrapper.getChart());
-                      },
-                    },
-                  ]}
-                  // For tests
-                  rootProps={{"data-testid": "1"}}
                 />
 
                 <b>Types of DPGs deployed in {props.selectedCountry.name}</b>
@@ -305,14 +290,10 @@ const InfoComponent = forwardRef((props, ref) => {
                       minValue: 0,
                     },
                     vAxis: {
-                      // title:'Types',
-                      // titleTextStyle: {italic:false,},
                       textPosition: "none",
                     },
                     legend: {position: "none"},
                   }}
-                  // For tests
-                  rootProps={{"data-testid": "2"}}
                 />
               </div>
             </div>
