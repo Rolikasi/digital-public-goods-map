@@ -235,6 +235,10 @@ ul.menu {
   display: flex;
   justify-content: space-between;
 }
+#dg-menu ::placeholder {
+  font-size: 0.8rem;
+  line-height: 1.5rem;
+}
 
 .searchIcons {
   display: flex;
@@ -252,7 +256,8 @@ ul.menu {
   color: black;
   padding: 12px 16px;
   text-decoration: none;
-  display: block;
+  display: flex;
+  justify-content: space-between;
 }
 #dg-menu-dropdown {
   display: none;
@@ -567,6 +572,9 @@ ul.menu {
   }
 }
 @media screen and (min-width: 1008px) {
+  #dg-menu ::placeholder {
+    font-size: 1rem;
+  }
   .controls {
     display: none;
   }
@@ -604,7 +612,7 @@ ul.menu {
     bottom: 3rem;
     margin-right: 3rem;
   }
-  .mapContainer.right{
+  .mapContainer.right {
     left: 30rem;
     width: calc(100% - 30rem);
   }

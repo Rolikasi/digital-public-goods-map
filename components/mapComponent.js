@@ -53,7 +53,7 @@ export default function mapComponent(props) {
   const ref = useRef();
   const mainRef = useRef();
   const searchRef = useRef();
-  const {width, height} = UseWindowDimensions();
+  const {width} = UseWindowDimensions();
   const [zoom, setZoom] = useState(zoomDefault);
   const [lonLat, setLonLat] = useState([props.lon, props.lat]);
   const [selectedGood, setSelectedGood] = useState({});

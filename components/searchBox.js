@@ -1,4 +1,6 @@
 import React, {forwardRef, useImperativeHandle, useState} from "react";
+import dpgBadge from "../public/dpgBadge.svg";
+import UseWindowDimensions from "./UseWindowDimensions";
 
 const SearchBox = forwardRef((props, ref) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -9,18 +11,22 @@ const SearchBox = forwardRef((props, ref) => {
       ? props.selectedCountry
       : ""
   );
+  const {width} = UseWindowDimensions();
   const handleMouseOver = () => {
-    menuOpen ? null : setMenuOpen(true);
+    !menuOpen && setMenuOpen(true);
   };
   const handleMouseLeave = () => {
-    menuOpen ? setMenuOpen(false) : null;
+    menuOpen && setMenuOpen(false);
   };
   const handleMenuClick = () => {
-    !menuOpen ? setMenuOpen(true) : null;
+    !menuOpen && setMenuOpen(true);
   };
   const handleMenuSelect = () => {
-    menuOpen ? setMenuOpen(false) : null;
+    menuOpen && setMenuOpen(false);
   };
+  const [searchFocused, setSearchFocused] = useState(false);
+  const onFocus = () => setSearchFocused(true);
+  const onBlur = () => setSearchFocused(false);
   const handleSelect = (item, event) => {
     event.preventDefault();
     // Here, we invoke the callback with the new value
@@ -62,18 +68,22 @@ const SearchBox = forwardRef((props, ref) => {
         id="dg-menu"
       >
         <textarea
+          onFocus={onFocus}
+          onBlur={(e) => onBlur(e)}
           className="searchInput"
           type="text"
           value={inputValue}
           placeholder="Select a digital good or country"
           onChange={(e) => handleChangeInput(e)}
         ></textarea>
-        <span className={menuOpen ? "arrow up active" : "arrow down active"}></span>
+        <span
+          className={menuOpen || searchFocused ? "arrow up active" : "arrow down active"}
+        ></span>
         <div
           onClick={handleMenuSelect}
           onMouseLeave={handleMouseLeave}
           id="dg-menu-dropdown"
-          className={menuOpen ? "active" : ""}
+          className={menuOpen || searchFocused ? "active" : ""}
         >
           {props.goods
             .filter(
@@ -83,6 +93,7 @@ const SearchBox = forwardRef((props, ref) => {
             .map((item, index) => (
               <a key={item.name + index} href="#" onClick={(e) => handleSelect(item, e)}>
                 {item.name}
+                {width > 1008 && <img width="45px" height="auto" src={dpgBadge}></img>}
               </a>
             ))}
           {Object.values(props.countries)
