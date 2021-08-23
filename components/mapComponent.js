@@ -1,7 +1,7 @@
 import React, {useState, useRef} from "react";
 import ReactMapboxGl, {ZoomControl, MapContext} from "react-mapbox-gl";
-import implementedpattern from "../public/implemented.svg";
-import pathpattern from "../public/pathfinders.svg";
+import confirmedPattern from "../public/confirmed.svg";
+import exploratoryPattern from "../public/exploratory.svg";
 import hardwarePattern from "../public/hardware.svg";
 import {Scrollama, Step} from "react-scrollama";
 import {InView} from "react-intersection-observer";
@@ -156,7 +156,7 @@ export default function mapComponent(props) {
         )
     );
 
-    setZoom(5.5);
+    setZoom(6);
     setLonLat([props.countries[code].lon, props.countries[code].lat]);
     setSelectedCountry({
       deployments: deployments,
@@ -345,9 +345,10 @@ export default function mapComponent(props) {
                 console.log("Pathfinders Exploratory is layer already created");
                 return;
               } else {
-                let pathimg = new Image(20, 20);
-                pathimg.onload = () => map.addImage("pathfinders-pattern", pathimg);
-                pathimg.src = pathpattern;
+                let exploratoryImg = new Image(20, 20);
+                exploratoryImg.onload = () =>
+                  map.addImage("exploratory-pattern", exploratoryImg);
+                exploratoryImg.src = exploratoryPattern;
 
                 // Use it
                 map.addLayer(
@@ -361,7 +362,7 @@ export default function mapComponent(props) {
                     "source-layer": "ne_10m_admin_0_countries-dxlasx",
                     type: "fill",
                     paint: {
-                      "fill-pattern": "pathfinders-pattern",
+                      "fill-pattern": "exploratory-pattern",
                       "fill-opacity": 0.5,
                     },
                     layout: {
@@ -382,10 +383,10 @@ export default function mapComponent(props) {
                 return;
               } else {
                 // Declare the image
-                let implementedimg = new Image(20, 20);
-                implementedimg.onload = () =>
-                  map.addImage("implemented-pattern", implementedimg);
-                implementedimg.src = implementedpattern;
+                let confirmedImg = new Image(20, 20);
+                confirmedImg.onload = () =>
+                  map.addImage("confirmed-pattern", confirmedImg);
+                confirmedImg.src = confirmedPattern;
 
                 // Use it
                 map.addLayer(
@@ -399,7 +400,7 @@ export default function mapComponent(props) {
                     "source-layer": "ne_10m_admin_0_countries-dxlasx",
                     type: "fill",
                     paint: {
-                      "fill-pattern": "implemented-pattern",
+                      "fill-pattern": "confirmed-pattern",
                       "fill-opacity": 0.5,
                     },
                     layout: {
