@@ -7,10 +7,10 @@ import Chart from "react-google-charts";
 
 const buttonStyles = {
   "Pathfinders Exploratory": {
-    backgroundImage: "url(pathfinders.svg)",
+    backgroundImage: "url(exploratory.svg)",
   },
   "Pathfinders Confirmed": {
-    backgroundImage: "url(implemented.svg)",
+    backgroundImage: "url(confirmed.svg)",
   },
   "DPGs developed": {
     backgroundColor: "#FF952A",
