@@ -1,9 +1,10 @@
-import React, {forwardRef, useImperativeHandle, useState} from "react";
+import React, {forwardRef, useImperativeHandle, useState, useRef, useEffect} from "react";
 import dpgBadge from "../public/dpgBadge.svg";
 import UseWindowDimensions from "./UseWindowDimensions";
 
 const SearchBox = forwardRef((props, ref) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const textRef = useRef();
   const [inputValue, setInputValue] = useState(
     props.selectedGood
       ? props.selectedGood
@@ -47,8 +48,10 @@ const SearchBox = forwardRef((props, ref) => {
   };
   const handleChangeInput = (event) => {
     setInputValue(event.target.value);
-    event.target.style.height = "2rem";
-    event.target.style.height = event.target.scrollHeight + "px";
+  };
+  const handleInputSize = (element) => {
+    element.style.height = "2rem";
+    element.style.height = element.scrollHeight + "px";
   };
   const changeInput = (value) => {
     setInputValue(value);
@@ -57,6 +60,10 @@ const SearchBox = forwardRef((props, ref) => {
     return {
       changeInput: changeInput,
     };
+  });
+  useEffect(() => {
+    handleInputSize(textRef.current);
+    // code to run after render goes here
   });
 
   return (
@@ -68,6 +75,7 @@ const SearchBox = forwardRef((props, ref) => {
         id="dg-menu"
       >
         <textarea
+          ref={textRef}
           onFocus={onFocus}
           onBlur={(e) => onBlur(e)}
           className="searchInput"
