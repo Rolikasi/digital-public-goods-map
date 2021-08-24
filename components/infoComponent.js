@@ -4,13 +4,15 @@ import ghLogo from "../public/github.png";
 import {InView} from "react-intersection-observer";
 import Footer from "./footer";
 import Chart from "react-google-charts";
+import confirmedPattern from "../public/confirmed.svg";
+import exploratoryPattern from "../public/exploratory.svg";
 
 const buttonStyles = {
   "Pathfinders Exploratory": {
-    backgroundImage: "url(exploratory.svg)",
+    backgroundImage: `url(${exploratoryPattern})`,
   },
   "Pathfinders Confirmed": {
-    backgroundImage: "url(confirmed.svg)",
+    backgroundImage: `url(${confirmedPattern})`,
   },
   "DPGs developed": {
     backgroundColor: "#FF952A",

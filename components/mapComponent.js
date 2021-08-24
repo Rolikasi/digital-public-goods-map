@@ -625,7 +625,7 @@ export default function mapComponent(props) {
                   className="legend-key"
                   style={
                     index == 0
-                      ? {backgroundImage: "url(hardware.svg"}
+                      ? {backgroundImage: `url(${hardwarePattern})`}
                       : {backgroundColor: colors[index]}
                   }
                 ></span>

@@ -14,5 +14,6 @@ module.exports = withCSS(
     cssLoaderOptions: {
       url: false,
     },
+    // assetPrefix: "map/" //for github integration in publicgoods-website TODO: move entire app in publicgoods-scripts, uncomment, write additional code in movefiles.bash and auto.yml 
   })
 );
