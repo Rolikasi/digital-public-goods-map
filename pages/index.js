@@ -4,7 +4,6 @@ import {promises as fs} from "fs";
 import path from "path";
 
 export default function Home(props) {
-  console.log(process.env.MAPBOX_ACCESS_TOKEN)
   const MapComponent = dynamic(import("../components/mapComponent"), {
     ssr: false,
   });
