@@ -4,6 +4,7 @@ import {promises as fs} from "fs";
 import path from "path";
 
 export default function Home(props) {
+  console.log(process.env.MAPBOX_ACCESS_TOKEN)
   const MapComponent = dynamic(import("../components/mapComponent"), {
     ssr: false,
   });
@@ -194,7 +195,7 @@ export async function getStaticProps() {
       return await csv().fromString(resultText);
     };
     const storyData = addStory(
-      await loadGsheet(process.env.SHEET_ID, 728344896)
+      await loadGsheet(process.env.NEXT_PUBLIC_SHEET_ID, 728344896)
     );
 
     const addCountries = async (results, label) => {
@@ -222,7 +223,7 @@ export async function getStaticProps() {
       countries = c;
       return {confirmed: s, exploratory: l};
     };
-    const pathfinderData = await loadGsheet(process.env.SHEET_ID, 635692465);
+    const pathfinderData = await loadGsheet(process.env.NEXT_PUBLIC_SHEET_ID, 635692465);
     const pathfinders = await addCountries(pathfinderData, "pathfinder");
 
     const polygonsDirectory = path.join(process.cwd(), "public");

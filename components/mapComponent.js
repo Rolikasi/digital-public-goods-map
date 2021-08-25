@@ -39,9 +39,9 @@ const sdgsDefault = () => {
   }
   return obj;
 };
-
+// console.log(process.env.MAPBOX_ACCESS_TOKEN)
 const Map = ReactMapboxGl({
-  accessToken: process.env.MAPBOX_TOKEN,
+  accessToken: process.env.NEXT_PUBLIC_MAPBOX_TOKEN,
   maxZoom: 9,
   minZoom: 0,
   logoPosition: "bottom-right",
