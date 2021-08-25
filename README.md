@@ -46,8 +46,8 @@ In order to run this application, you need to:
 - Copy [google spreadsheet](https://docs.google.com/spreadsheets/d/1t75gYVhdUjPD1532DbPYN49FLXFhpRwEBFiS4Hbk6_Q) for this project and [set up](https://github.com/bpk68/g-sheets-api#set-up-a-google-sheet) it so you can obtain sheets id.
 The following [environment variables](https://nextjs.org/docs/basic-features/environment-variables) need to be set in `.env` or `.env.local`:
 ```
-NEXT_PUBLIC_ACCESS_TOKEN="MAPBOX_ACCESS_TOKEN"
-NEXT_PUBLIC_SHEET="SHEET_ACCESS_TOKEN"
+MAPBOX_TOKEN="MAPBOX_ACCESS_TOKEN"
+SHEET_ID="SHEET_ID"
 ```
 
 ## 💻 Development Environment

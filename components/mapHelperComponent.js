@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import ReactMapboxGl, {ZoomControl} from "react-mapbox-gl";
 const Map = ReactMapboxGl({
-  accessToken: process.env.NEXT_PUBLIC_ACCESS_TOKEN,
+  accessToken: process.env.MAPBOX_TOKEN,
   maxZoom: 9,
   minZoom: 0,
   logoPosition: "bottom-right",
