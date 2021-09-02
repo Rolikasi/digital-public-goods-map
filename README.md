@@ -27,24 +27,26 @@ The above requirements were addressed with the following strategies:
 
 ## 🛠 Architecture
 
-This webapp is built using [Next.js](https://nextjs.org/) as a React Framework and deployed using [Vercel](https://vercel.com/).
+This webapp is built using [Next.js](https://nextjs.org/) as a React Framework.
 There are 2 pages: `index.js` and `helper.js`
 
-* `pages/_app.js` is the application entry point, which loads the required stylesheets and loads `index.js`
-* `pages/index.js` wraps most of the logic of the application:
-    - loads the data from [google spreadsheet](https://docs.google.com/spreadsheets/d/1t75gYVhdUjPD1532DbPYN49FLXFhpRwEBFiS4Hbk6_Q) and [unicef/publicgoods-candidates](https://github.com/unicef/publicgoods-candidates) using [Incremental Static Regeneration](https://nextjs.org/docs/basic-features/data-fetching#incremental-static-regeneration). It allows us to prerender data as JSONs, create or update static pages after the site is built. It significantly improves loading time and requires no fetches from client side. All data passed to react components as `props`.
-    - loads the MapComponent from `components/mapComponents.js`
-* `pages/helper.js` tool which allows team easily find logitude, latitude and zoom variables for cards in [google spreadsheet](https://docs.google.com/spreadsheets/d/1t75gYVhdUjPD1532DbPYN49FLXFhpRwEBFiS4Hbk6_Q)
-* `components/mapComponent.js` loads the Mapbox map, adds a layer for each dataset, creates a popup for each country, searchBar menu to toggle the visibility of each layer of digitalpublic good, and creates filters for other layers of data.
-* `components/infoComponent.js` display information about selected digital public good.
-* `components/searchBox.js` interface that allows users to select and search for digital public good.
+- `pages/_app.js` is the application entry point, which loads the required stylesheets and loads `index.js`
+- `pages/index.js` wraps most of the logic of the application:
+  - loads the data from [google spreadsheet](https://docs.google.com/spreadsheets/d/1t75gYVhdUjPD1532DbPYN49FLXFhpRwEBFiS4Hbk6_Q) and [unicef/publicgoods-candidates](https://github.com/unicef/publicgoods-candidates) using [Incremental Static Regeneration](https://nextjs.org/docs/basic-features/data-fetching#incremental-static-regeneration). It allows us to prerender data as JSONs, create or update static pages after the site is built. It significantly improves loading time and requires no fetches from client side. All data passed to react components as `props`.
+  - loads the MapComponent from `components/mapComponents.js`
+- `pages/helper.js` tool which allows team easily find logitude, latitude and zoom variables for cards in [google spreadsheet](https://docs.google.com/spreadsheets/d/1t75gYVhdUjPD1532DbPYN49FLXFhpRwEBFiS4Hbk6_Q)
+- `components/mapComponent.js` loads the Mapbox map, adds a layer for each dataset, creates a popup for each country, searchBar menu to toggle the visibility of each layer of digitalpublic good, and creates filters for other layers of data.
+- `components/infoComponent.js` display information about selected digital public good.
+- `components/searchBox.js` interface that allows users to select and search for digital public good.
 
 ## ✏️ Configuration
 
 In order to run this application, you need to:
-- open an account with [Mapbox](https://www.mapbox.com/) to obtain an *Access Token*. 
+
+- open an account with [Mapbox](https://www.mapbox.com/) to obtain an _Access Token_.
 - Copy [google spreadsheet](https://docs.google.com/spreadsheets/d/1t75gYVhdUjPD1532DbPYN49FLXFhpRwEBFiS4Hbk6_Q) for this project and [set up](https://github.com/bpk68/g-sheets-api#set-up-a-google-sheet) it so you can obtain sheets id.
-The following [environment variables](https://nextjs.org/docs/basic-features/environment-variables) need to be set in `.env` or `.env.local`:
+  The following [environment variables](https://nextjs.org/docs/basic-features/environment-variables) need to be set in `.env` or `.env.local`:
+
 ```
 NEXT_PUBLIC_MAPBOX_TOKEN="MAPBOX_ACCESS_TOKEN"
 NEXT_PUBLIC_SHEET_ID="SHEET_ID"
@@ -55,25 +57,45 @@ NEXT_PUBLIC_SHEET_ID="SHEET_ID"
 Setup your development environment as follows:
 
 1. Clone this repo:
-    - SSL:
-    ```bash
-    git clone git@github.com:rolikasi/digital-public-goods-map
-    ```
-    - HTTPS:
-    ```bash
-    git clone https://github.com/Rolikasi/digital-public-goods-map
-    ```
-2. Install project dependencies:
-    ```bash
-    cd digital-public-goods-map
-    npm install
-    ```
-3. After having set up the proper [Configuration](#%EF%B8%8F-configuration), run the developmnet server with [fast refresh](https://nextjs.org/docs/basic-features/fast-refresh):
-    ```bash
-    npm run dev
-    ```
-    
-This project has been developed on top of the [Visualization of UNICEF Office of Innovation (OoI) repository](https://github.com/lacabra/ooi-project-visualization) that is licensed under the [GNU General Public License](LICENSE)
+   - SSL:
+   ```bash
+   git clone git@github.com:unicef/publicgoods-scripts
+   ```
+   - HTTPS:
+   ```bash
+   git clone https://github.com/unicef/publicgoods-scripts
+   ```
+2. Install root dependencies from publicgoods-script
+   ```bash
+   npm install
+   ```
+3. Clone interconnected publicgoods-website
+   ```bash
+   git clone https://github.com/unicef/publicgoods-website.git ../publicgoods-website
+   ```
+4. ```bash
+   ./scripts/static.bash
+   ```
+   crawls a private instance of the WordPress website and saves a copy in `../publicgoods-website`
+5. `cd packages/automation && node index.js` generates necessary files for the map(and other packages) from publicgoods website
+6. ```bash |
+    ln -s ../../../../publicgoods-website/wp-includes/ packages/map/public/wp-includes;
+    ln -s ../../../../publicgoods-website/wp-content/ packages/map/public/wp-content;
+   ```
+   add styles and js for template files(navigation and footer)
+7. Navigate to the map package
+   ```bash
+   cd /packages/map
+   ```
+8. Install project dependencies:
+   ```bash
+   npm install
+   ```
+9. After having set up the proper [Configuration](#%EF%B8%8F-configuration), run the developmnet server with [fast refresh](https://nextjs.org/docs/basic-features/fast-refresh):
+   ```bash
+   npm run dev
+   ```
+10. Access visualization via http://localhost:3000
 
 ## :memo: License
 
@@ -97,5 +119,3 @@ any later version.
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ```
-
-
