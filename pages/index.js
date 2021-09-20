@@ -106,9 +106,8 @@ export async function getStaticProps() {
     const alpha3 = {...loadAlpha};
     var countries = {};
     var mismatched = {};
-    //TODO: add an ability to fetch more than 100 dpgs
     const result = await fetch(
-      "https://api.github.com/search/code?q=repo:unicef/publicgoods-candidates+path:digitalpublicgoods+filename:.json&per_page=100"
+      "https://api.github.com/search/code?q=repo:unicef/publicgoods-candidates+path:digitalpublicgoods+filename:.json"
     );
     const goodsFileNames = await result.json();
     const handleCountries = (data) => {
